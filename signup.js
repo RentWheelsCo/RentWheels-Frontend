@@ -108,3 +108,4 @@ function goToLogin() {
 }
 
 document.addEventListener('DOMContentLoaded', attachLiveClearing); 
+

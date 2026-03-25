@@ -15,14 +15,12 @@
     background-position: center;
   }
 
-  /* ── BACKGROUND OVERLAY ── */
   .overlay-bg {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.45);
   }
 
-  /* ── MODAL CARD ── */
   .modal {
     position: relative;
     z-index: 10;
@@ -35,21 +33,20 @@
     box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
   }
 
-  /* ── LEFT PANEL – image ── */
   .modal-image {
-    flex: 1;                 /* take remaining space */
+    flex: 1;                 
     position: relative;
     overflow: hidden;
-    margin: 30px 0 30px 20px; /* top & left margin */
-    border-radius: 16px;     /* optional: round corners of container */
+    margin: 30px 0 30px 20px; 
+    border-radius: 16px;     
   }
   
 
   .modal-image img {
-    width: 100%;            /* fill container */
-    height: 100%;           /* fill container */
-    object-fit: cover;      /* cover without stretching */
-    border-radius: 20px;    /* curve the image corners */
+    width: 100%;        
+    height: 100%;        
+    object-fit: cover;   
+    border-radius: 20px;    
     display: block;
   }
 
@@ -60,7 +57,6 @@
     background: linear-gradient(135deg, rgba(30, 80, 200, 0.18) 0%, rgba(0, 0, 0, 0.10) 100%);
   }
 
-  /* ── RIGHT PANEL – scrollable form ── */
   .modal-form-wrap {
     flex: 0 0 350px;;
     display: flex;
@@ -91,7 +87,6 @@
     border-radius: 4px;
   }
 
-  /* ── PROFILE ICON ── */
   .profile-icon {
     display: flex;
     justify-content: center;
@@ -104,7 +99,6 @@
     color: #1a1a2e;
   }
 
-  /* ── HEADING ── */
   h2 {
     text-align: center;
     font-size: 1.55rem;
@@ -118,9 +112,12 @@
     color: #2563eb;
   }
 
-  /* ── INPUT GROUPS ── */
   .input-group {
     margin-bottom: 14px;
+  }
+
+  .input-group span{
+    color: #ef4444;
   }
 
   .input-group label {
@@ -154,7 +151,6 @@
     background: #fff;
   }
 
-  /* ── SWITCH TEXT ── */
   .switch-text {
     font-size: 0.78rem;
     color: #6b7280;
@@ -168,7 +164,6 @@
     text-decoration: underline;
   }
 
-  /* ── NEXT BUTTON ── */
   .btn-next {
     display: block;
     width: 100%;
@@ -194,7 +189,6 @@
     transform: translateY(0);
   }
 
-  /* ── GOOGLE BUTTON ── */
   .btn-google {
     display: flex;
     align-items: center;
@@ -219,7 +213,6 @@
     border-color: #c7d2fe;
   }
 
-  /* ── PAGE DOTS ── */
   .page-dots {
     display: flex;
     justify-content: center;
@@ -233,22 +226,19 @@
     border-radius: 50%;
     background: #d1d5db;
     transition: background 0.2s, transform 0.2s;
-    cursor: pointer;
   }
 
   .dot.active {
     background: #2563eb;
     transform: scale(1.25);
   }
-  /* ── Add these rules to the bottom of your existing style.css ── */
- 
-/* Red border on invalid input */
+
+
 .input-group input.input-error {
   border-color: #ef4444;
   box-shadow: 00 0 0 3px rgba(37,99,235,.12);
 }
- 
-/* Error message text below the input */
+
 .error-msg {
   display: block;
   margin-top: 4px;
@@ -258,8 +248,7 @@
   font-family: 'Nunito', sans-serif;
 }
 
-/* page2
-/* ── UPLOAD BOX ── */
+
 .upload-box {
   display: flex;
   align-items: center;
@@ -287,7 +276,6 @@
   background: #f0fdf4;
 }
 
-/* ── PREVIEW AREA inside box ── */
 .upload-preview {
   display: flex;
   align-items: center;
@@ -295,7 +283,6 @@
   width: 100%;
 }
 
-/* ── DEFAULT ICON (grey folder/person look) ── */
 .upload-icon-wrap {
   flex-shrink: 0;
   display: flex;
@@ -310,7 +297,6 @@
   object-fit: contain;
 }
 
-/* ── UPLOADED THUMBNAIL ── */
 .upload-thumb {
   width: 72px;
   height: 72px;
@@ -320,10 +306,10 @@
   flex-shrink: 0;
 }
 
-/* ── HINT TEXT ── */
 .upload-hint {
   margin: 0;
   flex: 1;
+  color: #64748B;
   white-space: normal;      
   word-break: break-word;
 }
@@ -335,7 +321,6 @@
   line-height: 1.4;
 }
 
-/* ── ERROR state on upload box ── */
 .upload-box.upload-error {
   border-color: #ef4444;
   background: #fff5f5;
