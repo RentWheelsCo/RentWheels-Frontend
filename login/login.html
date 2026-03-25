@@ -5,14 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>RentWheels – Login</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="login.css"/>
 </head>
 <body>
 
   <div class="page-body">
     <div class="card">
 
-      <!-- LEFT: image -->
       <div class="card-image">
         <img
           src="images/car.png"
@@ -21,7 +20,6 @@
         />
       </div>
 
-      <!-- RIGHT: form -->
       <div class="card-form">
         <div class="avatar-icon">
           <img src="images/profile.png" alt="Profile" />
@@ -30,7 +28,6 @@
 
         <form id="loginForm" novalidate>
 
-          <!-- Email -->
           <div class="field">
             <label for="email">Email</label>
             <input type="email" id="email" name="email" placeholder="Enter your email" autocomplete="email"/>
@@ -38,7 +35,6 @@
             <span class="field-msg success" id="email-ok"></span>
           </div>
 
-          <!-- Password -->
           <div class="field">
             <label for="password">Password</label>
             <div class="pw-wrap">
@@ -56,14 +52,12 @@
 
           <a href="#" class="forgot">Forgot password?</a>
 
-          <!-- Error banner -->
           <div id="loginError">
             Invalid email or password. Please try again.
           </div>
 
           <button type="submit" class="btn-submit">Login</button>
 
-          <!-- Google -->
           <button type="button" class="btn-google">
             <svg viewBox="0 0 48 48">
               <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.2l6.7-6.7C35.9 2.5 30.3 0 24 0 14.8 0 6.9 5.4 3 13.3l7.8 6C12.6 13 17.9 9.5 24 9.5z"/>
@@ -79,9 +73,9 @@
         </form>
       </div>
 
-    </div><!-- /card -->
+    </div>
   </div>
 
-  <script src="script.js"></script>
+  <script src="login.js"></script>
 </body>
 </html>

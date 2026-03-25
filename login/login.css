@@ -13,7 +13,6 @@
   --white:     #FFFFFF;
 }
 
-/* ── PAGE ── */
 body {
   font-family: 'Poppins', sans-serif;
   min-height: 100vh;
@@ -31,7 +30,6 @@ body {
   padding: 2rem 1rem;
 }
 
-/* ── CARD ── */
 .card {
   background: var(--white);
   border-radius: 12px;
@@ -49,7 +47,6 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── LEFT IMAGE PANEL ── */
 .card-image {
   width: 46%;
   flex-shrink: 0;
@@ -65,12 +62,10 @@ body {
   display: block;
 }
 
-/* fallback bg when image errors */
 .card-image.fallback {
   background: linear-gradient(140deg, #0c1a35 0%, #1e3a6e 50%, #0c1a35 100%);
 }
 
-/* ── RIGHT FORM PANEL ── */
 .card-form {
   flex: 1;
   padding: 1.5rem 2rem;
@@ -81,7 +76,6 @@ body {
   background: var(--white);
 }
 
-/* Avatar icon */
 .avatar-icon {
   width: 52px;
   height: 52px;
@@ -102,7 +96,6 @@ h2 {
   margin-bottom: .9rem;
 }
 
-/* ── FORM ── */
 form { width: 100%; }
 
 .field { margin-bottom: .7rem; }
@@ -132,7 +125,6 @@ input[type="text"] {
 input::placeholder { color: #9CA3AF; }
 input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
 
-/* Validation states */
 input.valid   { border-color: var(--green); }
 input.invalid { border-color: var(--red); }
 
@@ -145,7 +137,6 @@ input.invalid { border-color: var(--red); }
 .field-msg.error   { color: var(--red); }
 .field-msg.success { color: var(--green); }
 
-/* Password wrapper */
 .pw-wrap { position: relative; }
 .toggle-pw {
   position: absolute;
@@ -160,7 +151,6 @@ input.invalid { border-color: var(--red); }
 }
 .toggle-pw svg { width: 17px; height: 17px; display: block; }
 
-/* Forgot link */
 .forgot {
   display: block;
   text-align: right;
@@ -171,7 +161,6 @@ input.invalid { border-color: var(--red); }
 }
 .forgot:hover { text-decoration: underline; }
 
-/* Login error banner */
 #loginError {
   display: none;
   background: #ffffff;
@@ -183,7 +172,6 @@ input.invalid { border-color: var(--red); }
   text-align: center;
 }
 
-/* Login button */
 .btn-submit {
   width: 100%;
   margin-top: .8rem;
@@ -201,7 +189,6 @@ input.invalid { border-color: var(--red); }
 .btn-submit:hover  { background: var(--blue-dark); }
 .btn-submit:active { transform: scale(.98); }
 
-/* Google button */
 .btn-google {
   width: 100%;
   margin-top: .5rem;
@@ -223,7 +210,6 @@ input.invalid { border-color: var(--red); }
 .btn-google:hover { background: var(--gray-100); border-color: #9CA3AF; }
 .btn-google svg   { width: 18px; height: 18px; flex-shrink: 0; }
 
-/* Signup link */
 .signup-link {
   text-align: center;
   margin-top: .5rem;
@@ -237,7 +223,6 @@ input.invalid { border-color: var(--red); }
 }
 .signup-link a:hover { text-decoration: underline; }
 
-/* ── RESPONSIVE ── */
 @media (max-width: 540px) {
   .card { flex-direction: column; max-width: 360px; }
   .card-image { width: 100%; height: 200px; }
