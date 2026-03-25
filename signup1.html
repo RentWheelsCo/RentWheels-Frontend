@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sign Up – Step 2</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="signup.css">
+  <link rel="stylesheet" href="signup1.css">
+</head>
+<body>
+
+<div class="overlay-bg"></div>
+
+<div class="modal">
+
+  <div class="modal-image">
+    <img src="./Assests/signup-img.jpg" alt="Car on map">
+  </div>
+
+  <div class="modal-form-wrap">
+    <div class="modal-form-inner">
+
+      <div class="profile-icon">
+        <img src="./Assests/Person-Icon.png" width="60" height="60" alt="Person icon">
+      </div>
+
+      <h2><span>Get</span> Started !</h2>
+
+      <div class="input-group">
+        <label>Profile Picture</label>
+        <div class="upload-box" id="profileBox" onclick="triggerUpload('profileInput')">
+          <div class="upload-preview" id="profilePreview">
+            <div class="upload-icon-wrap">
+              <img src="./Assests/file-icon.png" class="upload-default-icon" width="100" height="100" alt="upload">
+            </div>
+           <p class="upload-hint">Please upload a recent formal photo where your face is clearly seen.</p>
+          </div>
+          <input type="file" id="profileInput" accept="image/*" hidden onchange="handleUpload(this, 'profilePreview', 'profileBox')">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Upload License</label>
+        <div class="upload-box" id="licenseBox" onclick="triggerUpload('licenseInput')">
+          <div class="upload-preview" id="licensePreview">
+            <div class="upload-icon-wrap">
+              <img src="./Assests/file-icon.png" class="upload-default-icon" width="100" height="100" alt="upload">
+            </div>
+            <p class="upload-hint">Please upload a clear image of the front side of your license.</p>
+          </div>
+          <input type="file" id="licenseInput" accept="image/*" hidden onchange="handleUpload(this, 'licensePreview', 'licenseBox')">
+        </div>
+      </div>
+
+      <p class="switch-text">
+        Already have an account? <span onclick="goToLogin()">click here</span>
+      </p>
+
+      <button type="button" class="btn-next" onclick="submitSignup()">Sign In</button>
+
+      <div class="page-dots">
+        <div class="dot" onclick="goBack()"></div>
+        <div class="dot active"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="signup1.js"></script>
+
+</body>
+</html>
