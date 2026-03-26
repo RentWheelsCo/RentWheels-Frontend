@@ -1,9 +1,6 @@
 const ASSETS = {
-  // From the provided Figma design (node 1:4).
-  brandLogo:
-    "https://www.figma.com/api/mcp/asset/5d15e4b7-59fa-4782-b5fc-3f1a19528a94",
-  searchIcon:
-    "https://www.figma.com/api/mcp/asset/f655dc66-d14b-4e34-b654-2eda563ba435",
+  brandLogo: "assets/rentwheels.png",
+  searchIcon: "assets/search_icon.png",
 };
 
 function renderHeader(activeKey) {
@@ -25,9 +22,9 @@ function renderHeader(activeKey) {
 
   return `
     <header class="rw-header">
-      <div class="rw-brand" aria-label="RentWheels">
+      <a class="rw-brand" href="index.html" aria-label="RentWheels">
         <img src="${ASSETS.brandLogo}" alt="RentWheels logo" />
-      </div>
+      </a>
 
       <nav class="rw-nav" aria-label="Primary navigation">
         ${navHtml}
@@ -48,6 +45,9 @@ function renderFooter() {
   return `
     <footer class="rw-footer">
       <div class="rw-footer-inner">
+        <a class="rw-brand" href="index.html" aria-label="RentWheels Home">
+          <img src="${ASSETS.brandLogo}" alt="RentWheels logo" />
+        </a>
         <div class="rw-footer-col">
           <div class="rw-footer-title">Quick Links</div>
           <a class="rw-footer-item" href="index.html">Home</a>
@@ -78,4 +78,3 @@ document.addEventListener("DOMContentLoaded", () => {
   if (headerTarget) headerTarget.innerHTML = renderHeader(pageKey);
   if (footerTarget) footerTarget.innerHTML = renderFooter();
 });
-
