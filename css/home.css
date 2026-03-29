@@ -1,35 +1,43 @@
 :root {
-  --clr-primary:     #2563EB;
-  --clr-primary-dk:  #1D4ED8;
-  --clr-primary-lt:  #EFF6FF;
-  --clr-accent:      #3B82F6;
-  --clr-hero-bg:     #E8EEF6;
-  --clr-bg:          #FFFFFF;
-  --clr-surface:     #FFFFFF;
-  --clr-border:      #E5E7EB;
-  --clr-text:        #111827;
-  --clr-text-muted:  #6B7280;
-  --clr-text-light:  #9CA3AF;
+  --clr-primary: #2563EB;
+  --clr-primary-dk: #1D4ED8;
+  --clr-primary-lt: #EFF6FF;
+  --clr-accent: #3B82F6;
+  --clr-hero-bg: #E8EEF6;
+  --clr-bg: #FFFFFF;
+  --clr-surface: #FFFFFF;
+  --clr-border: #E5E7EB;
+  --clr-text: #111827;
+  --clr-text-muted: #6B7280;
+  --clr-text-light: #9CA3AF;
   --clr-badge-green: #22C55E;
-  --clr-star:        #F59E0B;
+  --clr-star: #F59E0B;
 
-  --radius-sm:  8px;
-  --radius-md:  12px;
-  --radius-lg:  20px;
-  --radius-xl:  28px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
   --radius-full: 9999px;
 
-  --shadow-card: 0 2px 12px rgba(0,0,0,0.07);
-  --shadow-card-hover: 0 8px 32px rgba(37,99,235,0.13);
-  --shadow-search: 0 4px 32px rgba(0,0,0,0.10);
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.07);
+  --shadow-card-hover: 0 8px 32px rgba(37, 99, 235, 0.13);
+  --shadow-search: 0 4px 32px rgba(0, 0, 0, 0.10);
 
   --transition: 0.22s ease;
   --font: 'Outfit', sans-serif;
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+}
 
 body {
   font-family: var(--font);
@@ -39,9 +47,21 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-a { text-decoration: none; color: inherit; }
-img { display: block; max-width: 100%; }
-select, input, button { font-family: var(--font); }
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+select,
+input,
+button {
+  font-family: var(--font);
+}
 
 .container {
   max-width: 1100px;
@@ -120,16 +140,71 @@ select, input, button { font-family: var(--font); }
   width: 100%;
   height: auto;
   object-fit: contain;
-  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.18));
+  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.18));
   transform: translateY(12px);
   transition: transform 0.5s ease;
 }
 
-.hero__car-img:hover { transform: translateY(6px) scale(1.01); }
+.hero__car-img:hover {
+  transform: translateY(6px) scale(1.01);
+}
 
 .featured {
-  padding: 80px 0 60px;
+  padding: 76px 0 60px;
   background: var(--clr-bg);
+}
+
+.section-header--vehicles {
+  margin-bottom: 40px;
+}
+
+.section-title--vehicles {
+  font-family: Roboto, var(--font);
+  font-size: clamp(1.9rem, 3vw, 2.25rem);
+  font-weight: 600;
+  color: #090a0b;
+  margin-bottom: 8px;
+}
+
+.section-subtitle--vehicles {
+  max-width: 620px;
+  color: #64748b;
+  font-size: 1.05rem;
+  margin-bottom: 22px;
+}
+
+.vehicles-search-wrap {
+  width: min(100%, 672px);
+  margin: 0 auto;
+  height: 50px;
+  border-radius: 999px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  padding: 0 16px 0 14px;
+  gap: 10px;
+}
+
+.vehicles-search-icon {
+  width: 18px;
+  height: 18px;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.vehicles-search-input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.vehicles-search-input::placeholder {
+  color: #64748b;
 }
 
 .vehicles-grid {
@@ -169,7 +244,9 @@ select, input, button { font-family: var(--font); }
   transition: transform 0.4s ease;
 }
 
-.vehicle-card:hover .vehicle-card__img { transform: scale(1.04); }
+.vehicle-card:hover .vehicle-card__img {
+  transform: scale(1.04);
+}
 
 .badge {
   position: absolute;
@@ -191,7 +268,7 @@ select, input, button { font-family: var(--font); }
 .badge--price {
   bottom: 12px;
   right: 12px;
-  background: rgba(0,0,0,0.62);
+  background: rgba(0, 0, 0, 0.62);
   color: #fff;
   font-size: 0.78rem;
 }
@@ -265,10 +342,12 @@ select, input, button { font-family: var(--font); }
   border-color: var(--clr-primary);
   color: var(--clr-primary);
   background: var(--clr-primary-lt);
-  box-shadow: 0 2px 10px rgba(37,99,235,0.10);
+  box-shadow: 0 2px 10px rgba(37, 99, 235, 0.10);
 }
 
-.btn-explore:hover svg { transform: translateX(4px); }
+.btn-explore:hover svg {
+  transform: translateX(4px);
+}
 
 .testimonials {
   padding: 72px 0 88px;
@@ -348,29 +427,67 @@ select, input, button { font-family: var(--font); }
 }
 
 @keyframes fadeDown {
-  from { opacity: 0; transform: translateY(-18px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes cardFadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.vehicles-grid .vehicle-card:nth-child(1) { animation-delay: 0.05s; }
-.vehicles-grid .vehicle-card:nth-child(2) { animation-delay: 0.15s; }
-.vehicles-grid .vehicle-card:nth-child(3) { animation-delay: 0.25s; }
+.vehicles-grid .vehicle-card:nth-child(1) {
+  animation-delay: 0.05s;
+}
 
-.testimonials-grid .testimonial-card:nth-child(1) { animation: cardFadeIn 0.5s ease 0.1s both; }
-.testimonials-grid .testimonial-card:nth-child(2) { animation: cardFadeIn 0.5s ease 0.22s both; }
-.testimonials-grid .testimonial-card:nth-child(3) { animation: cardFadeIn 0.5s ease 0.34s both; }
+.vehicles-grid .vehicle-card:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.vehicles-grid .vehicle-card:nth-child(3) {
+  animation-delay: 0.25s;
+}
+
+.testimonials-grid .testimonial-card:nth-child(1) {
+  animation: cardFadeIn 0.5s ease 0.1s both;
+}
+
+.testimonials-grid .testimonial-card:nth-child(2) {
+  animation: cardFadeIn 0.5s ease 0.22s both;
+}
+
+.testimonials-grid .testimonial-card:nth-child(3) {
+  animation: cardFadeIn 0.5s ease 0.34s both;
+}
 
 @media (max-width: 900px) {
+
   .vehicles-grid,
   .testimonials-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -378,12 +495,20 @@ select, input, button { font-family: var(--font); }
 }
 
 @media (max-width: 640px) {
-  .hero { padding: 44px 16px 0; }
+  .hero {
+    padding: 44px 16px 0;
+  }
+
+  .vehicles-search-wrap {
+    height: 46px;
+  }
 
   .vehicles-grid,
   .testimonials-grid {
     grid-template-columns: 1fr;
   }
 
-  .section-title { font-size: 1.5rem; }
+  .section-title {
+    font-size: 1.5rem;
+  }
 }

@@ -32,14 +32,14 @@ body {
 
 /* Header */
 .rw-header {
-  width: 1440px;
-  height: 62px;
+  width: 100%;
+  min-height: 64px;
   background: #ffffff;
-  border-bottom: 1px solid rgba(225, 225, 225, 0.75);
+  border-bottom: 1px solid #e1e1e1;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  padding: 0px 48px;
+  padding: 10px 48px;
 }
 
 .rw-brand {
@@ -61,8 +61,8 @@ body {
 }
 
 .rw-brand img {
-  width: 288px;
-  height: 81px;
+  width: 290px;
+  height: 83px;
   border-radius: 999px;
   object-fit: cover;
 }
@@ -77,7 +77,7 @@ body {
 .rw-nav a {
   text-decoration: none;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--rw-muted);
   padding: 6px 0;
   transition: color 120ms ease, font-weight 120ms ease;
@@ -96,8 +96,8 @@ body {
 }
 
 .rw-search {
-  width: 233px;
-  height: 38px;
+  width: 239px;
+  height: 39px;
   border-radius: 999px;
   border: 1px solid var(--rw-border);
   display: flex;
@@ -129,8 +129,8 @@ body {
 }
 
 .rw-login {
-  width: 115px;
-  height: 38px;
+  width: 118px;
+  height: 39px;
   background: var(--rw-blue);
   color: #fff;
   border-radius: 8px;
@@ -146,20 +146,20 @@ body {
 .rw-footer {
   margin-top: auto;
   background: #ffffff;
-  border-top: 1px solid rgba(225, 225, 225, 0.85);
-  padding: 26px 48px 18px;
+  border-top: 0;
+  padding: 52px 80px 18px;
 }
 
 .rw-footer-inner {
-  max-width: 1280px;
+  max-width: 1288px;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
-  gap: 40px;
+  gap: 48px;
 }
 
 .rw-footer-col {
-  min-width: 280px;
+  min-width: 190px;
 }
 
 .rw-footer-title {
@@ -167,8 +167,9 @@ body {
   color: #0b0c0f;
   font-size: 14px;
   font-weight: 500;
-  text-transform: none;
-  margin: 0 0 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  margin: 0 0 14px;
 }
 
 .rw-footer-item {
@@ -177,23 +178,24 @@ body {
   font-weight: 400;
   text-decoration: none;
   display: block;
-  margin: 6px 0;
+  margin: 8px 0;
 }
 
 .rw-footer-text {
   color: var(--rw-muted-2);
   font-size: 16px;
   font-weight: 400;
-  margin: 6px 0;
+  margin: 8px 0;
 }
 
 .rw-footer-bottom {
-  max-width: 1280px;
-  margin: 22px auto 0;
+  max-width: 1288px;
+  margin: 26px auto 0;
   color: #64748b;
   font-size: 14px;
-  border-top: 1px solid rgba(225, 225, 225, 0.85);
-  padding-top: 6px;
+  border-top: 1px solid #e1e1e1;
+  padding-top: 10px;
+  text-align: center;
 }
 
 /* Blank page body spacing to match the "header/footer only" request */
