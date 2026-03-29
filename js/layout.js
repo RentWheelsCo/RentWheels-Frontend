@@ -1,6 +1,6 @@
 const ASSETS = {
-  brandLogo: "assets/rentwheels.png",
-  searchIcon: "assets/search_icon.png",
+  brandLogo: "../assets/rentwheels.png",
+  searchIcon: "../assets/search_icon.png",
 };
 
 function renderHeader(activeKey) {
