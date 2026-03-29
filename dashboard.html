@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="sidebar-profile">
+      <div class="avatar">
+        <img src="./assests/Person-Icon.png" width="40" height="40">
+      </div>
+      <span class="profile-name">Lasta Maharjan</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" data-page="dashboard">
+        <span class="nav-icon">
+          <img src="./assests/dashboard.png" width="20" height="20">
+        </span>
+        Dashboard
+      </a>
+      <a href="#" class="nav-item" data-page="add-vehicle">
+        <span class="nav-icon">
+          <img src="./assests/add.png" width="20" height="20">
+        </span>
+        Add Vehicle
+      </a>
+      <a href="#" class="nav-item" data-page="manage-vehicle">
+        <span class="nav-icon">
+          <img src="./assests/carGrey.png" width="20" height="20">
+        </span>
+        Manage Vehicle
+      </a>
+      <a href="#" class="nav-item" data-page="manage-bookings">
+        <span class="nav-icon">
+          <img src="./assests/clipboardGrey.png" width="20" height="20">
+        </span>
+        Manage Bookings
+      </a>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+    <header class="page-header">
+      <h1 class="page-title">Admin Dashboard</h1>
+      <p class="page-subtitle">Monitor overall platform performance including total vehicles, bookings, revenue, and recent activities</p>
+    </header>
+
+    <section class="stats-row">
+      <div class="stat-card">
+        <div class="stat-info">
+          <span class="stat-label">Total Vehicles</span>
+          <span class="stat-value" id="totalVehicles">8</span>
+        </div>
+        <div class="stat-icon vehicles">
+          <img src="./assests/car.png" width="30" height="30">
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <span class="stat-label">Total Bookings</span>
+          <span class="stat-value" id="totalBookings">4</span>
+        </div>
+        <div class="stat-icon bookings">
+          <img src="./assests/clipboard.png" width="30" height="30">
+        </div>
+      </div>
+    </section>
+
+    <section class="bottom-grid">
+      <div class="card bookings-card">
+        <div class="card-header">
+          <h2 class="card-title">Recent Bookings</h2>
+          <p class="card-subtitle">Latest customer bookings</p>
+        </div>
+        <div class="bookings-list" id="bookingsList">
+        </div>
+      </div>
+
+      <div class="card revenue-card">
+        <div class="card-header">
+          <h2 class="card-title">Monthly Revenue</h2>
+          <p class="card-subtitle">Revenue for current month</p>
+        </div>
+        <div class="revenue-amount" id="monthlyRevenue">$1060</div>
+      </div>
+    </section>
+  </main>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>
