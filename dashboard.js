@@ -75,3 +75,91 @@ document.addEventListener("DOMContentLoaded", () => {
   renderDashboard();
   initNav();
 });
+// Modal controls
+function openModal() {
+  showMainOptions();
+  document.getElementById("editProfileModal").style.display = "flex";
+}
+function closeModal() {
+  document.getElementById("editProfileModal").style.display = "none";
+}
+function showMainOptions() {
+  document.getElementById("mainOptions").style.display = "block";
+  document.getElementById("photoEdit").style.display   = "none";
+  document.getElementById("licenseEdit").style.display = "none";
+}
+function showPhotoEdit() {
+  document.getElementById("mainOptions").style.display = "none";
+  document.getElementById("photoEdit").style.display   = "block";
+  document.getElementById("licenseEdit").style.display = "none";
+}
+function showLicenseEdit() {
+  document.getElementById("mainOptions").style.display  = "none";
+  document.getElementById("photoEdit").style.display    = "none";
+  document.getElementById("licenseEdit").style.display  = "block";
+}
+
+function previewLicense(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const preview = document.getElementById("licensePreview");
+    preview.src = e.target.result;
+    preview.style.display = "block";
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveLicense() {
+  const licenseInput  = document.getElementById("licenseNumber");
+  const expiryInput   = document.getElementById("expiryDate");
+  let valid = true;
+
+  // Reset
+  licenseInput.style.borderColor = "";
+  expiryInput.style.borderColor  = "";
+  licenseInput.style.color       = "";
+  expiryInput.style.color        = "";
+
+  if (!licenseInput.value.trim()) {
+    licenseInput.style.borderColor = "#dc2626";
+    licenseInput.style.color       = "#dc2626";
+    licenseInput.placeholder       = "License number is required";
+    valid = false;
+  }
+
+  if (!expiryInput.value) {
+    expiryInput.style.borderColor = "#dc2626";
+    expiryInput.style.color       = "#dc2626";
+    valid = false;
+  }
+
+  if (!valid) return;
+
+  // success — close or show toast
+  closeModal();
+}
+function previewPhoto(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const preview = document.getElementById("photoPreview");
+    preview.src = e.target.result;
+    preview.style.display = "block";
+  };
+  reader.readAsDataURL(file);
+}
+function savePhoto() {
+  const preview = document.getElementById("photoPreview");
+  if (preview.src) {
+    document.querySelector(".avatar img").src = preview.src;
+  }
+  closeModal();
+}
+
+// Close modal on backdrop click
+document.getElementById("editProfileModal").addEventListener("click", function(e) {
+  if (e.target === this) closeModal();
+});

@@ -257,6 +257,202 @@ body {
   animation: fadeUp .4s ease forwards;
 }
 
+/* ── Edit Profile Modal ── */
+#editProfileModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-box {
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px 24px;
+  width: 320px;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+}
+
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #555;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+
+.modal-header span {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* Main option buttons */
+.modal-btn-primary {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition: background 0.15s;
+}
+.modal-btn-primary:hover { background: #1d4ed8; }
+
+.modal-btn-secondary {
+  width: 100%;
+  background: var(--border);
+  color: var(--text-primary);
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.modal-btn-secondary:hover { background: #d1d5db; }
+
+/* Sub-form panels */
+.modal-panel { display: none; }
+
+.modal-panel h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+}
+
+.modal-form { display: flex; flex-direction: column; gap: 12px; }
+
+.modal-form label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.modal-form input[type="text"],
+.modal-form input[type="date"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  outline: none;
+  color: var(--text-primary);
+  transition: border-color 0.15s;
+}
+.modal-form input:focus { border-color: var(--accent); }
+
+.upload-area {
+  border: 2px dashed var(--accent);
+  border-radius: 10px;
+  padding: 24px;
+  text-align: center;
+  cursor: pointer;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.upload-area:hover { background: var(--accent-light); }
+
+.upload-area-sm {
+  border: 2px dashed var(--accent);
+  border-radius: 8px;
+  padding: 14px;
+  text-align: center;
+  cursor: pointer;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  transition: background 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.upload-area-sm:hover { background: var(--accent-light); }
+#photoPreview {
+  display: none;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto;
+  border: 2px solid var(--border);
+}
+#licensePreview {
+  display: none;
+  width: 100%;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  object-fit: cover;
+  max-height: 140px;
+}
+.modal-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.modal-row .btn-back {
+  flex: 1;
+  background: var(--border);
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.modal-row .btn-back:hover { background: #d1d5db; }
+
+.modal-row .btn-save {
+  flex: 1;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.modal-row .btn-save:hover { background: #1d4ed8; }
+
 @media (max-width: 800px) {
   .bottom-grid { grid-template-columns: 1fr; }
 }
