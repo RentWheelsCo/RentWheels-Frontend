@@ -12,7 +12,7 @@ const dashboardData = {
 };
 
 const calendarSVG = `
-  <img src="./assests/clipboard.png" alt="Dropdown" width="25" height="25">`;
+  <img src="./assets/clipboard.png" alt="Dropdown" width="25" height="25">`;
 
 function badgeClass(status) {
   const map = { Pending: "badge-pending", Completed: "badge-completed", Confirmed: "badge-confirmed" };

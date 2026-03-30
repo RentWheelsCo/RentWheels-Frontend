@@ -11,8 +11,13 @@
 
   <aside class="sidebar">
     <div class="sidebar-profile">
-      <div class="avatar">
-        <img src="./assests/Person-Icon.png" width="40" height="40">
+      <div class="avatar-wrapper">
+        <div class="avatar">
+          <img src="./assets/Person-Icon.png" width="40" height="40">
+        </div>
+        <div class="avatar-edit" style="position:absolute; top:-4px; right:-4px; width:18px; height:18px; background:#ffffff; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; border:2px solid #fff;">
+          <img src="./assets/edit.png" width="15" height="15">
+        </div>
       </div>
       <span class="profile-name">Lasta Maharjan</span>
     </div>
@@ -20,25 +25,25 @@
     <nav class="sidebar-nav">
       <a href="#" class="nav-item active" data-page="dashboard">
         <span class="nav-icon">
-          <img src="./assests/dashboard.png" width="20" height="20">
+          <img src="./assets/dashboard.png" width="20" height="20">
         </span>
         Dashboard
       </a>
       <a href="#" class="nav-item" data-page="add-vehicle">
         <span class="nav-icon">
-          <img src="./assests/add.png" width="20" height="20">
+          <img src="./assets/add.png" width="20" height="20">
         </span>
         Add Vehicle
       </a>
       <a href="#" class="nav-item" data-page="manage-vehicle">
         <span class="nav-icon">
-          <img src="./assests/carGrey.png" width="20" height="20">
+          <img src="./assets/carGrey.png" width="20" height="20">
         </span>
         Manage Vehicle
       </a>
       <a href="#" class="nav-item" data-page="manage-bookings">
         <span class="nav-icon">
-          <img src="./assests/clipboardGrey.png" width="20" height="20">
+          <img src="./assets/clipboardGrey.png" width="20" height="20">
         </span>
         Manage Bookings
       </a>
@@ -58,7 +63,7 @@
           <span class="stat-value" id="totalVehicles">8</span>
         </div>
         <div class="stat-icon vehicles">
-          <img src="./assests/car.png" width="30" height="30">
+          <img src="./assets/car.png" width="30" height="30">
         </div>
       </div>
       <div class="stat-card">
@@ -67,7 +72,7 @@
           <span class="stat-value" id="totalBookings">4</span>
         </div>
         <div class="stat-icon bookings">
-          <img src="./assests/clipboard.png" width="30" height="30">
+          <img src="./assets/clipboard.png" width="30" height="30">
         </div>
       </div>
     </section>
