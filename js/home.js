@@ -1,4 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const params = new URLSearchParams(window.location.search);
+  const carsOnlyView = params.get("view") === "cars";
+  const isVehiclePage = document.body?.dataset?.page === "vehicle";
+
   document.querySelectorAll(".vehicle-card").forEach((card) => {
     card.addEventListener("click", () => {
       const vehicleId = card.dataset.id;
@@ -13,10 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const exploreBikes = document.getElementById("exploreBikes");
 
   if (exploreCars) {
-    exploreCars.addEventListener("click", (e) => {
-      e.preventDefault();
+    exploreCars.addEventListener("click", () => {
       console.log("[RentWheels] Navigate → all cars");
-      showToast("Loading all cars…", "info");
     });
   }
 
@@ -26,6 +28,25 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("[RentWheels] Navigate → all bikes");
       showToast("Loading all bikes…", "info");
     });
+  }
+
+  if (carsOnlyView && isVehiclePage) {
+    document.body.classList.add("cars-only-view");
+    const carsOnlyToolbar = document.getElementById("carsOnlyToolbar");
+    if (carsOnlyToolbar) carsOnlyToolbar.hidden = false;
+
+    const carsGrid = document.getElementById("carsGrid");
+    if (carsGrid) {
+      const baseCards = Array.from(carsGrid.children);
+      let index = 0;
+      while (carsGrid.children.length < 9 && baseCards.length > 0) {
+        const clone = baseCards[index % baseCards.length].cloneNode(true);
+        const idValue = 100 + carsGrid.children.length + 1;
+        clone.dataset.id = String(idValue);
+        carsGrid.appendChild(clone);
+        index += 1;
+      }
+    }
   }
 
   const vehiclesSearch = document.getElementById("vehiclesSearch");

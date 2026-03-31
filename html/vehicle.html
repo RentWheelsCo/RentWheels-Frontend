@@ -7,45 +7,23 @@
     <link rel="stylesheet" href="../css/styles.css" />
     <link rel="stylesheet" href="../css/home.css" />
     <script src="../js/layout.js" defer></script>
+
   </head>
   <body data-page="vehicle" class="rw-page">
     <div id="rw-header"></div>
     <main class="rw-main" aria-label="Vehicle page content"></main>
-
+    
     <section class="featured" id="featured">
       <div class="container">
         <div class="section-header section-header--vehicles">
-          <h2 class="section-title section-title--vehicles">
-            Available Vehicles
-          </h2>
+          <h2 class="section-title section-title--vehicles">Available Vehicles</h2>
           <p class="section-subtitle section-subtitle--vehicles">
-            Browse our selection of premium vehicles available for your next
-            adventure
+            Browse our selection of premium vehicles available for your next adventure
           </p>
-          <div
-            class="vehicles-search-wrap"
-            role="search"
-            aria-label="Available vehicles search"
-          >
-            <svg
-              class="vehicles-search-icon"
-              viewBox="0 0 20 20"
-              fill="none"
-              aria-hidden="true"
-            >
-              <circle
-                cx="9"
-                cy="9"
-                r="5.7"
-                stroke="currentColor"
-                stroke-width="1.6"
-              ></circle>
-              <path
-                d="M13.1 13.2L17 17"
-                stroke="currentColor"
-                stroke-width="1.6"
-                stroke-linecap="round"
-              ></path>
+          <div class="vehicles-search-wrap" role="search" aria-label="Available vehicles search">
+            <svg class="vehicles-search-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <circle cx="9" cy="9" r="5.7" stroke="currentColor" stroke-width="1.6"></circle>
+              <path d="M13.1 13.2L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
             </svg>
             <input
               id="vehiclesSearch"
@@ -55,6 +33,13 @@
               aria-label="Search available vehicles"
             />
           </div>
+        </div>
+        <div class="cars-only-toolbar" id="carsOnlyToolbar" hidden>
+          <a href="../html/vehicle.html" class="cars-only-back" id="carsOnlyBack">
+            <span aria-hidden="true">←</span>
+            Back
+          </a>
+          <h2 class="cars-only-title">Cars Ready For Rent</h2>
         </div>
 
         <div class="vehicles-grid" id="carsGrid">
@@ -324,7 +309,7 @@
         </div>
 
         <div class="explore-cta">
-          <a href="#" class="btn-explore" id="exploreCars">
+          <a href="../html/vehicle.html?view=cars" class="btn-explore" id="exploreCars">
             Explore all cars
             <svg
               viewBox="0 0 20 20"
