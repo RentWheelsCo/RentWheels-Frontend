@@ -11,8 +11,8 @@ const dashboardData = {
   ]
 };
 
-const calendarSVG = `
-  <img src="./assets/clipboard.png" alt="Dropdown" width="25" height="25">`;
+const clipboard = `
+  <img src="../assets/clipboard.png" alt="Dropdown" width="25" height="25">`;
 
 function badgeClass(status) {
   const map = { Pending: "badge-pending", Completed: "badge-completed", Confirmed: "badge-confirmed" };
@@ -28,7 +28,7 @@ function renderDashboard() {
   const list = document.getElementById("bookingsList");
   list.innerHTML = dashboardData.bookings.map((b, i) => `
     <div class="booking-row" style="animation-delay: ${i * 80}ms">
-      <div class="booking-icon-wrap">${calendarSVG}</div>
+      <div class="booking-icon-wrap">${clipboard}</div>
       <div class="booking-meta">
         <div class="booking-name">${b.vehicle}</div>
         <div class="booking-date">${b.date}</div>
@@ -39,7 +39,7 @@ function renderDashboard() {
   `).join("");
 }
 
-const DISABLED_PAGES = ["add-vehicle", "manage-vehicle", "manage-bookings"];
+const DISABLED_PAGES = ["add-vehicle", "manage-bookings"];
 
 function initNav() {
   document.querySelectorAll(".nav-item").forEach(item => {
@@ -53,21 +53,28 @@ function initNav() {
     }
 
     item.addEventListener("click", function (e) {
-      e.preventDefault();
-      document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
-      this.classList.add("active");
+    e.preventDefault();
 
-      const titles = {
-        "dashboard": [
-          "Admin Dashboard",
-          "Monitor overall platform performance including total vehicles, bookings, revenue, and recent activities"
-        ],
-      };
-      if (titles[page]) {
-        document.querySelector(".page-title").textContent    = titles[page][0];
-        document.querySelector(".page-subtitle").textContent = titles[page][1];
-      }
-    });
+    // Navigate to Manage Vehicle page
+    if (page === "manage-vehicle") {
+      window.location.href = "../html/Manage_vehicle.html";
+      return;
+    }
+
+    document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+    this.classList.add("active");
+
+    const titles = {
+      "dashboard": [
+        "Admin Dashboard",
+        "Monitor overall platform performance including total vehicles, bookings, revenue, and recent activities"
+      ],
+    };
+    if (titles[page]) {
+      document.querySelector(".page-title").textContent    = titles[page][0];
+      document.querySelector(".page-subtitle").textContent = titles[page][1];
+    }
+  });
   });
 }
 
