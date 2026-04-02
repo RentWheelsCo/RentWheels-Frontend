@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vehicle details – RentWheels</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/styles.css" />
+    <link rel="stylesheet" href="../css/home.css" />
+    <script src="../js/layout.js" defer></script>
+    <script src="../js/home.js" defer></script>
+    <script src="../js/vehicle-detail.js" defer></script>
+  </head>
+  <body data-page="vehicle" class="rw-page vehicle-detail-page">
+    <div id="rw-header"></div>
+    <main class="vehicle-detail-main" aria-label="Vehicle details">
+      <div class="container vehicle-detail-container">
+        <a class="vehicle-detail-back" id="detailBack" href="vehicle.html">
+          <span class="vehicle-detail-back__icon" aria-hidden="true">←</span>
+          Back to all cars
+        </a>
+
+        <div class="vehicle-detail-layout">
+          <div class="vehicle-detail-primary">
+            <div class="vehicle-detail-hero">
+              <img
+                id="detailHeroImg"
+                src="../assets/bmwx5.png"
+                alt=""
+                class="vehicle-detail-hero__img"
+              />
+            </div>
+            <h1 class="vehicle-detail-title" id="detailTitle">BMW X5</h1>
+            <p class="vehicle-detail-meta" id="detailMeta">2022 • SUV</p>
+
+            <div class="vehicle-detail-stats" id="detailStats" aria-label="Vehicle highlights"></div>
+
+            <hr class="vehicle-detail-rule" />
+
+            <section class="vehicle-detail-section" aria-labelledby="detailDescHeading">
+              <h2 class="vehicle-detail-section__title" id="detailDescHeading">Description</h2>
+              <p class="vehicle-detail-section__text" id="detailDescription"></p>
+            </section>
+
+            <section class="vehicle-detail-section" aria-labelledby="detailFeaturesHeading">
+              <h2 class="vehicle-detail-section__title" id="detailFeaturesHeading">Features</h2>
+              <ul class="vehicle-detail-features" id="detailFeatures"></ul>
+            </section>
+
+            <section class="vehicle-detail-section vehicle-detail-section--comments" aria-labelledby="detailCommentsHeading">
+              <h2 class="vehicle-detail-section__title" id="detailCommentsHeading">Comments</h2>
+              <div class="vehicle-detail-comment-form">
+                <img
+                  class="vehicle-detail-comment-form__avatar"
+                  src="https://randomuser.me/api/portraits/men/32.jpg"
+                  alt=""
+                  width="56"
+                  height="52"
+                />
+                <input
+                  type="text"
+                  class="vehicle-detail-comment-form__input"
+                  id="commentInput"
+                  placeholder="Write a comment"
+                  autocomplete="off"
+                />
+                <button type="button" class="vehicle-detail-comment-form__post" id="commentPost">
+                  Post
+                </button>
+              </div>
+              <div class="vehicle-detail-comments" id="detailCommentsList"></div>
+            </section>
+          </div>
+
+          <aside class="vehicle-detail-booking" aria-label="Booking">
+            <div class="vehicle-detail-booking__card">
+              <div class="vehicle-detail-booking__price-row">
+                <span class="vehicle-detail-booking__price" id="detailPrice">$100</span>
+                <span class="vehicle-detail-booking__per" id="detailPriceNote">per day</span>
+              </div>
+              <hr class="vehicle-detail-booking__rule" />
+
+              <label class="vehicle-detail-field">
+                <span class="vehicle-detail-field__label">Pickup Date</span>
+                <div class="vehicle-detail-field__input-wrap">
+                  <input type="date" class="vehicle-detail-field__control" id="pickupDate" />
+                </div>
+              </label>
+              <label class="vehicle-detail-field">
+                <span class="vehicle-detail-field__label">Return Date</span>
+                <div class="vehicle-detail-field__input-wrap">
+                  <input type="date" class="vehicle-detail-field__control" id="returnDate" />
+                </div>
+              </label>
+              <label class="vehicle-detail-field">
+                <span class="vehicle-detail-field__label">Insurance type</span>
+                <select class="vehicle-detail-field__control vehicle-detail-field__select" id="insuranceType">
+                  <option value="none">No insurance</option>
+                  <option value="basic">Basic coverage</option>
+                  <option value="full">Full coverage</option>
+                </select>
+              </label>
+
+              <button type="button" class="vehicle-detail-book-now" id="bookNowBtn">Book Now</button>
+              <p class="vehicle-detail-booking__fineprint">No credit card required to reserve</p>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </main>
+    <div id="rw-footer"></div>
+  </body>
+</html>
