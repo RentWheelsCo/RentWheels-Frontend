@@ -12,26 +12,25 @@
   --accent-icon:  #3b82f6;
   --green:        #16a34a;
   --green-bg:     #f0fdf4;
-  --orange:       #d97706;
-  --orange-bg:    #fffbeb;
-  --blue-badge:   #1d4ed8;
-  --blue-badge-bg:#eff6ff;
+  --red:          #dc2626;
+  --red-bg:       #fef2f2;
   --sidebar-w:    210px;
   --radius:       12px;
   --shadow:       0 1px 4px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.06);
-
+  --font:         'Nunito', sans-serif;
 }
 
 body {
   display: flex;
   min-height: 100vh;
   background: var(--bg);
-  font-family: 'Nunito', sans-serif;
+  font-family: var(--font);
   color: var(--text-primary);
   font-size: 14px;
   line-height: 1.5;
 }
 
+/* ── Sidebar (identical to manage vehicle) ── */
 .sidebar {
   width: var(--sidebar-w);
   background: var(--sidebar-bg);
@@ -97,28 +96,22 @@ body {
   color: var(--accent);
   font-weight: 600;
 }
-
+.nav-item.nav-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
 .nav-icon {
   width: 18px; height: 18px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
 }
-.nav-icon svg { width: 18px; height: 18px; }
 
-.nav-item.nav-disabled {
-  color: #b0b7c3;
-  cursor: not-allowed;
-  pointer-events: none;
-  background: transparent;
-}
-.nav-item.nav-disabled .nav-icon svg {
-  stroke: #b0b7c3;
-}
-
+/* ── Main Content ── */
 .main-content {
   margin-left: var(--sidebar-w);
   flex: 1;
   padding: 36px 36px 40px;
-  max-width: 960px;
+  max-width: 1100px;
 }
 
 .page-header { margin-bottom: 28px; }
@@ -129,138 +122,118 @@ body {
   letter-spacing: -.3px;
   margin-bottom: 5px;
 }
-.page-subtitle { font-size: 13px; color: var(--text-muted); max-width: 480px; }
+.page-subtitle { font-size: 13px; color: var(--text-muted); max-width: 520px; }
 
-.stats-row {
-  display: flex;
-  gap: 18px;
-  margin-bottom: 22px;
-}
-
-.stat-card {
+/* ── Table Card ── */
+.table-card {
   background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding: 20px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  min-width: 180px;
-  transition: transform .2s, box-shadow .2s;
-}
-.stat-card:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(0,0,0,.09); }
-
-.stat-info { display: flex; flex-direction: column; gap: 4px; }
-.stat-label { font-size: 12.5px; color: var(--text-muted); font-weight: 500; }
-.stat-value { font-size: 28px; font-weight: 700; color: var(--text-primary); letter-spacing: -.5px; }
-
-.stat-icon {
-  width: 44px; height: 44px;
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.stat-icon svg { width: 22px; height: 22px; }
-.stat-icon.vehicles  { background: var(--accent-light); color: var(--accent-icon); }
-.stat-icon.bookings  { background: var(--accent-light); color: var(--accent-icon); }
-
-.bottom-grid {
-  display: grid;
-  grid-template-columns: 1fr 260px;
-  gap: 18px;
-  align-items: start;
+  overflow: hidden;
 }
 
-.card {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 24px;
+.booking-table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.card-header { margin-bottom: 18px; }
-.card-title  { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 3px; }
-.card-subtitle { font-size: 12.5px; color: var(--text-muted); }
+.booking-table thead tr {
+  border-bottom: 1px solid var(--border);
+}
 
-.bookings-list { display: flex; flex-direction: column; gap: 4px; }
+.booking-table th {
+  padding: 14px 20px;
+  text-align: left;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  background: #fafbfc;
+}
 
-.booking-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 11px 10px;
-  border-radius: 8px;
-  transition: background .15s;
+.booking-table td {
+  padding: 12px 20px;
+  font-size: 13.5px;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.booking-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.booking-table tbody tr {
   opacity: 0;
   transform: translateY(8px);
   animation: fadeUp .35s ease forwards;
+  transition: background .15s;
 }
-.booking-row:hover { background: var(--bg); }
+.booking-table tbody tr:hover { background: var(--bg); }
 
 @keyframes fadeUp {
   to { opacity: 1; transform: translateY(0); }
 }
 
-.booking-icon-wrap {
-  width: 36px; height: 36px;
+/* Vehicle cell */
+.vehicle-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.vehicle-img {
+  width: 64px;
+  height: 42px;
   border-radius: 8px;
-  background: var(--accent-light);
-  color: var(--accent-icon);
-  display: flex; align-items: center; justify-content: center;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  background: var(--bg);
   flex-shrink: 0;
 }
-.booking-icon-wrap svg { width: 16px; height: 16px; }
-
-.booking-meta { flex: 1; min-width: 0; }
-.booking-name {
+.vehicle-name {
   font-size: 13.5px;
-  font-weight: 600;
-  color: var(--text-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.booking-date { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
-
-.booking-price {
-  font-size: 13.5px;
-  font-weight: 600;
-  color: var(--text-primary);
-   font-family: 'Nunito', sans-serif;
-  flex-shrink: 0;
-}
-
-.badge {
-  font-size: 11.5px;
-  font-weight: 600;
-  padding: 3px 10px;
-  border-radius: 20px;
-  flex-shrink: 0;
-  text-transform: capitalize;
-}
-.badge-pending   { background: var(--orange-bg); color: var(--orange); }
-.badge-completed { background: var(--green-bg);  color: var(--green); }
-.badge-confirmed { background: var(--blue-badge-bg); color: var(--blue-badge); }
-
-.revenue-card .revenue-amount {
-  font-size: 36px;
   font-weight: 700;
-  color: var(--accent);
-  letter-spacing: -.5px;
-  margin-top: 8px;
-  font-family: 'Nunito', sans-serif;
-  animation: fadeUp .4s ease forwards;
+  color: var(--text-primary);
 }
 
-/* ── Edit Profile Modal ── */
-#editProfileModal {
+/* Status badges */
+.badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+.badge-confirmed  { background: var(--green-bg); color: var(--green); }
+.badge-pending    { background: #fffbeb;          color: #d97706; }
+.badge-cancelled  { background: var(--red-bg);    color: var(--red); }
+
+/* Call button */
+.btn-call-outline {
+  background: none;
+  border: 1.5px solid var(--red);
+  color: var(--red);
+  border-radius: 8px;
+  padding: 6px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: background .15s, color .15s;
+}
+.btn-call-outline:hover {
+  background: var(--red-bg);
+}
+
+/* ── Modals ── */
+#editProfileModal,
+#callModal {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0,0,0,.4);
   z-index: 100;
   align-items: center;
   justify-content: center;
@@ -272,7 +245,12 @@ body {
   padding: 28px 24px;
   width: 320px;
   position: relative;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 8px 32px rgba(0,0,0,.18);
+}
+
+.modal-box-sm {
+  width: 300px;
+  text-align: center;
 }
 
 .modal-close {
@@ -294,14 +272,12 @@ body {
   border-bottom: 1px solid var(--border);
   margin-bottom: 20px;
 }
-
 .modal-header span {
   font-size: 18px;
   font-weight: 700;
   color: var(--accent);
 }
 
-/* Main option buttons */
 .modal-btn-primary {
   width: 100%;
   display: flex;
@@ -317,6 +293,7 @@ body {
   cursor: pointer;
   margin-bottom: 12px;
   transition: background 0.15s;
+  font-family: var(--font);
 }
 .modal-btn-primary:hover { background: #1d4ed8; }
 
@@ -331,12 +308,11 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s;
+  font-family: var(--font);
 }
 .modal-btn-secondary:hover { background: #d1d5db; }
 
-/* Sub-form panels */
 .modal-panel { display: none; }
-
 .modal-panel h3 {
   font-size: 15px;
   font-weight: 700;
@@ -345,7 +321,6 @@ body {
 }
 
 .modal-form { display: flex; flex-direction: column; gap: 12px; }
-
 .modal-form label {
   font-size: 12px;
   font-weight: 600;
@@ -353,7 +328,6 @@ body {
   display: block;
   margin-bottom: 4px;
 }
-
 .modal-form input[type="text"],
 .modal-form input[type="date"] {
   width: 100%;
@@ -364,6 +338,7 @@ body {
   outline: none;
   color: var(--text-primary);
   transition: border-color 0.15s;
+  font-family: var(--font);
 }
 .modal-form input:focus { border-color: var(--accent); }
 
@@ -400,6 +375,7 @@ body {
   gap: 6px;
 }
 .upload-area-sm:hover { background: var(--accent-light); }
+
 #photoPreview {
   display: none;
   width: 80px;
@@ -418,12 +394,12 @@ body {
   object-fit: cover;
   max-height: 140px;
 }
+
 .modal-row {
   display: flex;
   gap: 10px;
   margin-top: 4px;
 }
-
 .modal-row .btn-back {
   flex: 1;
   background: var(--border);
@@ -434,9 +410,9 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s;
+  font-family: var(--font);
 }
 .modal-row .btn-back:hover { background: #d1d5db; }
-
 .modal-row .btn-save {
   flex: 1;
   background: var(--accent);
@@ -448,14 +424,53 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s;
+  font-family: var(--font);
 }
 .modal-row .btn-save:hover { background: #1d4ed8; }
+.modal-row .btn-call {
+  flex: 1;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-family: var(--font);
+}
+.modal-row .btn-call:hover { background: #1d4ed8; }
+
+/* Call modal */
+.call-icon-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+.call-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+.call-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+.call-number {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-top: 6px;
+}
 
 @media (max-width: 800px) {
-  .bottom-grid { grid-template-columns: 1fr; }
+  .booking-table th:nth-child(3),
+  .booking-table td:nth-child(3) { display: none; }
 }
 @media (max-width: 640px) {
   .main-content { padding: 24px 16px; margin-left: 0; }
   .sidebar { display: none; }
-  .stats-row { flex-direction: column; }
 }

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Manage Vehicle</title>
-  <link rel="stylesheet" href="../css/Manage_vehicle.css" />
+  <title>Manage Bookings</title>
+  <link rel="stylesheet" href="../css/Manage_booking.css" />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
 </head>
 <body>
@@ -35,15 +35,15 @@
         </span>
         Add Vehicle
       </a>
-      <a href="#" class="nav-item active" data-page="manage_vehicle">
+      <a href="Manage_vehicle.html" class="nav-item" data-page="manage-vehicle">
         <span class="nav-icon">
-          <img src="../assets/car.png" width="20" height="20">
+          <img src="../assets/carGrey.png" width="20" height="20">
         </span>
         Manage Vehicle
       </a>
-      <a href="#" class="nav-item" data-page="manage_booking">
+      <a href="#" class="nav-item active" data-page="manage-bookings">
         <span class="nav-icon">
-          <img src="../assets/clipboardGrey.png" width="20" height="20">
+          <img src="../assets/clipboard.png" width="20" height="20">
         </span>
         Manage Bookings
       </a>
@@ -52,28 +52,28 @@
 
   <main class="main-content">
     <header class="page-header">
-      <h1 class="page-title">Manage Vehicle</h1>
-      <p class="page-subtitle">View all listed vehicle, update their details, or remove them from the booking platform</p>
+      <h1 class="page-title">Manage Bookings</h1>
+      <p class="page-subtitle">Track all customer bookings, approve or cancel requests, and manage booking statuses</p>
     </header>
 
     <div class="table-card">
-      <table class="vehicle-table">
+      <table class="booking-table">
         <thead>
           <tr>
             <th>Vehicle</th>
-            <th>Category</th>
-            <th>Price</th>
+            <th>Date Range</th>
+            <th>Total</th>
             <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody id="vehicleTableBody">
+        <tbody id="bookingTableBody">
         </tbody>
       </table>
     </div>
   </main>
 
-  <!-- Edit Profile Modal (same as dashboard) -->
+  <!-- Edit Profile Modal -->
   <div id="editProfileModal">
     <div class="modal-box">
       <button class="modal-close" onclick="closeModal()">✕</button>
@@ -136,31 +136,18 @@
     </div>
   </div>
 
-  <div id="viewVehicleModal">
-    <div class="modal-box">
-      <button class="modal-close" onclick="closeViewModal()">✕</button>
-      <div class="modal-header">
-        <span>Vehicle Details</span>
-      </div>
-      <div id="viewVehicleContent"></div>
-    </div>
-  </div>
-
-  <div id="deleteModal">
+  <!-- Call Modal -->
+  <div id="callModal">
     <div class="modal-box modal-box-sm">
-      <button class="modal-close" onclick="closeDeleteModal()">✕</button>
-      <div class="delete-icon-wrap">
-        <img src="../assets/deleteRed.png" width="35" height="35">
+      <button class="modal-close" onclick="closeCallModal()">✕</button>
+      <div class="call-icon-wrap">
+        <img src="../assets/call.png" width="40" height="40">
       </div>
-      <h3 class="delete-title">Remove Vehicle?</h3>
-      <p class="delete-subtitle">This will permanently remove <strong id="deleteVehicleName"></strong> from the platform.</p>
-      <div class="modal-row" style="margin-top:20px;">
-        <button class="btn-back" onclick="closeDeleteModal()">Cancel</button>
-        <button class="btn-delete" onclick="confirmDelete()">Remove</button>
-      </div>
+      <h3 class="call-title">Contact Renter</h3>
+      <p class="call-subtitle">Calling renter for <strong id="callVehicleName"></strong></p>
+      <p class="call-number" id="callNumber"></p>
     </div>
   </div>
-
-  <script src="../js/Manage_vehicle.js"></script>
+  <script src="../js/Manage_booking.js"></script>
 </body>
 </html>

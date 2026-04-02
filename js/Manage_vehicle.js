@@ -142,7 +142,7 @@ function confirmDelete() {
 }
 
 // ── Nav ──
-const DISABLED_PAGES = ["add-vehicle", "manage-bookings"];
+const DISABLED_PAGES = ["add-vehicle"];
 
 function initNav() {
   document.querySelectorAll(".nav-item").forEach(item => {
@@ -160,6 +160,10 @@ function initNav() {
 
       if (page === "dashboard") {
         window.location.href = "../html/dashboard.html";
+        return;
+      }
+      if (page === "manage_booking") {
+        window.location.href = "../html/Manage_booking.html";
         return;
       }
 

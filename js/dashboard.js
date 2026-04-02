@@ -39,7 +39,7 @@ function renderDashboard() {
   `).join("");
 }
 
-const DISABLED_PAGES = ["add-vehicle", "manage-bookings"];
+const DISABLED_PAGES = ["add-vehicle"];
 
 function initNav() {
   document.querySelectorAll(".nav-item").forEach(item => {
@@ -56,8 +56,14 @@ function initNav() {
     e.preventDefault();
 
     // Navigate to Manage Vehicle page
-    if (page === "manage-vehicle") {
+    if (page === "manage_vehicle") {
       window.location.href = "../html/Manage_vehicle.html";
+      return;
+    }
+
+    // Navigate
+    if (page === "manage_booking") {
+      window.location.href = "../html/Manage_booking.html";
       return;
     }
 
