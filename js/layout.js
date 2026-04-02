@@ -5,10 +5,14 @@ const ASSETS = {
 
 function renderHeader(activeKey) {
   const navItems = [
-    { key: "home", label: "Home", href: "index.html" },
-    { key: "vehicle", label: "Vehicle", href: "vehicle.html" },
-    { key: "my-bookings", label: "My Bookings", href: "my-bookings.html" },
-    { key: "dashboard", label: "Dashboard", href: "dashboard.html" },
+    { key: "home", label: "Home", href: "../html/home.html" },
+    { key: "vehicle", label: "Vehicle", href: "../html/vehicle.html" },
+    {
+      key: "my-bookings",
+      label: "My Bookings",
+      href: "../html/my-bookings.html",
+    },
+    { key: "dashboard", label: "Dashboard", href: "../html/dashboard.html" },
   ];
 
   const navHtml = navItems
@@ -22,7 +26,7 @@ function renderHeader(activeKey) {
 
   return `
     <header class="rw-header">
-      <a class="rw-brand" href="index.html" aria-label="RentWheels">
+      <a class="rw-brand" href="../html/home.html" aria-label="RentWheels">
         <img src="${ASSETS.brandLogo}" alt="RentWheels logo" />
       </a>
 
@@ -35,7 +39,7 @@ function renderHeader(activeKey) {
           <img src="${ASSETS.searchIcon}" alt="" />
           <input type="text" placeholder="Search vehicles" aria-label="Search vehicles" />
         </div>
-        <a class="rw-login" href="#" role="button" aria-label="Log in">Log in</a>
+        <a class="rw-login" href="#" role="button" aria-label="Log out">Log out</a>
       </div>
     </header>
   `;
@@ -45,14 +49,14 @@ function renderFooter() {
   return `
     <footer class="rw-footer">
       <div class="rw-footer-inner">
-        <a class="rw-brand" href="index.html" aria-label="RentWheels Home">
+        <a class="rw-brand" href="../html/home.html" aria-label="RentWheels Home">
           <img src="${ASSETS.brandLogo}" alt="RentWheels logo" />
         </a>
         <div class="rw-footer-col">
           <div class="rw-footer-title">Quick Links</div>
-          <a class="rw-footer-item" href="index.html">Home</a>
-          <a class="rw-footer-item" href="vehicle.html">Browse Vehicle</a>
-          <a class="rw-footer-item" href="my-bookings.html">Bookings</a>
+          <a class="rw-footer-item" href="../html/home.html">Home</a>
+          <a class="rw-footer-item" href="../html/vehicle.html">Browse Vehicle</a>
+          <a class="rw-footer-item" href="../html/my-bookings.html">Bookings</a>
         </div>
 
         <div class="rw-footer-col">
