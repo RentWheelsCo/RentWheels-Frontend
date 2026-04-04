@@ -38,22 +38,50 @@
             <h1 class="vehicle-detail-title" id="detailTitle">BMW X5</h1>
             <p class="vehicle-detail-meta" id="detailMeta">2022 • SUV</p>
 
-            <div class="vehicle-detail-stats" id="detailStats" aria-label="Vehicle highlights"></div>
+            <div
+              class="vehicle-detail-stats"
+              id="detailStats"
+              aria-label="Vehicle highlights"
+            ></div>
 
             <hr class="vehicle-detail-rule" />
 
-            <section class="vehicle-detail-section" aria-labelledby="detailDescHeading">
-              <h2 class="vehicle-detail-section__title" id="detailDescHeading">Description</h2>
-              <p class="vehicle-detail-section__text" id="detailDescription"></p>
+            <section
+              class="vehicle-detail-section"
+              aria-labelledby="detailDescHeading"
+            >
+              <h2 class="vehicle-detail-section__title" id="detailDescHeading">
+                Description
+              </h2>
+              <p
+                class="vehicle-detail-section__text"
+                id="detailDescription"
+              ></p>
             </section>
 
-            <section class="vehicle-detail-section" aria-labelledby="detailFeaturesHeading">
-              <h2 class="vehicle-detail-section__title" id="detailFeaturesHeading">Features</h2>
+            <section
+              class="vehicle-detail-section"
+              aria-labelledby="detailFeaturesHeading"
+            >
+              <h2
+                class="vehicle-detail-section__title"
+                id="detailFeaturesHeading"
+              >
+                Features
+              </h2>
               <ul class="vehicle-detail-features" id="detailFeatures"></ul>
             </section>
 
-            <section class="vehicle-detail-section vehicle-detail-section--comments" aria-labelledby="detailCommentsHeading">
-              <h2 class="vehicle-detail-section__title" id="detailCommentsHeading">Comments</h2>
+            <section
+              class="vehicle-detail-section vehicle-detail-section--comments"
+              aria-labelledby="detailCommentsHeading"
+            >
+              <h2
+                class="vehicle-detail-section__title"
+                id="detailCommentsHeading"
+              >
+                Comments
+              </h2>
               <div class="vehicle-detail-comment-form">
                 <img
                   class="vehicle-detail-comment-form__avatar"
@@ -69,50 +97,126 @@
                   placeholder="Write a comment"
                   autocomplete="off"
                 />
-                <button type="button" class="vehicle-detail-comment-form__post" id="commentPost">
+                <button
+                  type="button"
+                  class="vehicle-detail-comment-form__post"
+                  id="commentPost"
+                >
                   Post
                 </button>
               </div>
-              <div class="vehicle-detail-comments" id="detailCommentsList"></div>
+              <div
+                class="vehicle-detail-comments"
+                id="detailCommentsList"
+              ></div>
             </section>
           </div>
 
           <aside class="vehicle-detail-booking" aria-label="Booking">
             <div class="vehicle-detail-booking__card">
               <div class="vehicle-detail-booking__price-row">
-                <span class="vehicle-detail-booking__price" id="detailPrice">$100</span>
-                <span class="vehicle-detail-booking__per" id="detailPriceNote">per day</span>
+                <span class="vehicle-detail-booking__price" id="detailPrice"
+                  >$100</span
+                >
+                <span class="vehicle-detail-booking__per" id="detailPriceNote"
+                  >per day</span
+                >
               </div>
               <hr class="vehicle-detail-booking__rule" />
 
               <label class="vehicle-detail-field">
                 <span class="vehicle-detail-field__label">Pickup Date</span>
                 <div class="vehicle-detail-field__input-wrap">
-                  <input type="date" class="vehicle-detail-field__control" id="pickupDate" />
+                  <input
+                    type="date"
+                    class="vehicle-detail-field__control"
+                    id="pickupDate"
+                  />
                 </div>
               </label>
               <label class="vehicle-detail-field">
                 <span class="vehicle-detail-field__label">Return Date</span>
                 <div class="vehicle-detail-field__input-wrap">
-                  <input type="date" class="vehicle-detail-field__control" id="returnDate" />
+                  <input
+                    type="date"
+                    class="vehicle-detail-field__control"
+                    id="returnDate"
+                  />
                 </div>
               </label>
               <label class="vehicle-detail-field">
                 <span class="vehicle-detail-field__label">Insurance type</span>
-                <select class="vehicle-detail-field__control vehicle-detail-field__select" id="insuranceType">
+                <select
+                  class="vehicle-detail-field__control vehicle-detail-field__select"
+                  id="insuranceType"
+                >
                   <option value="none">No insurance</option>
                   <option value="basic">Basic coverage</option>
                   <option value="full">Full coverage</option>
                 </select>
               </label>
 
-              <button type="button" class="vehicle-detail-book-now" id="bookNowBtn">Book Now</button>
-              <p class="vehicle-detail-booking__fineprint">No credit card required to reserve</p>
+              <button
+                type="button"
+                class="vehicle-detail-book-now"
+                id="bookNowBtn"
+              >
+                Book Now
+              </button>
+              <p class="vehicle-detail-booking__fineprint">
+                No credit card required to reserve
+              </p>
             </div>
           </aside>
         </div>
       </div>
     </main>
     <div id="rw-footer"></div>
+
+    <!-- Booking Modal Overlay -->
+    <div class="booking-modal-overlay" id="bookingModal" hidden>
+      <div class="booking-modal-content" id="bookingModalContent">
+        <h2 class="booking-modal-title">Complete Your Booking Payment</h2>
+
+        <div class="booking-modal-section">
+          <h3 class="booking-modal-subtitle">Booking Summary</h3>
+          <div class="booking-modal-summary-card">
+            <img
+              src=""
+              id="modalCarImg"
+              alt="Vehicle"
+              class="booking-modal-car-img"
+            />
+            <div class="booking-modal-car-info">
+              <span class="booking-modal-label">VEHICLE</span>
+              <p class="booking-modal-car-name" id="modalCarName"></p>
+              <span class="booking-modal-label">RENTAL PERIOD:</span>
+              <p class="booking-modal-period" id="modalRentalPeriod"></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="booking-modal-section">
+          <h3 class="booking-modal-subtitle">Price Summary</h3>
+          <div class="booking-modal-price-row">
+            <span id="modalRentalDaysLabel">Car Rental</span>
+            <strong id="modalRentalCost"></strong>
+          </div>
+          <div class="booking-modal-price-row">
+            <span>Insurance</span>
+            <strong id="modalInsuranceCost"></strong>
+          </div>
+          <hr class="booking-modal-divider" />
+          <div class="booking-modal-price-total">
+            <span>Total Price</span>
+            <strong id="modalTotalCost"></strong>
+          </div>
+        </div>
+
+        <button type="button" class="booking-modal-pay-btn" id="modalPayBtn">
+          Complete & Pay
+        </button>
+      </div>
+    </div>
   </body>
 </html>

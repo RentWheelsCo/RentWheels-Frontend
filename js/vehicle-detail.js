@@ -107,7 +107,12 @@
       location: "Kathmandu",
       description:
         "Italian V4 performance in a naked streetfighter package—raw sound, precise handling, and unmistakable Ducati character.",
-      features: ["Cornering ABS", "TFT Display", "Öhlins Suspension", "Quick Shift"],
+      features: [
+        "Cornering ABS",
+        "TFT Display",
+        "Öhlins Suspension",
+        "Quick Shift",
+      ],
       commentSample: {
         name: "Jordan Lee",
         text: "Sounds incredible. Staff made pickup quick and easy.",
@@ -127,7 +132,12 @@
       location: "Kathmandu",
       description:
         "Timeless cruiser styling with a torque-friendly single-cylinder engine—perfect for relaxed rides through city streets and hills.",
-      features: ["Tripper Navigation", "LED Headlamp", "Dual Channel ABS", "USB Charging"],
+      features: [
+        "Tripper Navigation",
+        "LED Headlamp",
+        "Dual Channel ABS",
+        "USB Charging",
+      ],
       commentSample: {
         name: "Priya Sharma",
         text: "Classic look, easy to ride. Great for weekend trips.",
@@ -170,7 +180,7 @@
       <div class="vehicle-detail-stat">
         <span class="vehicle-detail-stat__icon">${statIcon(s.icon)}</span>
         <span class="vehicle-detail-stat__label">${s.label}</span>
-      </div>`
+      </div>`,
       )
       .join("");
   }
@@ -184,7 +194,7 @@
           <svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </span>
         <span>${f}</span>
-      </li>`
+      </li>`,
       )
       .join("");
   }
@@ -208,7 +218,10 @@
   }
 
   function showToast(message) {
-    if (window.RentWheels && typeof window.RentWheels.showToast === "function") {
+    if (
+      window.RentWheels &&
+      typeof window.RentWheels.showToast === "function"
+    ) {
       window.RentWheels.showToast(message, "info");
       return;
     }
@@ -224,9 +237,7 @@
     const back = document.getElementById("detailBack");
     if (back) {
       back.href =
-        from === "cars"
-          ? "./vehicle.html?view=cars"
-          : "./vehicle.html";
+        from === "cars" ? "./vehicle.html?view=cars" : "./vehicle.html";
     }
 
     document.title = `${d.title} – RentWheels`;
@@ -257,10 +268,89 @@
     if (list) list.innerHTML = renderComment(d.commentSample);
 
     const bookBtn = document.getElementById("bookNowBtn");
-    if (bookBtn) {
+    const modal = document.getElementById("bookingModal");
+    const modalContent = document.getElementById("bookingModalContent");
+
+    if (bookBtn && modal && modalContent) {
       bookBtn.addEventListener("click", () => {
-        showToast(`Reservation started for ${d.title}`);
+        const pDate = document.getElementById("pickupDate").value;
+        const rDate = document.getElementById("returnDate").value;
+
+        let days = 5;
+        let periodStr = "4/10/2025 - 4/15/2025 (5 Days)";
+
+        if (pDate && rDate) {
+          const start = new Date(pDate);
+          const end = new Date(rDate);
+          const diffSpan = end - start;
+          if (diffSpan > 0) {
+            days = Math.ceil(diffSpan / (1000 * 60 * 60 * 24));
+            periodStr = `${start.toLocaleDateString()} - ${end.toLocaleDateString()} (${days} Days)`;
+          } else {
+            showToast("Return date must be after pickup date.");
+            return;
+          }
+        } else if (pDate || rDate) {
+          showToast("Please select both Pickup and Return dates.");
+          return;
+        }
+
+        const basePrice = parseInt(d.price.replace(/[^0-9]/g, ""), 10) || 80;
+        const carCost = basePrice * days;
+
+        const insSelect = document.getElementById("insuranceType");
+        const insType = insSelect ? insSelect.value : "none";
+        let insCostPerDay = 0;
+        if (insType === "basic") insCostPerDay = 15;
+        if (insType === "full") insCostPerDay = 30;
+        const insuranceCost = insCostPerDay * days;
+
+        const total = carCost + insuranceCost;
+
+        const typeLabel = d.meta.includes("•")
+          ? d.meta.split("•")[1].trim()
+          : "VEHICLE";
+
+        const imgEl = document.getElementById("modalCarImg");
+        if (imgEl) imgEl.src = d.image;
+
+        const nameEl = document.getElementById("modalCarName");
+        if (nameEl) nameEl.textContent = `${d.title} (${typeLabel})`;
+
+        const periodEl = document.getElementById("modalRentalPeriod");
+        if (periodEl) periodEl.textContent = periodStr;
+
+        const daysLabelEl = document.getElementById("modalRentalDaysLabel");
+        if (daysLabelEl) daysLabelEl.textContent = `Car Rental (${days} days)`;
+
+        const rCostEl = document.getElementById("modalRentalCost");
+        if (rCostEl) rCostEl.textContent = `$${carCost}`;
+
+        const iCostEl = document.getElementById("modalInsuranceCost");
+        if (iCostEl) iCostEl.textContent = `$${insuranceCost}`;
+
+        const tCostEl = document.getElementById("modalTotalCost");
+        if (tCostEl) tCostEl.textContent = `$${total}`;
+
+        const payBtnEl = document.getElementById("modalPayBtn");
+        if (payBtnEl) payBtnEl.textContent = `Complete & Pay $${total}`;
+
+        modal.removeAttribute("hidden");
       });
+
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) {
+          modal.setAttribute("hidden", "");
+        }
+      });
+
+      const payBtnEl = document.getElementById("modalPayBtn");
+      if (payBtnEl) {
+        payBtnEl.addEventListener("click", () => {
+          modal.setAttribute("hidden", "");
+          showToast("Payment Successful!");
+        });
+      }
     }
 
     const postBtn = document.getElementById("commentPost");
