@@ -50,18 +50,13 @@ function getStatusBadge(status) {
   return `<span class="badge badge-not-available">Not Available</span>`;
 }
 
-
-
 function renderVehicles() {
   const tbody = document.getElementById("vehicleTableBody");
   tbody.innerHTML = vehicleData.map((v, i) => `
     <tr data-id="${v.id}" style="animation-delay: ${i * 80}ms">
       <td>
         <div class="vehicle-cell">
-          ${v.image
-            ? `<img class="vehicle-img" src="${v.image}" alt="${v.name}">`
-            : getCarSVG()
-          }
+          <img class="vehicle-img" src="${v.image}" alt="${v.name}">
           <div>
             <div class="vehicle-name">${v.name}</div>
             <div class="vehicle-meta">${v.seats} seats • ${v.transmission}</div>
@@ -85,35 +80,28 @@ function renderVehicles() {
   `).join("");
 }
 
+function toggleStatus(id) {
+  const v = vehicleData.find(x => x.id === id);
+  if (!v) return;
+  v.status = v.status === "Available" ? "Not Available" : "Available";
+  const row = document.querySelector(`tr[data-id="${id}"]`);
+  if (!row) return;
+  row.cells[3].innerHTML = getStatusBadge(v.status);
+  row.querySelector(".btn-icon.toggle-eye img").src =
+    v.status === "Available" ? "../assets/eye.png" : "../assets/eyeClose.png";
+}
+
 // ── View Modal ──
 function openViewModal(id) {
   const v = vehicleData.find(x => x.id === id);
   if (!v) return;
   document.getElementById("viewVehicleContent").innerHTML = `
-    <div class="detail-row">
-      <span class="detail-label">Vehicle</span>
-      <span class="detail-value">${v.name}</span>
-    </div>
-    <div class="detail-row">
-      <span class="detail-label">Category</span>
-      <span class="detail-value">${v.category}</span>
-    </div>
-    <div class="detail-row">
-      <span class="detail-label">Price</span>
-      <span class="detail-value">$${v.price}/day</span>
-    </div>
-    <div class="detail-row">
-      <span class="detail-label">Seats</span>
-      <span class="detail-value">${v.seats}</span>
-    </div>
-    <div class="detail-row">
-      <span class="detail-label">Transmission</span>
-      <span class="detail-value" style="text-transform:capitalize">${v.transmission}</span>
-    </div>
-    <div class="detail-row">
-      <span class="detail-label">Status</span>
-      <span>${getStatusBadge(v.status)}</span>
-    </div>
+    <div class="detail-row"><span class="detail-label">Vehicle</span><span class="detail-value">${v.name}</span></div>
+    <div class="detail-row"><span class="detail-label">Category</span><span class="detail-value">${v.category}</span></div>
+    <div class="detail-row"><span class="detail-label">Price</span><span class="detail-value">$${v.price}/day</span></div>
+    <div class="detail-row"><span class="detail-label">Seats</span><span class="detail-value">${v.seats}</span></div>
+    <div class="detail-row"><span class="detail-label">Transmission</span><span class="detail-value" style="text-transform:capitalize">${v.transmission}</span></div>
+    <div class="detail-row"><span class="detail-label">Status</span><span>${getStatusBadge(v.status)}</span></div>
   `;
   document.getElementById("viewVehicleModal").style.display = "flex";
 }
@@ -142,24 +130,17 @@ function confirmDelete() {
 }
 
 // ── Nav ──
-const DISABLED_PAGES = ["add-vehicle"];
-
 function initNav() {
   document.querySelectorAll(".nav-item").forEach(item => {
-    const page = item.dataset.page;
-
-    if (DISABLED_PAGES.includes(page)) {
-      item.classList.add("nav-disabled");
-      item.setAttribute("aria-disabled", "true");
-      item.setAttribute("title", "Coming soon");
-      return;
-    }
-
     item.addEventListener("click", function (e) {
-      e.preventDefault();
+      const page = this.dataset.page;
 
       if (page === "dashboard") {
         window.location.href = "../html/dashboard.html";
+        return;
+      }
+      if (page === "add-vehicle") {
+        window.location.href = "../html/add_vehicle.html";
         return;
       }
       if (page === "manage_booking") {
@@ -167,13 +148,14 @@ function initNav() {
         return;
       }
 
+      e.preventDefault();
       document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
       this.classList.add("active");
     });
   });
 }
 
-// ── Edit Profile Modal (same as dashboard) ──
+// ── Edit Profile Modal ──
 function openModal() {
   showMainOptions();
   document.getElementById("editProfileModal").style.display = "flex";
@@ -192,9 +174,9 @@ function showPhotoEdit() {
   document.getElementById("licenseEdit").style.display = "none";
 }
 function showLicenseEdit() {
-  document.getElementById("mainOptions").style.display  = "none";
-  document.getElementById("photoEdit").style.display    = "none";
-  document.getElementById("licenseEdit").style.display  = "block";
+  document.getElementById("mainOptions").style.display = "none";
+  document.getElementById("photoEdit").style.display   = "none";
+  document.getElementById("licenseEdit").style.display = "block";
 }
 function previewLicense(event) {
   const file = event.target.files[0];
@@ -250,7 +232,7 @@ function savePhoto() {
 
 // Close modals on backdrop click
 ["editProfileModal", "viewVehicleModal", "deleteModal"].forEach(id => {
-  document.getElementById(id).addEventListener("click", function(e) {
+  document.getElementById(id).addEventListener("click", function (e) {
     if (e.target === this) {
       this.style.display = "none";
       if (id === "deleteModal") pendingDeleteId = null;
@@ -262,21 +244,3 @@ document.addEventListener("DOMContentLoaded", () => {
   renderVehicles();
   initNav();
 });
-
-function toggleStatus(id) {
-  const v = vehicleData.find(x => x.id === id);
-  if (!v) return;
-
-  v.status = v.status === "Available" ? "Not Available" : "Available";
-
-  const row = document.querySelector(`tr[data-id="${id}"]`);
-  if (!row) return;
-
-  // Update badge
-  const badgeCell = row.cells[3];
-  badgeCell.innerHTML = getStatusBadge(v.status);
-
-  // Update eye icon
-  const eyeImg = row.querySelector(".btn-icon.toggle-eye img");
-  eyeImg.src = v.status === "Available" ? "../assets/eye.png" : "../assets/eyeClose.png";
-}

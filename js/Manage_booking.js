@@ -88,28 +88,24 @@ function closeCallModal() {
 }
 
 // ── Nav ──
-const DISABLED_PAGES = ["add-vehicle"];
-
 function initNav() {
   document.querySelectorAll(".nav-item").forEach(item => {
-    const page = item.dataset.page;
-
-    if (DISABLED_PAGES.includes(page)) {
-      item.classList.add("nav-disabled");
-      item.setAttribute("aria-disabled", "true");
-      item.setAttribute("title", "Coming soon");
-      return;
-    }
-
     item.addEventListener("click", function (e) {
+      const page = this.dataset.page;
+
       if (page === "dashboard") {
         window.location.href = "../html/dashboard.html";
         return;
       }
-      if (page === "manage-vehicle") {
+      if (page === "add-vehicle") {
+        window.location.href = "../html/add_vehicle.html";
+        return;
+      }
+      if (page === "manage_vehicle") {
         window.location.href = "../html/Manage_vehicle.html";
         return;
       }
+
       e.preventDefault();
       document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
       this.classList.add("active");
@@ -136,9 +132,9 @@ function showPhotoEdit() {
   document.getElementById("licenseEdit").style.display = "none";
 }
 function showLicenseEdit() {
-  document.getElementById("mainOptions").style.display  = "none";
-  document.getElementById("photoEdit").style.display    = "none";
-  document.getElementById("licenseEdit").style.display  = "block";
+  document.getElementById("mainOptions").style.display = "none";
+  document.getElementById("photoEdit").style.display   = "none";
+  document.getElementById("licenseEdit").style.display = "block";
 }
 function previewLicense(event) {
   const file = event.target.files[0];
@@ -194,7 +190,7 @@ function savePhoto() {
 
 // Close modals on backdrop click
 ["editProfileModal", "callModal"].forEach(id => {
-  document.getElementById(id).addEventListener("click", function(e) {
+  document.getElementById(id).addEventListener("click", function (e) {
     if (e.target === this) {
       this.style.display = "none";
       if (id === "callModal") pendingCallId = null;

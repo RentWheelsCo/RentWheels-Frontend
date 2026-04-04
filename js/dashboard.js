@@ -11,8 +11,7 @@ const dashboardData = {
   ]
 };
 
-const clipboard = `
-  <img src="../assets/clipboard.png" alt="Dropdown" width="25" height="25">`;
+const clipboard = `<img src="../assets/clipboard.png" alt="Booking" width="25" height="25">`;
 
 function badgeClass(status) {
   const map = { Pending: "badge-pending", Completed: "badge-completed", Confirmed: "badge-confirmed" };
@@ -22,8 +21,7 @@ function badgeClass(status) {
 function renderDashboard() {
   document.getElementById("totalVehicles").textContent = dashboardData.totalVehicles;
   document.getElementById("totalBookings").textContent = dashboardData.totalBookings;
-  document.getElementById("monthlyRevenue").textContent =
-    "$" + dashboardData.monthlyRevenue.toLocaleString();
+  document.getElementById("monthlyRevenue").textContent = "$" + dashboardData.monthlyRevenue.toLocaleString();
 
   const list = document.getElementById("bookingsList");
   list.innerHTML = dashboardData.bookings.map((b, i) => `
@@ -39,48 +37,28 @@ function renderDashboard() {
   `).join("");
 }
 
-const DISABLED_PAGES = ["add-vehicle"];
-
 function initNav() {
   document.querySelectorAll(".nav-item").forEach(item => {
-    const page = item.dataset.page;
-
-    if (DISABLED_PAGES.includes(page)) {
-      item.classList.add("nav-disabled");
-      item.setAttribute("aria-disabled", "true");
-      item.setAttribute("title", "Coming soon");
-      return;
-    }
-
     item.addEventListener("click", function (e) {
-    e.preventDefault();
+      const page = this.dataset.page;
 
-    // Navigate to Manage Vehicle page
-    if (page === "manage_vehicle") {
-      window.location.href = "../html/Manage_vehicle.html";
-      return;
-    }
+      if (page === "add-vehicle") {
+        window.location.href = "../html/add_vehicle.html";
+        return;
+      }
+      if (page === "manage_vehicle") {
+        window.location.href = "../html/Manage_vehicle.html";
+        return;
+      }
+      if (page === "manage_booking") {
+        window.location.href = "../html/Manage_booking.html";
+        return;
+      }
 
-    // Navigate
-    if (page === "manage_booking") {
-      window.location.href = "../html/Manage_booking.html";
-      return;
-    }
-
-    document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
-    this.classList.add("active");
-
-    const titles = {
-      "dashboard": [
-        "Admin Dashboard",
-        "Monitor overall platform performance including total vehicles, bookings, revenue, and recent activities"
-      ],
-    };
-    if (titles[page]) {
-      document.querySelector(".page-title").textContent    = titles[page][0];
-      document.querySelector(".page-subtitle").textContent = titles[page][1];
-    }
-  });
+      // Dashboard (current page) — just update active state
+      document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+      this.classList.add("active");
+    });
   });
 }
 
@@ -88,6 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
   renderDashboard();
   initNav();
 });
+
 // Modal controls
 function openModal() {
   showMainOptions();
@@ -107,9 +86,9 @@ function showPhotoEdit() {
   document.getElementById("licenseEdit").style.display = "none";
 }
 function showLicenseEdit() {
-  document.getElementById("mainOptions").style.display  = "none";
-  document.getElementById("photoEdit").style.display    = "none";
-  document.getElementById("licenseEdit").style.display  = "block";
+  document.getElementById("mainOptions").style.display = "none";
+  document.getElementById("photoEdit").style.display   = "none";
+  document.getElementById("licenseEdit").style.display = "block";
 }
 
 function previewLicense(event) {
@@ -125,11 +104,10 @@ function previewLicense(event) {
 }
 
 function saveLicense() {
-  const licenseInput  = document.getElementById("licenseNumber");
-  const expiryInput   = document.getElementById("expiryDate");
+  const licenseInput = document.getElementById("licenseNumber");
+  const expiryInput  = document.getElementById("expiryDate");
   let valid = true;
 
-  // Reset
   licenseInput.style.borderColor = "";
   expiryInput.style.borderColor  = "";
   licenseInput.style.color       = "";
@@ -141,18 +119,15 @@ function saveLicense() {
     licenseInput.placeholder       = "License number is required";
     valid = false;
   }
-
   if (!expiryInput.value) {
     expiryInput.style.borderColor = "#dc2626";
     expiryInput.style.color       = "#dc2626";
     valid = false;
   }
-
   if (!valid) return;
-
-  // success — close or show toast
   closeModal();
 }
+
 function previewPhoto(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -164,6 +139,7 @@ function previewPhoto(event) {
   };
   reader.readAsDataURL(file);
 }
+
 function savePhoto() {
   const preview = document.getElementById("photoPreview");
   if (preview.src) {
@@ -172,7 +148,6 @@ function savePhoto() {
   closeModal();
 }
 
-// Close modal on backdrop click
-document.getElementById("editProfileModal").addEventListener("click", function(e) {
+document.getElementById("editProfileModal").addEventListener("click", function (e) {
   if (e.target === this) closeModal();
 });
