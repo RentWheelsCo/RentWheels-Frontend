@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vehicle Search</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="SearchBar.css" />
+</head>
+<body>
+
+  <div class="page-bg">
+
+    <!-- Search Bar -->
+    <div class="search-bar" id="searchBar" role="search">
+
+      <!-- Insurance -->
+      <div class="search-field" id="insuranceField">
+        <label class="field-label">Insurance Type</label>
+
+        <div class="custom-select-wrapper">
+          <button
+            class="custom-select-btn"
+            id="insuranceSelect"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+          >
+            <span class="select-value" id="insuranceValue">Select insurance</span>
+            <img src="./assests/dropdown.png" alt="Dropdown" width="20" height="20">
+          </button>
+
+          <ul class="dropdown-list" id="insuranceDropdown">
+            <li class="dropdown-item" data-value="none">No Insurance</li>
+            <li class="dropdown-item" data-value="half">Half Insurance</li>
+            <li class="dropdown-item" data-value="full">Full Insurance</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Pick-up Date -->
+      <div class="search-field" id="pickupField">
+        <label class="field-label">Pick-up Date</label>
+
+        <div class="date-input-wrapper">
+          <input
+            type="text"
+            class="date-input"
+            id="pickupDate"
+            placeholder="mm/dd/yyyy"
+            readonly
+          />
+
+          <button class="calendar-btn" id="pickupCalBtn" type="button">
+            <img src="./assests/calendar.png" alt="Calendar" width="20" height="20">
+          </button>
+        </div>
+      </div>
+
+      <!-- Return Date -->
+      <div class="search-field" id="returnField">
+        <label class="field-label">Return Date</label>
+
+        <div class="date-input-wrapper">
+          <input
+            type="text"
+            class="date-input"
+            id="returnDate"
+            placeholder="mm/dd/yyyy"
+            readonly
+          />
+
+          <button class="calendar-btn" id="returnCalBtn" type="button">
+            <img src="./assests/calendar.png" alt="Calendar" width="20" height="20">
+          </button>
+        </div>
+      </div>
+
+      <!-- Search Button -->
+      <button class="search-btn" id="searchBtn" type="button">
+        <img src="./assests/search.png" alt="Search" width="25" height="25">
+        <span>Search</span>
+      </button>
+
+    </div>
+
+    <!-- Calendar Popup -->
+    <div class="calendar-popup" id="calendarPopup" style="display:none;">
+      <div class="calendar-header">
+        <button class="cal-nav-btn" id="prevMonth" type="button">&#8249;</button>
+        <span class="cal-month-year" id="calMonthYear"></span>
+        <button class="cal-nav-btn" id="nextMonth" type="button">&#8250;</button>
+      </div>
+
+      <div class="cal-weekdays">
+        <span>Su</span><span>Mo</span><span>Tu</span>
+        <span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+      </div>
+
+      <div class="cal-days" id="calDays"></div>
+    </div>
+
+  </div>
+
+  <script src="SearchBar.js"></script>
+</body>
+</html>
