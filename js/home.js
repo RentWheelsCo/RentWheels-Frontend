@@ -23,8 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (exploreBikes) {
-    exploreBikes.addEventListener("click", (e) => {
-      e.preventDefault();
+    exploreBikes.addEventListener("click", () => {
       console.log("[RentWheels] Navigate → all bikes");
       showToast("Loading all bikes…", "info");
     });

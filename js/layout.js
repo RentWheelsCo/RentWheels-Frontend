@@ -39,7 +39,7 @@ function renderHeader(activeKey) {
           <img src="${ASSETS.searchIcon}" alt="" />
           <input type="text" placeholder="Search vehicles" aria-label="Search vehicles" />
         </div>
-        <a class="rw-login" href="#" role="button" aria-label="Log out">Log out</a>
+        <a class="rw-login" href="../html/login.html" role="button" aria-label="Log out">Log out</a>
       </div>
     </header>
   `;

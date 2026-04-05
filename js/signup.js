@@ -104,7 +104,7 @@ function nextPage() {
 }
 
 function goToLogin() {
-  alert('Redirecting to login page...');
+  window.location.href = 'login.html';
 }
 
 document.addEventListener('DOMContentLoaded', attachLiveClearing); 

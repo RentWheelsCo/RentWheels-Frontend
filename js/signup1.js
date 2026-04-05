@@ -52,7 +52,7 @@ function submitSignup() {
   if (hasError) return;
 
   alert('Sign up complete! Redirecting...');
-  // window.location.href = 'login.html';
+  window.location.href = 'login.html';
 }
 
 function showUploadError(boxEl, message) {
@@ -68,6 +68,5 @@ function goBack() {
 }
 
 function goToLogin() {
-  // Replace with actual navigation
-  alert('Redirecting to login page...');
+  window.location.href = 'login.html';
 }
