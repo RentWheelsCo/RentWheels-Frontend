@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manage Bookings</title>
+  <link rel="stylesheet" href="../css/Manage_booking.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="sidebar-profile">
+      <div class="avatar-wrapper">
+        <div class="avatar">
+          <img src="../assets/Person-Icon.png" width="40" height="40">
+        </div>
+        <div class="avatar-edit" onclick="openModal()" style="position:absolute; top:-4px; right:-4px; width:18px; height:18px; background:#ffffff; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; border:2px solid #fff;">
+          <img src="../assets/edit.png" width="15" height="15">
+        </div>
+      </div>
+      <span class="profile-name">Lasta Maharjan</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item" data-page="dashboard">
+        <span class="nav-icon">
+          <img src="../assets/dashboardGrey.png" width="20" height="20">
+        </span>
+        Dashboard
+      </a>
+      <a href="Add_vehicle.html" class="nav-item" data-page="add-vehicle">
+        <span class="nav-icon">
+          <img src="../assets/add.png" width="20" height="20">
+        </span>
+        Add Vehicle
+      </a>
+      <a href="Manage_vehicle.html" class="nav-item" data-page="manage_vehicle">
+        <span class="nav-icon">
+          <img src="../assets/carGrey.png" width="20" height="20">
+        </span>
+        Manage Vehicle
+      </a>
+      <a href="Manage_booking.html" class="nav-item active" data-page="manage-bookings">
+        <span class="nav-icon">
+          <img src="../assets/clipboard.png" width="20" height="20">
+        </span>
+        Manage Bookings
+      </a>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+    <header class="page-header">
+      <h1 class="page-title">Manage Bookings</h1>
+      <p class="page-subtitle">Track all customer bookings, approve or cancel requests, and manage booking statuses</p>
+    </header>
+
+    <div class="table-card">
+      <table class="booking-table">
+        <thead>
+          <tr>
+            <th>Vehicle</th>
+            <th>Date Range</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="bookingTableBody">
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Edit Profile Modal -->
+  <div id="editProfileModal">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-header">
+        <img src="../assets/Person-Icon.png" width="30" height="30">
+        <span>Edit Profile</span>
+      </div>
+      <div id="mainOptions">
+        <button class="modal-btn-primary" onclick="showPhotoEdit()">
+          <img src="../assets/camera.png" width="30" height="30">
+          Edit Photo
+        </button>
+        <button class="modal-btn-primary" onclick="showLicenseEdit()">
+          <img src="../assets/document.png" width="30" height="30">
+          Edit License
+        </button>
+        <button class="modal-btn-secondary" onclick="closeModal()">Done</button>
+      </div>
+      <div id="photoEdit" class="modal-panel">
+        <h3>Edit Photo</h3>
+        <div class="modal-form">
+          <div class="upload-area" onclick="document.getElementById('photoInput').click()">
+            <img src="../assets/upload.png" width="30" height="30">
+            Click to upload photo
+            <input type="file" id="photoInput" accept="image/*" style="display:none;" onchange="previewPhoto(event)">
+          </div>
+          <img id="photoPreview">
+          <div class="modal-row">
+            <button class="btn-back" onclick="showMainOptions()">Back</button>
+            <button class="btn-save" onclick="savePhoto()">Save</button>
+          </div>
+        </div>
+      </div>
+      <div id="licenseEdit" class="modal-panel">
+        <h3>Edit License</h3>
+        <div class="modal-form">
+          <div>
+            <label>License Number</label>
+            <input type="text" id="licenseNumber" placeholder="e.g. DL-1234567">
+          </div>
+          <div>
+            <label>Expiry Date</label>
+            <input type="date" id="expiryDate">
+          </div>
+          <div>
+            <label>Upload License Image</label>
+            <div class="upload-area-sm" onclick="document.getElementById('licenseInput').click()">
+              <img src="../assets/upload.png" width="30" height="30">
+              Click to upload
+              <input type="file" id="licenseInput" accept="image/*" style="display:none;" onchange="previewLicense(event)">
+            </div>
+            <img id="licensePreview" style="display:none; width:100%; margin-top:10px; border-radius:8px; border:1px solid #e8eaef; object-fit:cover;">
+          </div>
+          <div class="modal-row">
+            <button class="btn-back" onclick="showMainOptions()">Back</button>
+            <button class="btn-save" onclick="saveLicense()">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Call Modal -->
+  <div id="callModal">
+    <div class="modal-box modal-box-sm">
+      <button class="modal-close" onclick="closeCallModal()">✕</button>
+      <div class="call-icon-wrap">
+        <img src="../assets/call.png" width="40" height="40">
+      </div>
+      <h3 class="call-title">Contact Renter</h3>
+      <p class="call-subtitle">Calling renter for <strong id="callVehicleName"></strong></p>
+      <p class="call-number" id="callNumber"></p>
+    </div>
+  </div>
+  <script src="../js/Manage_booking.js"></script>
+</body>
+</html>
