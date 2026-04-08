@@ -1,17 +1,8 @@
-/**
- * RentWheels – manage-users.js
- * Admin: display, search, view, edit, delete users.
- *
- * API INTEGRATION:
- * Replace USERS_DATA and the TODO blocks with real fetch() calls.
- * All functions are structured to accept API response shapes directly.
- */
+
 
 'use strict';
 
-/* =============================================
-   PLACEHOLDER DATA – replace with API fetch
-   ============================================= */
+
 let USERS_DATA = [
   {
     id      : 1,
@@ -69,15 +60,11 @@ let USERS_DATA = [
   },
 ];
 
-/* =============================================
-   STATE
-   ============================================= */
+
 let filteredUsers = [...USERS_DATA];
 let pendingDeleteId = null;
 
-/* =============================================
-   DOM REFS
-   ============================================= */
+
 const tbody         = document.getElementById('usersTableBody');
 const tableWrap     = document.getElementById('tableWrap');
 const emptyState    = document.getElementById('emptyState');
@@ -87,12 +74,10 @@ const totalCount    = document.getElementById('totalCount');
 const searchInput   = document.getElementById('searchInput');
 const searchClear   = document.getElementById('searchClear');
 
-// View modal
 const viewModal      = document.getElementById('viewModal');
 const viewModalClose = document.getElementById('viewModalClose');
 const viewModalBody  = document.getElementById('viewModalBody');
 
-// Edit modal
 const editModal        = document.getElementById('editModal');
 const editModalClose   = document.getElementById('editModalClose');
 const editModalCancel  = document.getElementById('editModalCancel');
@@ -103,19 +88,15 @@ const editPhone        = document.getElementById('editPhone');
 const editStatus       = document.getElementById('editStatus');
 const editUserId       = document.getElementById('editUserId');
 
-// Delete modal
 const deleteModal        = document.getElementById('deleteModal');
 const deleteModalClose   = document.getElementById('deleteModalClose');
 const deleteModalCancel  = document.getElementById('deleteModalCancel');
 const deleteModalConfirm = document.getElementById('deleteModalConfirm');
 const deleteUserName     = document.getElementById('deleteUserName');
 
-// Toast
 const toastEl = document.getElementById('toast');
 
-/* =============================================
-   HELPERS
-   ============================================= */
+
 function getInitials(name) {
   return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
 }
@@ -137,9 +118,7 @@ function statusBadge(status) {
   return `<span class="status-badge status-badge--${status}">${labels[status] ?? status}</span>`;
 }
 
-/* =============================================
-   RENDER TABLE
-   ============================================= */
+
 function renderTable(data) {
   totalCount.textContent = `${USERS_DATA.length} user${USERS_DATA.length !== 1 ? 's' : ''}`;
 
@@ -197,9 +176,7 @@ function renderTable(data) {
   `).join('');
 }
 
-/* =============================================
-   SEARCH
-   ============================================= */
+
 function applySearch(query) {
   const q = query.trim().toLowerCase();
   filteredUsers = q
@@ -220,9 +197,6 @@ searchClear.addEventListener('click', () => {
   searchInput.focus();
 });
 
-/* =============================================
-   ACTION DISPATCH (event delegation)
-   ============================================= */
 tbody.addEventListener('click', e => {
   const btn = e.target.closest('[data-action]');
   if (!btn) return;
@@ -235,9 +209,6 @@ tbody.addEventListener('click', e => {
   if (btn.dataset.action === 'delete') openDeleteModal(user);
 });
 
-/* =============================================
-   VIEW MODAL
-   ============================================= */
 function openViewModal(user) {
   viewModalBody.innerHTML = `
     <div class="view-row">
@@ -267,9 +238,7 @@ function openViewModal(user) {
 viewModalClose.addEventListener('click', () => viewModal.classList.add('hidden'));
 viewModal.addEventListener('click', e => { if (e.target === viewModal) viewModal.classList.add('hidden'); });
 
-/* =============================================
-   EDIT MODAL
-   ============================================= */
+
 function openEditModal(user) {
   editUserId.value  = user.id;
   editName.value    = user.name;
@@ -290,8 +259,7 @@ editModalSave.addEventListener('click', () => {
   const idx = USERS_DATA.findIndex(u => u.id === id);
   if (idx === -1) return;
 
-  // TODO: replace with real API PUT call:
-  // await fetch(`/api/users/${id}`, { method:'PUT', body: JSON.stringify({...}) });
+
 
   USERS_DATA[idx] = {
     ...USERS_DATA[idx],
@@ -307,9 +275,7 @@ editModalSave.addEventListener('click', () => {
   console.log(`[RentWheels] Updated user id=${id}`);
 });
 
-/* =============================================
-   DELETE MODAL
-   ============================================= */
+
 function openDeleteModal(user) {
   pendingDeleteId = user.id;
   deleteUserName.textContent = user.name;
@@ -328,8 +294,7 @@ deleteModal.addEventListener('click', e => { if (e.target === deleteModal) close
 deleteModalConfirm.addEventListener('click', () => {
   if (pendingDeleteId === null) return;
 
-  // TODO: replace with real API DELETE call:
-  // await fetch(`/api/users/${pendingDeleteId}`, { method:'DELETE' });
+
 
   const name = USERS_DATA.find(u => u.id === pendingDeleteId)?.name ?? 'User';
   USERS_DATA = USERS_DATA.filter(u => u.id !== pendingDeleteId);
@@ -339,9 +304,7 @@ deleteModalConfirm.addEventListener('click', () => {
   console.log(`[RentWheels] Deleted user id=${pendingDeleteId}`);
 });
 
-/* =============================================
-   TOAST
-   ============================================= */
+
 let toastTimer;
 function showToast(message, type = 'success') {
   clearTimeout(toastTimer);
@@ -357,15 +320,9 @@ function showToast(message, type = 'success') {
   }, 3000);
 }
 
-/* =============================================
-   INIT
-   ============================================= */
+
 document.addEventListener('DOMContentLoaded', () => {
-  // TODO: replace with real fetch:
-  // fetch('/api/admin/users')
-  //   .then(r => r.json())
-  //   .then(data => { USERS_DATA = data; filteredUsers = [...data]; renderTable(data); })
-  //   .catch(() => showToast('Failed to load users', 'error'));
+
 
   renderTable(USERS_DATA);
 });

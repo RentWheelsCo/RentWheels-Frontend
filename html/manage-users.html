@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Manage Users – RentWheels Admin</title>
-  <link rel="stylesheet" href="manage-users.css" />
+  <link rel="stylesheet" href="../css/manage-users.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -14,7 +14,6 @@
   <main class="users-page">
     <div class="container">
 
-      <!-- Page Header -->
       <div class="page-header">
         <div class="page-header__left">
           <h1 class="page-title">Manage Users</h1>
@@ -25,7 +24,6 @@
         </div>
       </div>
 
-      <!-- Search Bar -->
       <div class="toolbar">
         <div class="search-wrap">
           <svg class="search-wrap__icon" viewBox="0 0 20 20" fill="none">
@@ -43,7 +41,6 @@
         </div>
       </div>
 
-      <!-- Users Table -->
       <div class="table-wrap" id="tableWrap">
         <table class="users-table" id="usersTable">
           <thead>
@@ -57,12 +54,10 @@
             </tr>
           </thead>
           <tbody id="usersTableBody">
-            <!-- Rows injected by JS -->
           </tbody>
         </table>
       </div>
 
-      <!-- Empty State -->
       <div class="empty-state hidden" id="emptyState">
         <div class="empty-state__icon">
           <svg viewBox="0 0 64 64" fill="none">
@@ -77,7 +72,6 @@
     </div>
   </main>
 
-  <!-- ======== VIEW MODAL ======== -->
   <div class="modal-overlay hidden" id="viewModal">
     <div class="modal">
       <div class="modal__header">
@@ -85,12 +79,10 @@
         <button class="modal__close" id="viewModalClose">✕</button>
       </div>
       <div class="modal__body" id="viewModalBody">
-        <!-- injected by JS -->
       </div>
     </div>
   </div>
 
-  <!-- ======== EDIT MODAL ======== -->
   <div class="modal-overlay hidden" id="editModal">
     <div class="modal">
       <div class="modal__header">
@@ -127,7 +119,6 @@
     </div>
   </div>
 
-  <!-- ======== DELETE CONFIRM MODAL ======== -->
   <div class="modal-overlay hidden" id="deleteModal">
     <div class="modal modal--sm">
       <div class="modal__header">
@@ -144,9 +135,8 @@
     </div>
   </div>
 
-  <!-- Toast -->
   <div class="toast hidden" id="toast" role="status"></div>
 
-  <script src="manage-users.js"></script>
+  <script src="../js/manage-users.js"></script>
 </body>
 </html>

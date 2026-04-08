@@ -1,6 +1,4 @@
-/* ============================================
-   RentWheels – manage-users.css
-   ============================================ */
+
 
 :root {
   --clr-primary:       #2563EB;
@@ -33,7 +31,6 @@
   --font: 'Outfit', sans-serif;
 }
 
-/* ---------- Reset ---------- */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
@@ -48,22 +45,18 @@ img { display: block; max-width: 100%; }
 button { font-family: var(--font); cursor: pointer; border: none; background: none; }
 input, select { font-family: var(--font); }
 
-/* ---------- Container ---------- */
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 24px;
 }
 
-/* ============================================
-   PAGE
-   ============================================ */
+
 .users-page {
   padding: 48px 0 100px;
   min-height: 70vh;
 }
 
-/* ---------- Page Header ---------- */
 .page-header {
   display: flex;
   align-items: flex-end;
@@ -95,9 +88,7 @@ input, select { font-family: var(--font); }
   padding: 4px 14px;
 }
 
-/* ============================================
-   TOOLBAR / SEARCH
-   ============================================ */
+
 .toolbar {
   margin-bottom: 20px;
   animation: fadeDown 0.5s ease 0.05s both;
@@ -151,9 +142,7 @@ input, select { font-family: var(--font); }
 .search-clear:hover { color: var(--clr-text); }
 .search-clear.hidden { display: none; }
 
-/* ============================================
-   TABLE
-   ============================================ */
+
 .table-wrap {
   border: 1px solid var(--clr-border);
   border-radius: var(--radius-md);
@@ -167,7 +156,6 @@ input, select { font-family: var(--font); }
   border-collapse: collapse;
 }
 
-/* Head */
 .users-table thead tr {
   background: var(--clr-border-lt);
   border-bottom: 1px solid var(--clr-border);
@@ -184,7 +172,6 @@ input, select { font-family: var(--font); }
   white-space: nowrap;
 }
 
-/* Body rows */
 .users-table tbody tr {
   border-bottom: 1px solid var(--clr-border);
   transition: background var(--transition);
@@ -206,7 +193,6 @@ input, select { font-family: var(--font); }
   width: 1%;
 }
 
-/* User cell: avatar + name */
 .user-cell {
   display: flex;
   align-items: center;
@@ -244,12 +230,10 @@ input, select { font-family: var(--font); }
   color: var(--clr-text);
 }
 
-/* Email, phone, joined */
 .td-email { color: var(--clr-text-muted); font-size: 0.83rem; }
 .td-phone { color: var(--clr-text-muted); font-size: 0.83rem; white-space: nowrap; }
 .td-joined { color: var(--clr-text-muted); font-size: 0.82rem; }
 
-/* Status badge */
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -274,7 +258,6 @@ input, select { font-family: var(--font); }
 .status-badge--inactive  { background: var(--clr-inactive-bg);  color: var(--clr-inactive-txt); }
 .status-badge--suspended { background: var(--clr-suspended-bg); color: var(--clr-suspended-txt); }
 
-/* Action buttons */
 .actions-cell {
   display: flex;
   align-items: center;
@@ -322,9 +305,7 @@ input, select { font-family: var(--font); }
   height: 13px;
 }
 
-/* ============================================
-   EMPTY STATE
-   ============================================ */
+
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -338,9 +319,7 @@ input, select { font-family: var(--font); }
 .empty-state__title { font-size: 1.1rem; font-weight: 700; color: var(--clr-text); }
 .empty-state__text  { font-size: 0.86rem; color: var(--clr-text-muted); }
 
-/* ============================================
-   MODALS
-   ============================================ */
+
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -404,7 +383,6 @@ input, select { font-family: var(--font); }
   border-top: 1px solid var(--clr-border);
 }
 
-/* View modal detail rows */
 .view-row {
   display: flex;
   flex-direction: column;
@@ -428,7 +406,6 @@ input, select { font-family: var(--font); }
   color: var(--clr-text);
 }
 
-/* Edit form */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -457,7 +434,6 @@ input, select { font-family: var(--font); }
   box-shadow: 0 0 0 3px rgba(37,99,235,0.10);
 }
 
-/* Buttons */
 .btn-primary {
   display: inline-flex;
   align-items: center;
@@ -498,7 +474,6 @@ input, select { font-family: var(--font); }
 }
 .btn-danger:hover { background: var(--clr-danger-dk); transform: translateY(-1px); }
 
-/* Delete message */
 .delete-message {
   font-size: 0.9rem;
   color: var(--clr-text-muted);
@@ -506,9 +481,7 @@ input, select { font-family: var(--font); }
 }
 .delete-message strong { color: var(--clr-text); }
 
-/* ============================================
-   TOAST
-   ============================================ */
+
 .toast {
   position: fixed;
   bottom: 28px;
@@ -530,9 +503,7 @@ input, select { font-family: var(--font); }
 .toast--success { background: #065F46; }
 .toast--error   { background: var(--clr-danger); }
 
-/* ============================================
-   ANIMATIONS
-   ============================================ */
+
 @keyframes fadeDown {
   from { opacity: 0; transform: translateY(-14px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -550,9 +521,7 @@ input, select { font-family: var(--font); }
   to   { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-/* ============================================
-   RESPONSIVE
-   ============================================ */
+
 @media (max-width: 768px) {
   .table-wrap { overflow-x: auto; }
   .users-table { min-width: 860px; }
