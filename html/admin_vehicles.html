@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin - Vehicles</title>
+  <link rel="stylesheet" href="../css/admin_Nav.css" />
+  <link rel="stylesheet" href="../css/admin_vehicles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body data-page="vehicles">
+
+  <!-- Admin Nav -->
+  <div id="admin-header"></div>
+
+  <main class="main-content">
+    <header class="page-header">
+      <div class="header-info">
+        <h1 class="page-title">Manage All Vehicles</h1>
+        <p class="page-subtitle">View, edit, and search vehicles across the platform along with renter and rentee information</p>
+      </div>
+      <div class="search-container">
+        <!-- SVG Search Icon -->
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Search vehicle by name..." />
+      </div>
+    </header>
+
+    <div class="table-card">
+      <table class="vehicle-table">
+        <thead>
+          <tr>
+            <th>S.N.</th>
+            <th>Vehicle</th>
+            <th>Renter Info</th>
+            <th>Rentee Info</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="vehicleTableBody">
+          <!-- Rows injected by JS -->
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- View Modal -->
+  <div id="viewVehicleModal" class="modal-overlay">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal('viewVehicleModal')">✕</button>
+      <div class="modal-header">
+        <span>Vehicle Details</span>
+      </div>
+      <div id="viewVehicleContent"></div>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div id="editVehicleModal" class="modal-overlay">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal('editVehicleModal')">✕</button>
+      <div class="modal-header">
+        <span>Edit Vehicle</span>
+      </div>
+      <div class="modal-form">
+        <div>
+          <label>Vehicle Name</label>
+          <input type="text" id="editVehicleName">
+        </div>
+        <div>
+          <label>Renter Name</label>
+          <input type="text" id="editRenterName">
+        </div>
+        <div>
+          <label>Renter Phone</label>
+          <input type="text" id="editRenterPhone">
+        </div>
+        <div>
+          <label>Rentee Name</label>
+          <input type="text" id="editRenteeName">
+        </div>
+        <div>
+          <label>Rentee Phone</label>
+          <input type="text" id="editRenteePhone">
+        </div>
+        <div class="modal-row">
+          <button class="btn-secondary" onclick="closeModal('editVehicleModal')">Cancel</button>
+          <button class="btn-primary" onclick="saveEdit()">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Modal -->
+  <div id="deleteModal" class="modal-overlay">
+    <div class="modal-box modal-box-sm">
+      <button class="modal-close" onclick="closeModal('deleteModal')">✕</button>
+      <div class="delete-icon-wrap">
+        <img src="../assets/deleteRed.png" width="35" height="35" alt="Warning">
+      </div>
+      <h3 class="delete-title">Remove Vehicle?</h3>
+      <p class="delete-subtitle">This will permanently remove <strong id="deleteVehicleName"></strong> from the platform.</p>
+      <div class="modal-row" style="margin-top:20px;">
+        <button class="btn-secondary" onclick="closeModal('deleteModal')">Cancel</button>
+        <button class="btn-danger" onclick="confirmDelete()">Remove</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/admin_Nav.js"></script>
+  <script src="../js/admin_vehicles.js"></script>
+</body>
+</html>
