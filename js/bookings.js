@@ -17,36 +17,30 @@ let BOOKINGS_DATA = [
       name     : 'BMW M4 COMPETITION',
       year     : '2022',
       type     : 'SUV',
-      location : 'Kathmandu',
       image    : 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&q=80',
     },
     rentalPeriod  : { from: '4/10/2025', to: '4/15/2025' },
-    pickupLocation: 'Tribhuvan International Airport',
-    returnLocation: 'Kathmandu Center',
     insuranceType : 'No insurance',
     totalPrice    : 475,
     bookedOn      : '4/1/2025',
-    renter        : { name: 'Bharat Gautam', phone: '+977 9841234567' },
+    renter        : { name: 'Ram Shah', phone: '+977 9841234567' },
     rentee        : { name: 'Ritesh Poudel', phone: '+977 9801234567' }
   },
   {
     id            : 2,
     bookingNumber : 'Booking #2',
-    status        : 'pending',
+    status        : 'confirmed',
     vehicle: {
         name     : 'Tesla Model 3',
         year     : '2023',
         type     : 'Sedan',
-        location : 'Pokhara',
         image    : 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=600&q=80',
     },
     rentalPeriod  : { from: '4/20/2025', to: '4/25/2025' },
-    pickupLocation: 'Lakeside Pokhara',
-    returnLocation: 'Lakeside Pokhara',
     insuranceType : 'Full Coverage',
     totalPrice    : 350,
     bookedOn      : '4/1/2026',
-    renter        : { name: 'Bharat Gautam', phone: '+977 9841234567' },
+    renter        : { name: 'Saroj Hamal', phone: '+977 9841234567' },
     rentee        : { name: 'Sanjok K.C.', phone: '+977 9800000000' }
   },
   {
@@ -57,16 +51,13 @@ let BOOKINGS_DATA = [
       name     : 'Ford Mustang',
       year     : '2021',
       type     : 'Coupe',
-      location : 'Lalitpur',
       image    : 'https://images.unsplash.com/photo-1584345611124-28c2813587b1?w=600&q=80',
     },
     rentalPeriod  : { from: '5/10/2025', to: '5/12/2025' },
-    pickupLocation: 'Patan Durbar Square',
-    returnLocation: 'Patan Durbar Square',
     insuranceType : 'Basic',
     totalPrice    : 200,
     bookedOn      : '4/1/2026',
-    renter        : { name: 'Bharat Gautam', phone: '+977 9841234567' },
+    renter        : { name: 'Asmit Bhatt', phone: '+977 9841234567' },
     rentee        : { name: 'Asmita Neupane', phone: '+977 9851111111' }
   },
 ];
@@ -295,13 +286,10 @@ function openEditModal(id) {
     document.getElementById('edit_v_name').value = booking.vehicle.name;
     document.getElementById('edit_v_year').value = booking.vehicle.year;
     document.getElementById('edit_v_type').value = booking.vehicle.type;
-    document.getElementById('edit_v_location').value = booking.vehicle.location || '';
     
     // Rental Period
     document.getElementById('edit_p_from').value = booking.rentalPeriod.from;
     document.getElementById('edit_p_to').value = booking.rentalPeriod.to;
-    document.getElementById('edit_l_pickup').value = booking.pickupLocation || '';
-    document.getElementById('edit_l_return').value = booking.returnLocation || '';
 
     // Users
     if (booking.renter) {
@@ -352,8 +340,6 @@ if (editForm) {
         
         booking.rentalPeriod.from = document.getElementById('edit_p_from').value;
         booking.rentalPeriod.to = document.getElementById('edit_p_to').value;
-        booking.pickupLocation = document.getElementById('edit_l_pickup').value;
-        booking.returnLocation = document.getElementById('edit_l_return').value;
 
         booking.renter.name = document.getElementById('edit_r_name').value;
         booking.renter.phone = document.getElementById('edit_r_phone').value;
