@@ -21,7 +21,7 @@ let BOOKINGS_DATA = [
     },
     rentalPeriod  : { from: '4/10/2025', to: '4/15/2025' },
     insuranceType : 'No insurance',
-    totalPrice    : 475,
+    totalPrice    : 4750,
     bookedOn      : '4/1/2025',
     renter        : { name: 'Ram Shah', phone: '+977 9841234567' },
     rentee        : { name: 'Ritesh Poudel', phone: '+977 9801234567' }
@@ -38,7 +38,7 @@ let BOOKINGS_DATA = [
     },
     rentalPeriod  : { from: '4/20/2025', to: '4/25/2025' },
     insuranceType : 'Full Coverage',
-    totalPrice    : 350,
+    totalPrice    : 3500,
     bookedOn      : '4/1/2026',
     renter        : { name: 'Saroj Hamal', phone: '+977 9841234567' },
     rentee        : { name: 'Sanjok K.C.', phone: '+977 9800000000' }
@@ -55,7 +55,7 @@ let BOOKINGS_DATA = [
     },
     rentalPeriod  : { from: '5/10/2025', to: '5/12/2025' },
     insuranceType : 'Basic',
-    totalPrice    : 200,
+    totalPrice    : 2000,
     bookedOn      : '4/1/2026',
     renter        : { name: 'Asmit Bhatt', phone: '+977 9841234567' },
     rentee        : { name: 'Asmita Neupane', phone: '+977 9851111111' }
@@ -186,7 +186,7 @@ function buildBookingCard(booking, index) {
       
         <div class="price-info">
             <span class="price-label">Total Price</span>
-            <span class="price-amount">$${booking.totalPrice}</span>
+            <span class="price-amount">Rs${booking.totalPrice}</span>
             <span class="price-booked-on">Booked on ${booking.bookedOn}</span>
         </div>
       </div>
