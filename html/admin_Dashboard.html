@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RenWheels — Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/admin_Dashboard.css"/>
+</head>
+<body>
+
+  <div class="page">
+
+
+
+    <!-- Search -->
+    <div class="search-wrap">
+      <div class="search-bar">
+        <img src="../assets/search_icon.png" width="30" height="30">
+        <input type="text" placeholder="Search" tabindex="-1" readonly/>
+      </div>
+    </div>
+
+    <!-- BOOKINGS -->
+    <section class="table-section">
+      <div class="section-label">Bookings</div>
+      <div class="table-wrapper">
+        <div class="tbl-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Vehicle Name</th>
+                <th>Owner's Name</th>
+                <th>Booked By</th>
+                <th>Start Date</th>
+                <th>Due Date</th>
+                <th>Insurance</th>
+                <th>Total Price</th>
+              </tr>
+            </thead>
+            <tbody id="booking-tbody"></tbody>
+          </table>
+        </div>
+        <div class="tbl-footer">
+          <a href="../html/booking.html" class="see-more">SEE MORE</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- USER -->
+    <section class="table-section">
+      <div class="section-label">Users</div>
+      <div class="table-wrapper">
+        <div class="tbl-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Photo</th>
+                <th>Full Name</th>
+                <th>Username</th>
+                <th>Phone</th>
+                <th>Email</th>
+              </tr>
+            </thead>
+            <tbody id="user-tbody"></tbody>
+          </table>
+        </div>
+        <div class="tbl-footer">
+          <a href="../html/user.html" class="see-more">SEE MORE</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- VEHICLE -->
+    <section class="table-section">
+      <div class="section-label">Vehicles</div>
+      <div class="table-wrapper">
+        <div class="tbl-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Photo</th>
+                <th>Vehicle Name</th>
+                <th>Owner</th>
+                <th>Daily Price</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="vehicle-tbody"></tbody>
+          </table>
+        </div>
+        <div class="tbl-footer">
+          <a href="../html/vehicle.html" class="see-more">SEE MORE</a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script src="../js/admin_Dashboard.js"></script>
+</body>
+</html>

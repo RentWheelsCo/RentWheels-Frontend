@@ -6,7 +6,9 @@ const adminVehicleData = [
     renterName: "John Doe",
     renterPhone: "+1 234-567-8901",
     renteeName: "Alice Smith",
-    renteePhone: "+1 987-654-3210"
+    renteePhone: "+1 987-654-3210",
+    dailyPrice: 45,
+    status: "Rented"
   },
   {
     id: 2,
@@ -15,16 +17,20 @@ const adminVehicleData = [
     renterName: "Jane Roe",
     renterPhone: "+1 333-444-5555",
     renteeName: "Bob Johnson",
-    renteePhone: "+1 222-333-4444"
+    renteePhone: "+1 222-333-4444",
+    dailyPrice: 50,
+    status: "Rented"
   },
   {
     id: 3,
     name: "BMW 3 Series",
     image: "../assets/bmwm3.png",
-    renterName: "Michael Chang",
-    renterPhone: "+1 888-999-0000",
+    renterName: "-",
+    renterPhone: "-",
     renteeName: "-",
-    renteePhone: "-"
+    renteePhone: "-",
+    dailyPrice: 120,
+    status: "Available"
   },
   {
     id: 4,
@@ -33,7 +39,9 @@ const adminVehicleData = [
     renterName: "Sarah Connor",
     renterPhone: "+1 555-555-5555",
     renteeName: "James Cameron",
-    renteePhone: "+1 444-444-4444"
+    renteePhone: "+1 444-444-4444",
+    dailyPrice: 150,
+    status: "Available"
   }
 ];
 
@@ -66,6 +74,10 @@ function renderVehicles(searchTerm = "") {
           <span class="person-name">${v.renteeName}</span>
           <span class="person-phone">${v.renteePhone}</span>
         </div>
+      </td>
+      <td><strong>Rs ${v.dailyPrice}</strong></td>
+      <td>
+        <span style="font-size:0.75rem; font-weight:600; padding:4px 10px; border-radius:999px; background:${v.status==='Available'?'#d1fae5':v.status==='Rented'?'#fef3c7':'#fee2e2'}; color:${v.status==='Available'?'#065f46':v.status==='Rented'?'#92400e':'#991b1b'}">${v.status}</span>
       </td>
       <td>
         <div class="action-dropdown-container">
@@ -118,6 +130,8 @@ function openViewModal(id) {
     <div class="detail-row"><span class="detail-label">Renter Phone</span><span class="detail-value">${v.renterPhone}</span></div>
     <div class="detail-row"><span class="detail-label">Rentee Name</span><span class="detail-value">${v.renteeName}</span></div>
     <div class="detail-row"><span class="detail-label">Rentee Phone</span><span class="detail-value">${v.renteePhone}</span></div>
+    <div class="detail-row"><span class="detail-label">Daily Price</span><span class="detail-value">Rs${v.dailyPrice}</span></div>
+    <div class="detail-row"><span class="detail-label">Status</span><span class="detail-value">${v.status}</span></div>
   `;
   document.getElementById("viewVehicleModal").style.display = "flex";
 }
@@ -131,6 +145,8 @@ function openEditModal(id) {
   document.getElementById("editRenterPhone").value = v.renterPhone;
   document.getElementById("editRenteeName").value = v.renteeName;
   document.getElementById("editRenteePhone").value = v.renteePhone;
+  document.getElementById("editDailyPrice").value = v.dailyPrice;
+  document.getElementById("editStatus").value = v.status;
   document.getElementById("editVehicleModal").style.display = "flex";
 }
 
@@ -142,6 +158,8 @@ function saveEdit() {
   v.renterPhone = document.getElementById("editRenterPhone").value;
   v.renteeName = document.getElementById("editRenteeName").value;
   v.renteePhone = document.getElementById("editRenteePhone").value;
+  v.dailyPrice = document.getElementById("editDailyPrice").value;
+  v.status = document.getElementById("editStatus").value;
   
   closeModal('editVehicleModal');
   const searchInput = document.getElementById("searchInput");
