@@ -1,0 +1,415 @@
+/* ============================================
+   RentWheels – vehicle-detail.css
+   ============================================ */
+
+:root {
+  --clr-primary:        #2563EB;
+  --clr-bg:             #F9FAFB;
+  --clr-surface:        #FFFFFF;
+  --clr-border:         #E5E7EB;
+  --clr-text:           #111827;
+  --clr-text-muted:     #6B7280;
+  --clr-text-light:     #9CA3AF;
+  
+  --radius-lg:          16px;
+  --radius-md:          12px;
+  --shadow-sm:          0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md:          0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+}
+
+.vehicle-detail-page {
+  background-color: var(--clr-bg);
+  min-height: 100vh;
+}
+
+.vehicle-detail-main {
+  padding: 32px 0 80px;
+}
+
+.vehicle-detail-container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.vehicle-detail-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--clr-text-muted);
+  font-weight: 500;
+  margin-bottom: 24px;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.15s;
+}
+.vehicle-detail-back:hover {
+  color: var(--clr-primary);
+}
+
+.vehicle-detail-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 40px;
+  align-items: start;
+}
+
+/* ---- Left Content ---- */
+.vehicle-detail-hero {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  margin-bottom: 24px;
+  background: var(--clr-surface);
+  height: 480px;
+}
+
+.vehicle-detail-hero__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.vehicle-detail-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--clr-text);
+  line-height: 1.1;
+  margin-bottom: 8px;
+}
+
+.vehicle-detail-meta {
+  font-size: 1.05rem;
+  color: var(--clr-text-muted);
+  margin-bottom: 20px;
+}
+
+.vehicle-detail-stats {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.vehicle-detail-stat {
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--clr-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vehicle-detail-rule {
+  border: none;
+  border-top: 1px solid var(--clr-border);
+  margin: 32px 0;
+}
+
+.vehicle-detail-section {
+  margin-bottom: 32px;
+}
+
+.vehicle-detail-section__title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--clr-text);
+  margin-bottom: 16px;
+}
+
+.vehicle-detail-section__text {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--clr-text-muted);
+}
+
+.vehicle-detail-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  list-style: none;
+  padding: 0;
+}
+
+.vehicle-detail-features li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  color: var(--clr-text-muted);
+}
+
+/* ---- Comments ---- */
+.vehicle-detail-comment-form {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.vehicle-detail-comment-form__avatar {
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.vehicle-detail-comment-form__input {
+  flex: 1;
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  font-size: 0.95rem;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.vehicle-detail-comment-form__input:focus {
+  border-color: var(--clr-primary);
+  box-shadow: 0 0 0 3px var(--clr-primary-lt);
+}
+
+.vehicle-detail-comment-form__post {
+  background: var(--clr-primary);
+  color: #fff;
+  border: none;
+  padding: 14px 24px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.vehicle-detail-comment-form__post:hover {
+  background: #1D4ED8;
+}
+
+.vehicle-comment {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--clr-border);
+  position: relative;
+}
+
+.vehicle-comment:last-child {
+  border-bottom: none;
+}
+
+.vehicle-comment__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.vehicle-comment__name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--clr-text);
+}
+
+.vehicle-comment__date {
+  font-size: 0.8rem;
+  color: var(--clr-text-light);
+}
+
+.vehicle-comment__text {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--clr-text-muted);
+}
+.delete-comment-btn {
+  background: #fee2e2;
+  color: #991b1b;
+  border: none;
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+.delete-comment-btn:hover { background: #fca5a5; }
+
+/* ---- Right Aside: Booking Card ---- */
+.vehicle-detail-booking__card {
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--shadow-md);
+}
+
+.vehicle-detail-booking__price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 24px;
+}
+
+.vehicle-detail-booking__price {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: var(--clr-text);
+  line-height: 1;
+}
+
+.vehicle-detail-booking__per {
+  font-size: 0.95rem;
+  color: var(--clr-text-muted);
+}
+
+.vehicle-detail-booking__rule {
+  border: none;
+  border-top: 1px solid var(--clr-border);
+  margin-bottom: 24px;
+}
+
+.vehicle-detail-field {
+  display: block;
+  margin-bottom: 16px;
+}
+
+.vehicle-detail-field__label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--clr-text);
+  margin-bottom: 6px;
+}
+
+.vehicle-detail-field__control {
+  width: 100%;
+  border: 1px solid var(--clr-border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  outline: none;
+  background: var(--clr-bg);
+  transition: border-color 0.2s;
+}
+
+.vehicle-detail-field__control:focus {
+  border-color: var(--clr-primary);
+}
+
+.vehicle-detail-book-now {
+  width: 100%;
+  background: var(--clr-primary);
+  color: #fff;
+  border: none;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  margin-top: 12px;
+  transition: all 0.2s;
+}
+
+.vehicle-detail-book-now:hover {
+  background: #1D4ED8;
+  transform: translateY(-1px);
+}
+
+.vehicle-detail-booking__fineprint {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--clr-text-light);
+  margin-top: 16px;
+}
+
+/* Modals etc for Admin override */
+.btn-secondary {
+  background: #F3F4F6;
+  border: 1px solid #D1D5DB;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  flex: 1;
+}
+.btn-secondary:hover { background: #E5E7EB; }
+.btn-primary {
+  background: var(--clr-primary);
+  color: #fff;
+  border: none;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  flex: 1;
+}
+.btn-danger {
+  background: #fee2e2;
+  color: #991b1b;
+  border: none;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  flex: 1;
+}
+
+/* Modals */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal-box {
+  background: var(--clr-surface);
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 400px;
+  position: relative;
+  text-align: center;
+}
+.modal-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  border: none; background: transparent; cursor: pointer;
+  font-size: 1.2rem;
+  color: var(--clr-text-muted);
+}
+.modal-box h3 {
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.edit-mode-input {
+  width: 100%;
+  padding: 10px;
+  font-family: inherit;
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
+  font-size: 1rem;
+}
+.edit-mode-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+@media (max-width: 968px) {
+  .vehicle-detail-layout {
+    grid-template-columns: 1fr;
+  }
+  .vehicle-detail-booking {
+    position: static;
+  }
+  .vehicle-detail-hero {
+    height: 320px;
+  }
+}
