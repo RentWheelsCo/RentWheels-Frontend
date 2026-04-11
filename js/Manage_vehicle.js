@@ -136,15 +136,15 @@ function initNav() {
       const page = this.dataset.page;
 
       if (page === "dashboard") {
-        window.location.href = "../html/dashboard.html";
+        window.location.href = "dashboard.html";
         return;
       }
       if (page === "add-vehicle") {
-        window.location.href = "../html/add_vehicle.html";
+        window.location.href = "Add_vehicle.html";
         return;
       }
       if (page === "manage_booking") {
-        window.location.href = "../html/Manage_booking.html";
+        window.location.href = "Manage_booking.html";
         return;
       }
 
