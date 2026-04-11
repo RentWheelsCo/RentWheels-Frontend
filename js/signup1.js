@@ -1,3 +1,5 @@
+const API_BASE = 'https://rentwheels-zr2p.onrender.com/api';
+
 function triggerUpload(inputId) {
   document.getElementById(inputId).click();
 }
@@ -7,7 +9,7 @@ function handleUpload(input, previewId, boxId) {
   if (!file) return;
 
   const previewEl = document.getElementById(previewId);
-  const boxEl     = document.getElementById(boxId);
+  const boxEl = document.getElementById(boxId);
 
   boxEl.classList.remove('upload-error');
   const existingErr = boxEl.parentNode.querySelector('.error-msg');
@@ -16,22 +18,52 @@ function handleUpload(input, previewId, boxId) {
   boxEl.classList.add('uploaded');
 
   const reader = new FileReader();
-  reader.onload = function (e) {
+  reader.onload = (e) => {
     previewEl.innerHTML = `
       <img class="upload-thumb" src="${e.target.result}" alt="Preview">
-      <span class="upload-filename"> ${file.name}</span>
+      <span class="upload-filename">${file.name}</span>
     `;
   };
   reader.readAsDataURL(file);
 }
 
-function submitSignup() {
+function showUploadError(boxEl, message) {
+  boxEl.classList.add('upload-error');
+  const err = document.createElement('span');
+  err.className = 'error-msg';
+  err.textContent = message;
+  boxEl.parentNode.appendChild(err);
+}
+
+function showPageError(message) {
+  let banner = document.getElementById('page-error-banner');
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'page-error-banner';
+    banner.style.cssText =
+      'background:#fee2e2;color:#b91c1c;border:1px solid #fca5a5;' +
+      'border-radius:6px;padding:10px 14px;margin-bottom:14px;font-size:0.9rem;';
+    const container = document.querySelector('.upload-section') || document.body.firstElementChild;
+    container.parentNode.insertBefore(banner, container);
+  }
+  banner.textContent = message;
+  banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function clearPageError() {
+  const banner = document.getElementById('page-error-banner');
+  if (banner) banner.remove();
+}
+
+async function submitSignup() {
+  clearPageError();
   let hasError = false;
 
   const profileInput = document.getElementById('profileInput');
-  const licenseInput = document.getElementById('licenseInput');
-  const profileBox   = document.getElementById('profileBox');
-  const licenseBox   = document.getElementById('licenseBox');
+  const licenseFrontInput = document.getElementById('licenseInput');
+  const licenseBackInput = document.getElementById('licenseBackInput');
+  const profileBox = document.getElementById('profileBox');
+  const licenseBox = document.getElementById('licenseBox');
 
   [profileBox, licenseBox].forEach(box => {
     box.classList.remove('upload-error');
@@ -44,23 +76,72 @@ function submitSignup() {
     hasError = true;
   }
 
-  if (!licenseInput.files.length) {
+  if (!licenseFrontInput.files.length) {
     showUploadError(licenseBox, 'Please upload your license image.');
     hasError = true;
   }
 
   if (hasError) return;
 
-  alert('Sign up complete! Redirecting...');
-  window.location.href = 'login.html';
-}
+  const savedData = sessionStorage.getItem('signupData');
+  if (!savedData) {
+    alert('Session expired. Please start the sign-up again.');
+    window.location.href = 'signup.html';
+    return;
+  }
 
-function showUploadError(boxEl, message) {
-  boxEl.classList.add('upload-error');
-  const err = document.createElement('span');
-  err.className = 'error-msg';
-  err.textContent = message;
-  boxEl.parentNode.appendChild(err);
+  const { name, email, phone, password } = JSON.parse(savedData);
+
+  const formData = new FormData();
+  formData.append('name', name);
+  formData.append('email', email);
+  formData.append('phone', phone);
+  formData.append('password', password);
+  formData.append('profilePhoto', profileInput.files[0]);
+  formData.append('licensePhoto', licenseFrontInput.files[0]);
+  if (licenseBackInput && licenseBackInput.files.length) {
+    formData.append('licensePhoto', licenseBackInput.files[0]);
+  }
+
+  const submitBtn = document.querySelector('button[onclick="submitSignup()"]');
+  if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting…'; }
+
+  try {
+    const response = await fetch(`${API_BASE}/auth/register`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      const message = data?.message || 'Registration failed. Please try again.';
+
+      if (message.toLowerCase().includes('email')) {
+        sessionStorage.setItem('signupError', message);
+        window.location.href = 'signup.html';
+        return;
+      }
+
+      showPageError(message);
+      return;
+    }
+
+    if (data?.data?.token) {
+      localStorage.setItem('authToken', data.data.token);
+    }
+    sessionStorage.removeItem('signupData');
+    sessionStorage.removeItem('signupError');
+
+    alert('Sign up complete! Redirecting…');
+    window.location.href = 'dashboard.html';
+
+  } catch (err) {
+    console.error('Registration error:', err);
+    showPageError('Network error. Please check your connection and try again.');
+  } finally {
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Submit'; }
+  }
 }
 
 function goBack() {
