@@ -1,3 +1,5 @@
+const API_BASE = window.RW_CONFIG?.API_BASE || "http://localhost:5000/api";
+
 const clipboard = `<img src="../assets/clipboard.png" alt="Booking" width="25" height="25">`;
 
 function getToken() {
@@ -81,18 +83,23 @@ function renderDashboard(data) {
 }
 
 async function loadDashboard() {
-  let payload;
-  try {
-    payload = await window.RW_API.request("/user/seller/dashboard", { auth: true });
-  } catch (err) {
-    if (err?.status === 401) {
+  const token = getToken();
+
+  const response = await fetch(`${API_BASE}/user/seller/dashboard`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const payload = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    if (response.status === 401) {
       logout();
       return;
     }
-    const msg =
-      (err?.data && typeof err.data === "object" ? err.data.message : null) ||
-      err?.message ||
-      "Failed to load dashboard data.";
+    const msg = payload?.message || "Failed to load dashboard data.";
     throw new Error(msg);
   }
 
@@ -163,17 +170,17 @@ function closeModal() {
 }
 function showMainOptions() {
   document.getElementById("mainOptions").style.display = "block";
-  document.getElementById("photoEdit").style.display   = "none";
+  document.getElementById("photoEdit").style.display = "none";
   document.getElementById("licenseEdit").style.display = "none";
 }
 function showPhotoEdit() {
   document.getElementById("mainOptions").style.display = "none";
-  document.getElementById("photoEdit").style.display   = "block";
+  document.getElementById("photoEdit").style.display = "block";
   document.getElementById("licenseEdit").style.display = "none";
 }
 function showLicenseEdit() {
   document.getElementById("mainOptions").style.display = "none";
-  document.getElementById("photoEdit").style.display   = "none";
+  document.getElementById("photoEdit").style.display = "none";
   document.getElementById("licenseEdit").style.display = "block";
 }
 
@@ -191,23 +198,23 @@ function previewLicense(event) {
 
 function saveLicense() {
   const licenseInput = document.getElementById("licenseNumber");
-  const expiryInput  = document.getElementById("expiryDate");
+  const expiryInput = document.getElementById("expiryDate");
   let valid = true;
 
   licenseInput.style.borderColor = "";
-  expiryInput.style.borderColor  = "";
-  licenseInput.style.color       = "";
-  expiryInput.style.color        = "";
+  expiryInput.style.borderColor = "";
+  licenseInput.style.color = "";
+  expiryInput.style.color = "";
 
   if (!licenseInput.value.trim()) {
     licenseInput.style.borderColor = "#dc2626";
-    licenseInput.style.color       = "#dc2626";
-    licenseInput.placeholder       = "License number is required";
+    licenseInput.style.color = "#dc2626";
+    licenseInput.placeholder = "License number is required";
     valid = false;
   }
   if (!expiryInput.value) {
     expiryInput.style.borderColor = "#dc2626";
-    expiryInput.style.color       = "#dc2626";
+    expiryInput.style.color = "#dc2626";
     valid = false;
   }
   if (!valid) return;

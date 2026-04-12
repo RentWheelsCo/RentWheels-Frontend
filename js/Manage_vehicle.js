@@ -182,6 +182,7 @@ async function confirmDelete() {
 function initNav() {
   document.querySelectorAll(".nav-item").forEach(item => {
     if (item.classList.contains("nav-logout")) return;
+    if (item.classList.contains("nav-logout")) return;
     item.addEventListener("click", function (e) {
       const page = this.dataset.page;
 
@@ -296,3 +297,4 @@ document.addEventListener("DOMContentLoaded", () => {
   loadVehicles();
   initNav();
 });
+

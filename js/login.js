@@ -1,3 +1,5 @@
+const API_BASE = window.RW_CONFIG?.API_BASE || "http://localhost:5000/api";
+
 const form = document.getElementById('loginForm');
 const emailIn = document.getElementById('email');
 const pwIn = document.getElementById('password');
@@ -101,29 +103,20 @@ form.addEventListener('submit', async (e) => {
   setLoading(true);
 
   try {
-    const data = await window.RW_API.request('/auth/login', {
+    const response = await fetch(`${API_BASE}/auth/login`, {
       method: 'POST',
-      body: {
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
         email: emailIn.value.trim(),
         password: pwIn.value,
-      },
+      }),
     });
 
-    const { token, id, name, email, isVerified } = data?.data || {};
-    if (!token) {
-      showLoginError("Login succeeded but token is missing. Please try again.");
-      return;
-    }
+    const data = await response.json();
 
-    localStorage.setItem("authToken", token);
-    localStorage.setItem("authUser", JSON.stringify({ id, name, email, isVerified }));
+    if (!response.ok) {
+      const raw = data?.message || '';
 
-    window.location.href = 'dashboard.html';
-
-  } catch (err) {
-    const raw = (err?.data && typeof err.data === 'object' ? err.data.message : '') || '';
-
-    if (raw) {
       if (raw.toLowerCase().includes('google')) {
         showLoginError('This account uses Google Sign-In. Please use the "Continue with Google" option.');
       } else if (
@@ -140,6 +133,19 @@ form.addEventListener('submit', async (e) => {
       }
       return;
     }
+
+    const { token, id, name, email, isVerified } = data.data || {};
+    if (!token) {
+      showLoginError("Login succeeded but token is missing. Please try again.");
+      return;
+    }
+
+    localStorage.setItem("authToken", token);
+    localStorage.setItem("authUser", JSON.stringify({ id, name, email, isVerified }));
+
+    window.location.href = 'dashboard.html';
+
+  } catch (err) {
     console.error('Login error:', err);
     showLoginError('Network error. Please check your connection and try again.');
   } finally {

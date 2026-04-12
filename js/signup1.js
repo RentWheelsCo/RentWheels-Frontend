@@ -1,3 +1,5 @@
+const API_BASE = window.RW_CONFIG?.API_BASE || "http://localhost:5000/api";
+
 function triggerUpload(inputId) {
   document.getElementById(inputId).click();
 }

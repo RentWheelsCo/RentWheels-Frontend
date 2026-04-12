@@ -64,13 +64,17 @@ function markInvalid(el, isInvalid) {
 }
 
 // €€ Vehicle Photo Preview €€
+// €€ Vehicle Photo Preview €€
 function previewVehiclePhoto(event) {
   const file = event.target.files[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = (e) => {
     const preview = document.getElementById("vehiclePhotoPreview");
+  reader.onload = (e) => {
+    const preview = document.getElementById("vehiclePhotoPreview");
     preview.src = e.target.result;
+    preview.style.display = "block";
     preview.style.display = "block";
   };
   reader.readAsDataURL(file);
@@ -242,11 +246,16 @@ async function handleSubmit() {
 function openModal() {
   showMainOptions();
   document.getElementById("editProfileModal").style.display = "flex";
+  document.getElementById("editProfileModal").style.display = "flex";
 }
 function closeModal() {
   document.getElementById("editProfileModal").style.display = "none";
+  document.getElementById("editProfileModal").style.display = "none";
 }
 function showMainOptions() {
+  document.getElementById("mainOptions").style.display = "block";
+  document.getElementById("photoEdit").style.display = "none";
+  document.getElementById("licenseEdit").style.display = "none";
   document.getElementById("mainOptions").style.display = "block";
   document.getElementById("photoEdit").style.display = "none";
   document.getElementById("licenseEdit").style.display = "none";
@@ -255,8 +264,14 @@ function showPhotoEdit() {
   document.getElementById("mainOptions").style.display = "none";
   document.getElementById("photoEdit").style.display = "block";
   document.getElementById("licenseEdit").style.display = "none";
+  document.getElementById("mainOptions").style.display = "none";
+  document.getElementById("photoEdit").style.display = "block";
+  document.getElementById("licenseEdit").style.display = "none";
 }
 function showLicenseEdit() {
+  document.getElementById("mainOptions").style.display = "none";
+  document.getElementById("photoEdit").style.display = "none";
+  document.getElementById("licenseEdit").style.display = "block";
   document.getElementById("mainOptions").style.display = "none";
   document.getElementById("photoEdit").style.display = "none";
   document.getElementById("licenseEdit").style.display = "block";
@@ -268,7 +283,10 @@ function previewLicense(event) {
   const reader = new FileReader();
   reader.onload = (e) => {
     const preview = document.getElementById("licensePreview");
+  reader.onload = (e) => {
+    const preview = document.getElementById("licensePreview");
     preview.src = e.target.result;
+    preview.style.display = "block";
     preview.style.display = "block";
   };
   reader.readAsDataURL(file);
@@ -277,8 +295,14 @@ function previewLicense(event) {
 function saveLicense() {
   const licenseInput = document.getElementById("licenseNumber");
   const expiryInput = document.getElementById("expiryDate");
+  const licenseInput = document.getElementById("licenseNumber");
+  const expiryInput = document.getElementById("expiryDate");
   let valid = true;
 
+  licenseInput.style.borderColor = "";
+  expiryInput.style.borderColor = "";
+  licenseInput.style.color = "";
+  expiryInput.style.color = "";
   licenseInput.style.borderColor = "";
   expiryInput.style.borderColor = "";
   licenseInput.style.color = "";
@@ -288,9 +312,14 @@ function saveLicense() {
     licenseInput.style.borderColor = "#dc2626";
     licenseInput.style.color = "#dc2626";
     licenseInput.placeholder = "License number is required";
+    licenseInput.style.borderColor = "#dc2626";
+    licenseInput.style.color = "#dc2626";
+    licenseInput.placeholder = "License number is required";
     valid = false;
   }
   if (!expiryInput.value) {
+    expiryInput.style.borderColor = "#dc2626";
+    expiryInput.style.color = "#dc2626";
     expiryInput.style.borderColor = "#dc2626";
     expiryInput.style.color = "#dc2626";
     valid = false;
@@ -305,7 +334,10 @@ function previewPhoto(event) {
   const reader = new FileReader();
   reader.onload = (e) => {
     const preview = document.getElementById("photoPreview");
+  reader.onload = (e) => {
+    const preview = document.getElementById("photoPreview");
     preview.src = e.target.result;
+    preview.style.display = "block";
     preview.style.display = "block";
   };
   reader.readAsDataURL(file);
@@ -313,7 +345,9 @@ function previewPhoto(event) {
 
 function savePhoto() {
   const preview = document.getElementById("photoPreview");
+  const preview = document.getElementById("photoPreview");
   if (preview.src) {
+    document.querySelector(".avatar img").src = preview.src;
     document.querySelector(".avatar img").src = preview.src;
   }
   closeModal();
@@ -335,5 +369,23 @@ document.addEventListener("DOMContentLoaded", () => {
       if (e.target === this) closeModal();
     });
   }
+document.addEventListener("DOMContentLoaded", () => {
+  requireAuth();
+  bindLogout();
+  setProfileName();
+
+  initVehicleDropdowns().catch((e) => {
+    console.error("Dropdown init error:", e);
+    showPageError(e?.message || "Failed to load dropdown options.");
+  });
+
+  const modal = document.getElementById("editProfileModal");
+  if (modal) {
+    modal.addEventListener("click", function (e) {
+      if (e.target === this) closeModal();
+    });
+  }
 });
+
+
 
