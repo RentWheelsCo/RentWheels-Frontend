@@ -83,6 +83,7 @@ body {
   margin-left: 8px;
   padding: 7px 16px;
   border-radius: 6px;
+  border: none;
   font-family: inherit;
   font-size: 14px;
   font-weight: 600;
@@ -91,6 +92,7 @@ body {
   text-decoration: none;
   transition: background 120ms ease;
   white-space: nowrap;
+  cursor: pointer;
 }
 
 .nav-logout:hover {

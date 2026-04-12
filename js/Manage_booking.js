@@ -1,3 +1,24 @@
+function requireAuth() {
+  if (!localStorage.getItem("authToken")) {
+    window.location.href = "login.html";
+  }
+}
+
+function logout() {
+  localStorage.removeItem("authToken");
+  localStorage.removeItem("authUser");
+  window.location.href = "login.html";
+}
+
+function bindLogout() {
+  const logoutLink = document.getElementById("rw-sidebar-logout");
+  if (!logoutLink) return;
+  logoutLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    logout();
+  });
+}
+
 const bookingData = [
   {
     id: 1,
@@ -90,6 +111,7 @@ function closeCallModal() {
 // ── Nav ──
 function initNav() {
   document.querySelectorAll(".nav-item").forEach(item => {
+    if (item.classList.contains("nav-logout")) return;
     item.addEventListener("click", function (e) {
       const page = this.dataset.page;
 
@@ -199,6 +221,8 @@ function savePhoto() {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+  requireAuth();
+  bindLogout();
   renderBookings();
   initNav();
 });

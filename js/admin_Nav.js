@@ -27,17 +27,26 @@ function renderAdminHeader(activeKey) {
       </a>
       <nav class="admin-nav" aria-label="Admin navigation">
         ${navHtml}
-        <a href="login.html" class="nav-logout" aria-label="Logout">
+        <button type="button" class="nav-logout" id="rw-admin-logout" aria-label="Logout">
           <img src="../assets/logout.png" alt="RentWheels" width="20" height="20" />
           Logout
-        </a>
+        </button>
       </nav>
     </header>
   `;
+}
+
+function logout() {
+  localStorage.removeItem("authToken");
+  localStorage.removeItem("authUser");
+  window.location.href = "login.html";
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   const pageKey = document.body?.dataset?.page || "dashboard";
   const headerTarget = document.getElementById("admin-header");
   if (headerTarget) headerTarget.innerHTML = renderAdminHeader(pageKey);
+
+  const logoutBtn = document.getElementById("rw-admin-logout");
+  if (logoutBtn) logoutBtn.addEventListener("click", logout);
 });

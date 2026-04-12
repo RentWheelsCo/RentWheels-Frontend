@@ -1,44 +1,127 @@
-const dashboardData = {
-  totalVehicles: 8,
-  totalBookings: 4,
-  monthlyRevenue: 1060,
-
-  bookings: [
-    { id: 1, vehicle: "BMW 3 Series",   date: "4/1/2025",  price: 475, status: "Pending"   },
-    { id: 2, vehicle: "Ford Explorer",  date: "3/11/2025", price: 425, status: "Completed" },
-    { id: 3, vehicle: "Toyota Corolla", date: "4/5/2025",  price: 225, status: "Pending"   },
-    { id: 4, vehicle: "Tesla Model 3",  date: "4/6/2025",  price: 360, status: "Confirmed" },
-  ]
-};
+const API_BASE = window.RW_CONFIG?.API_BASE || "http://localhost:5000/api";
 
 const clipboard = `<img src="../assets/clipboard.png" alt="Booking" width="25" height="25">`;
 
-function badgeClass(status) {
-  const map = { Pending: "badge-pending", Completed: "badge-completed", Confirmed: "badge-confirmed" };
-  return map[status] || "badge-pending";
+function getToken() {
+  return localStorage.getItem("authToken");
 }
 
-function renderDashboard() {
-  document.getElementById("totalVehicles").textContent = dashboardData.totalVehicles;
-  document.getElementById("totalBookings").textContent = dashboardData.totalBookings;
-  document.getElementById("monthlyRevenue").textContent = "$" + dashboardData.monthlyRevenue.toLocaleString();
+function requireAuth() {
+  if (!getToken()) {
+    window.location.href = "login.html";
+  }
+}
+
+function logout() {
+  localStorage.removeItem("authToken");
+  localStorage.removeItem("authUser");
+  window.location.href = "login.html";
+}
+
+function bindLogout() {
+  const logoutLink = document.getElementById("rw-sidebar-logout");
+  if (!logoutLink) return;
+  logoutLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    logout();
+  });
+}
+
+function badgeClass(status) {
+  const normalized = String(status || "").toUpperCase();
+  const map = {
+    PENDING: "badge-pending",
+    CONFIRMED: "badge-confirmed",
+    COMPLETED: "badge-completed",
+  };
+  return map[normalized] || "badge-pending";
+}
+
+function formatDate(value) {
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+}
+
+function setProfileName() {
+  const el = document.querySelector(".profile-name");
+  if (!el) return;
+  try {
+    const user = JSON.parse(localStorage.getItem("authUser") || "null");
+    if (user?.name) el.textContent = user.name;
+  } catch {
+    // ignore
+  }
+}
+
+function renderDashboard(data) {
+  document.getElementById("totalVehicles").textContent = data?.totalVehicles ?? 0;
+  document.getElementById("totalBookings").textContent = data?.totalBookings ?? 0;
+
+  const revenue = Number(data?.monthlyRevenue || 0);
+  document.getElementById("monthlyRevenue").textContent = "$" + revenue.toLocaleString();
 
   const list = document.getElementById("bookingsList");
-  list.innerHTML = dashboardData.bookings.map((b, i) => `
+
+  const bookings = Array.isArray(data?.recentBookings) ? data.recentBookings.slice(0, 4) : [];
+  if (bookings.length === 0) {
+    list.innerHTML = `<div style="color:#7b8292;font-size:13px;">No recent bookings yet.</div>`;
+    return;
+  }
+
+  list.innerHTML = bookings.map((b, i) => `
     <div class="booking-row" style="animation-delay: ${i * 80}ms">
       <div class="booking-icon-wrap">${clipboard}</div>
       <div class="booking-meta">
-        <div class="booking-name">${b.vehicle}</div>
-        <div class="booking-date">${b.date}</div>
+        <div class="booking-name">${b.vehicleName || "Booking"}</div>
+        <div class="booking-date">${formatDate(b.pickupDate) || ""}</div>
       </div>
-      <span class="booking-price">$${b.price}</span>
-      <span class="badge ${badgeClass(b.status)}">${b.status}</span>
+      <span class="booking-price">$${Number(b.totalAmount || 0).toLocaleString()}</span>
+      <span class="badge ${badgeClass(b.status)}">${b.status || ""}</span>
     </div>
   `).join("");
 }
 
+async function loadDashboard() {
+  const token = getToken();
+
+  const response = await fetch(`${API_BASE}/user/seller/dashboard`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const payload = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      logout();
+      return;
+    }
+    const msg = payload?.message || "Failed to load dashboard data.";
+    throw new Error(msg);
+  }
+
+  const data = payload?.data || {};
+
+  const monthly = Array.isArray(data.monthlyRevenue) ? data.monthlyRevenue : [];
+  const now = new Date();
+  const currentKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  const current = monthly.find((m) => m?.month === currentKey);
+  const fallback = monthly.length ? monthly[monthly.length - 1] : null;
+
+  renderDashboard({
+    totalVehicles: data.totalVehicles,
+    totalBookings: data.totalBookings,
+    monthlyRevenue: current?.revenue ?? fallback?.revenue ?? 0,
+    recentBookings: data.recentBookings,
+  });
+}
+
 function initNav() {
   document.querySelectorAll(".nav-item").forEach(item => {
+    if (item.classList.contains("nav-logout")) return;
     item.addEventListener("click", function (e) {
       const page = this.dataset.page;
 
@@ -63,8 +146,18 @@ function initNav() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  renderDashboard();
+  requireAuth();
+  bindLogout();
+  setProfileName();
   initNav();
+
+  loadDashboard().catch((err) => {
+    console.error("Dashboard load error:", err);
+    const list = document.getElementById("bookingsList");
+    if (list) {
+      list.innerHTML = `<div style="color:#b91c1c;font-size:13px;">${err?.message || "Failed to load dashboard."}</div>`;
+    }
+  });
 });
 
 // Modal controls

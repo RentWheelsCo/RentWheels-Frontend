@@ -3,6 +3,16 @@ const ASSETS = {
   searchIcon: "../assets/search_icon.png",
 };
 
+function isAuthed() {
+  return Boolean(localStorage.getItem("authToken"));
+}
+
+function logout() {
+  localStorage.removeItem("authToken");
+  localStorage.removeItem("authUser");
+  window.location.href = "../html/login.html";
+}
+
 function renderHeader(activeKey) {
   const navItems = [
     { key: "home", label: "Home", href: "../html/home.html" },
@@ -24,6 +34,10 @@ function renderHeader(activeKey) {
     })
     .join("");
 
+  const authActionHtml = isAuthed()
+    ? `<button type="button" class="rw-login" id="rw-logout-btn" aria-label="Log out">Log out</button>`
+    : `<a class="rw-login" href="../html/login.html" role="button" aria-label="Log in">Log in</a>`;
+
   return `
     <header class="rw-header">
       <a class="rw-brand" href="../html/home.html" aria-label="RentWheels">
@@ -39,7 +53,7 @@ function renderHeader(activeKey) {
           <img src="${ASSETS.searchIcon}" alt="" />
           <input type="text" placeholder="Search vehicles" aria-label="Search vehicles" />
         </div>
-        <a class="rw-login" href="../html/login.html" role="button" aria-label="Log out">Log out</a>
+        ${authActionHtml}
       </div>
     </header>
   `;
@@ -81,4 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (headerTarget) headerTarget.innerHTML = renderHeader(pageKey);
   if (footerTarget) footerTarget.innerHTML = renderFooter();
+
+  const logoutBtn = document.getElementById("rw-logout-btn");
+  if (logoutBtn) logoutBtn.addEventListener("click", logout);
 });
