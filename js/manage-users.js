@@ -3,62 +3,7 @@
 'use strict';
 
 
-let USERS_DATA = [
-  {
-    id      : 1,
-    name    : 'Emma Rodriguez',
-    email   : 'emma.rodriguez@email.com',
-    phone   : '+1 (555) 012-3456',
-    joined  : '1/15/2024',
-    status  : 'active',
-    avatar  : 'https://randomuser.me/api/portraits/women/44.jpg',
-  },
-  {
-    id      : 2,
-    name    : 'James Carter',
-    email   : 'james.carter@email.com',
-    phone   : '+1 (555) 234-5678',
-    joined  : '3/02/2024',
-    status  : 'active',
-    avatar  : 'https://randomuser.me/api/portraits/men/32.jpg',
-  },
-  {
-    id      : 3,
-    name    : 'Sita Rana',
-    email   : 'sita.rana@email.com',
-    phone   : '+977 98-1234-5678',
-    joined  : '4/20/2024',
-    status  : 'inactive',
-    avatar  : '',
-  },
-  {
-    id      : 4,
-    name    : 'Arjun Thapa',
-    email   : 'arjun.thapa@email.com',
-    phone   : '+977 98-9876-5432',
-    joined  : '6/11/2024',
-    status  : 'active',
-    avatar  : 'https://randomuser.me/api/portraits/men/65.jpg',
-  },
-  {
-    id      : 5,
-    name    : 'Priya Shrestha',
-    email   : 'priya.shrestha@email.com',
-    phone   : '+977 98-5555-1234',
-    joined  : '8/30/2024',
-    status  : 'suspended',
-    avatar  : 'https://randomuser.me/api/portraits/women/68.jpg',
-  },
-  {
-    id      : 6,
-    name    : 'Liam Nguyen',
-    email   : 'liam.nguyen@email.com',
-    phone   : '+1 (555) 876-5432',
-    joined  : '11/05/2024',
-    status  : 'active',
-    avatar  : '',
-  },
-];
+let USERS_DATA = [];
 
 
 let filteredUsers = [...USERS_DATA];
@@ -96,6 +41,66 @@ const deleteUserName     = document.getElementById('deleteUserName');
 
 const toastEl = document.getElementById('toast');
 
+function requireAuth() {
+  if (!localStorage.getItem("authToken")) {
+    window.location.href = "login.html";
+  }
+}
+
+function logout() {
+  localStorage.removeItem("authToken");
+  localStorage.removeItem("authUser");
+  window.location.href = "login.html";
+}
+
+function formatJoined(value) {
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleDateString();
+}
+
+function showLoadingState(title, text) {
+  tableWrap.classList.add('hidden');
+  emptyState.classList.remove('hidden');
+  emptyTitle.textContent = title || 'Loading...';
+  emptyText.textContent = text || 'Fetching users...';
+}
+
+async function loadUsers() {
+  showLoadingState('Loading users', 'Fetching latest users from the server...');
+
+  try {
+    const payload = await window.RW_API.request('/auth/admin/users', {
+      auth: true,
+      params: { limit: 50 },
+    });
+
+    const users = Array.isArray(payload?.data?.users) ? payload.data.users : [];
+    USERS_DATA = users.map((u) => ({
+      id: u.id,
+      name: u.name,
+      email: u.email,
+      phone: u.phone || '',
+      joined: formatJoined(u.createdAt),
+      status: u.isVerified ? 'active' : 'inactive',
+      avatar: '',
+    }));
+
+    filteredUsers = [...USERS_DATA];
+    applySearch(searchInput.value);
+  } catch (err) {
+    if (err?.status === 401) {
+      logout();
+      return;
+    }
+    const message =
+      (err?.data && typeof err.data === 'object' ? err.data.message : null) ||
+      err?.message ||
+      'Failed to load users.';
+    console.error('Load users error:', err);
+    showLoadingState('Unable to load users', message);
+  }
+}
 
 function getInitials(name) {
   return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
@@ -254,25 +259,56 @@ editModalClose.addEventListener('click',  closeEditModal);
 editModalCancel.addEventListener('click', closeEditModal);
 editModal.addEventListener('click', e => { if (e.target === editModal) closeEditModal(); });
 
-editModalSave.addEventListener('click', () => {
+editModalSave.addEventListener('click', async () => {
   const id = parseInt(editUserId.value);
   const idx = USERS_DATA.findIndex(u => u.id === id);
   if (idx === -1) return;
 
+  const originalText = editModalSave.textContent;
+  editModalSave.disabled = true;
+  editModalSave.textContent = 'Saving...';
 
-
-  USERS_DATA[idx] = {
-    ...USERS_DATA[idx],
-    name  : editName.value.trim()   || USERS_DATA[idx].name,
-    email : editEmail.value.trim()  || USERS_DATA[idx].email,
-    phone : editPhone.value.trim()  || USERS_DATA[idx].phone,
-    status: editStatus.value,
+  const payloadBody = {
+    name: editName.value.trim() || undefined,
+    email: editEmail.value.trim() || undefined,
+    phone: editPhone.value.trim() || undefined,
+    isVerified: editStatus.value === 'active',
   };
 
-  applySearch(searchInput.value);
-  closeEditModal();
-  showToast('User updated successfully', 'success');
-  console.log(`[RentWheels] Updated user id=${id}`);
+  try {
+    const payload = await window.RW_API.request(`/auth/admin/users/${id}`, {
+      method: 'PATCH',
+      auth: true,
+      body: payloadBody,
+    });
+
+    const updated = payload?.data || {};
+    USERS_DATA[idx] = {
+      ...USERS_DATA[idx],
+      name: updated.name ?? USERS_DATA[idx].name,
+      email: updated.email ?? USERS_DATA[idx].email,
+      phone: updated.phone ?? USERS_DATA[idx].phone,
+      status: updated.isVerified ? 'active' : 'inactive',
+    };
+
+    applySearch(searchInput.value);
+    closeEditModal();
+    showToast('User updated successfully', 'success');
+  } catch (err) {
+    if (err?.status === 401) {
+      logout();
+      return;
+    }
+    const message =
+      (err?.data && typeof err.data === 'object' ? err.data.message : null) ||
+      err?.message ||
+      'Failed to update user.';
+    console.error('Update user error:', err);
+    showToast(message, 'error');
+  } finally {
+    editModalSave.disabled = false;
+    editModalSave.textContent = originalText;
+  }
 });
 
 
@@ -291,17 +327,37 @@ deleteModalClose.addEventListener('click',  closeDeleteModal);
 deleteModalCancel.addEventListener('click', closeDeleteModal);
 deleteModal.addEventListener('click', e => { if (e.target === deleteModal) closeDeleteModal(); });
 
-deleteModalConfirm.addEventListener('click', () => {
+deleteModalConfirm.addEventListener('click', async () => {
   if (pendingDeleteId === null) return;
 
+  const id = pendingDeleteId;
+  const name = USERS_DATA.find(u => u.id === id)?.name ?? 'User';
 
+  const originalText = deleteModalConfirm.textContent;
+  deleteModalConfirm.disabled = true;
+  deleteModalConfirm.textContent = 'Deleting...';
 
-  const name = USERS_DATA.find(u => u.id === pendingDeleteId)?.name ?? 'User';
-  USERS_DATA = USERS_DATA.filter(u => u.id !== pendingDeleteId);
-  applySearch(searchInput.value);
-  closeDeleteModal();
-  showToast(`${name} deleted`, 'success');
-  console.log(`[RentWheels] Deleted user id=${pendingDeleteId}`);
+  try {
+    await window.RW_API.request(`/auth/admin/users/${id}`, { method: 'DELETE', auth: true });
+    USERS_DATA = USERS_DATA.filter(u => u.id !== id);
+    applySearch(searchInput.value);
+    closeDeleteModal();
+    showToast(`${name} deleted`, 'success');
+  } catch (err) {
+    if (err?.status === 401) {
+      logout();
+      return;
+    }
+    const message =
+      (err?.data && typeof err.data === 'object' ? err.data.message : null) ||
+      err?.message ||
+      'Failed to delete user.';
+    console.error('Delete user error:', err);
+    showToast(message, 'error');
+  } finally {
+    deleteModalConfirm.disabled = false;
+    deleteModalConfirm.textContent = originalText;
+  }
 });
 
 
@@ -322,7 +378,6 @@ function showToast(message, type = 'success') {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-
-
-  renderTable(USERS_DATA);
+  requireAuth();
+  loadUsers();
 });

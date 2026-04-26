@@ -1,5 +1,3 @@
-const API_BASE = window.RW_CONFIG?.API_BASE || "http://localhost:5000/api";
-
 const clipboard = `<img src="../assets/clipboard.png" alt="Booking" width="25" height="25">`;
 
 function getToken() {
@@ -83,23 +81,18 @@ function renderDashboard(data) {
 }
 
 async function loadDashboard() {
-  const token = getToken();
-
-  const response = await fetch(`${API_BASE}/user/seller/dashboard`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  const payload = await response.json().catch(() => null);
-
-  if (!response.ok) {
-    if (response.status === 401) {
+  let payload;
+  try {
+    payload = await window.RW_API.request("/user/seller/dashboard", { auth: true });
+  } catch (err) {
+    if (err?.status === 401) {
       logout();
       return;
     }
-    const msg = payload?.message || "Failed to load dashboard data.";
+    const msg =
+      (err?.data && typeof err.data === "object" ? err.data.message : null) ||
+      err?.message ||
+      "Failed to load dashboard data.";
     throw new Error(msg);
   }
 

@@ -1,7 +1,7 @@
 // ── RenWheels Admin Dashboard ──
 
 // ── BOOKING DATA ──
-const bookings = [
+let bookings = [
   { id: 1, car: "Toyota Fortuner",  owner: "Ramesh Sharma",  bookedBy: "Anita KC",     start: "2025-04-01", due: "2025-04-05", insurance: "Half Insurance", price: "NPR 12,500" },
   { id: 2, car: "Honda City",       owner: "Sita Thapa",     bookedBy: "Bikash Rai",   start: "2025-04-03", due: "2025-04-06", insurance: "No Insurance",   price: "NPR 6,800"  },
   { id: 3, car: "Hyundai i20",      owner: "Gopal Magar",    bookedBy: "Priya Joshi",  start: "2025-04-07", due: "2025-04-10", insurance: "Half Insurance",    price: "NPR 9,200"  },
@@ -10,7 +10,7 @@ const bookings = [
 ];
 
 // ── USER DATA ──
-const users = [
+let users = [
   { id: 1, name: "Anita KC",      username: "anita_kc",    phone: "9801234567", email: "anita@mail.com"  },
   { id: 2, name: "Bikash Rai",    username: "bikash_rai",  phone: "9807654321", email: "bikash@mail.com" },
   { id: 3, name: "Priya Joshi",   username: "priya_j",     phone: "9812345678", email: "priya@mail.com"  },
@@ -19,7 +19,7 @@ const users = [
 ];
 
 // ── VEHICLE DATA ──
-const vehicles = [
+let vehicles = [
   { id: 1, name: "Toyota Fortuner", owner: "Ramesh Sharma",  dailyPrice: "NPR 2,500", booked: true,  icon: "🚙" },
   { id: 2, name: "Honda City",      owner: "Sita Thapa",     dailyPrice: "NPR 1,700", booked: true,  icon: "🚗" },
   { id: 3, name: "Hyundai i20",     owner: "Gopal Magar",    dailyPrice: "NPR 1,400", booked: false, icon: "🚗" },
@@ -39,7 +39,7 @@ function initials(name) {
 }
 
 // ── Render Bookings ──
-document.getElementById("booking-tbody").innerHTML = bookings.slice(0, 5).map(r => `
+if (false) document.getElementById("booking-tbody").innerHTML = bookings.slice(0, 5).map(r => `
   <tr>
     <td><span class="id-cell">#${r.id}</span></td>
     <td>${r.car}</td>
@@ -53,7 +53,7 @@ document.getElementById("booking-tbody").innerHTML = bookings.slice(0, 5).map(r 
 `).join("");
 
 // ── Render Users ──
-document.getElementById("user-tbody").innerHTML = users.slice(0, 5).map(r => `
+if (false) document.getElementById("user-tbody").innerHTML = users.slice(0, 5).map(r => `
   <tr>
     <td><span class="id-cell">#${r.id}</span></td>
     <td><div class="avatar">${initials(r.name)}</div></td>
@@ -65,7 +65,7 @@ document.getElementById("user-tbody").innerHTML = users.slice(0, 5).map(r => `
 `).join("");
 
 // ── Render Vehicles ──
-document.getElementById("vehicle-tbody").innerHTML = vehicles.slice(0, 5).map(r => `
+if (false) document.getElementById("vehicle-tbody").innerHTML = vehicles.slice(0, 5).map(r => `
   <tr>
     <td><span class="id-cell">#${r.id}</span></td>
     <td><div class="photo-box">${r.icon}</div></td>
@@ -75,3 +75,133 @@ document.getElementById("vehicle-tbody").innerHTML = vehicles.slice(0, 5).map(r 
     <td><span class="status ${r.booked ? 'status-booked' : 'status-free'}">${r.booked ? 'Booked' : 'Available'}</span></td>
   </tr>
 `).join("");
+
+function requireAuth() {
+  if (!localStorage.getItem("authToken")) {
+    window.location.href = "login.html";
+  }
+}
+
+function logout() {
+  localStorage.removeItem("authToken");
+  localStorage.removeItem("authUser");
+  window.location.href = "login.html";
+}
+
+function formatDateISO(value) {
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toISOString().split("T")[0];
+}
+
+function formatNpr(value) {
+  const amount = Number(value || 0);
+  return `NPR ${amount.toLocaleString()}`;
+}
+
+function safeUsername(email) {
+  const e = String(email || "");
+  const at = e.indexOf("@");
+  return at > 0 ? e.slice(0, at) : e || "-";
+}
+
+function renderAll() {
+  const bookingTbody = document.getElementById("booking-tbody");
+  const userTbody = document.getElementById("user-tbody");
+  const vehicleTbody = document.getElementById("vehicle-tbody");
+
+  if (bookingTbody) {
+    bookingTbody.innerHTML = bookings.slice(0, 5).map(r => `
+      <tr>
+        <td><span class="id-cell">#${r.id}</span></td>
+        <td>${r.car}</td>
+        <td>${r.owner}</td>
+        <td>${r.bookedBy}</td>
+        <td>${r.start}</td>
+        <td>${r.due}</td>
+        <td><span class="ins ${insClass(r.insurance)}">${r.insurance}</span></td>
+        <td class="price-cell">${r.price}</td>
+      </tr>
+    `).join("");
+  }
+
+  if (userTbody) {
+    userTbody.innerHTML = users.slice(0, 5).map(r => `
+      <tr>
+        <td><span class="id-cell">#${r.id}</span></td>
+        <td><div class="avatar">${initials(r.name)}</div></td>
+        <td>${r.name}</td>
+        <td>${r.username}</td>
+        <td>${r.phone}</td>
+        <td>${r.email}</td>
+      </tr>
+    `).join("");
+  }
+
+  if (vehicleTbody) {
+    vehicleTbody.innerHTML = vehicles.slice(0, 5).map(r => `
+      <tr>
+        <td><span class="id-cell">#${r.id}</span></td>
+        <td><div class="photo-box">${r.icon}</div></td>
+        <td>${r.name}</td>
+        <td>${r.owner}</td>
+        <td class="price-cell">${r.dailyPrice}</td>
+        <td><span class="status ${r.booked ? 'status-booked' : 'status-free'}">${r.booked ? 'Booked' : 'Available'}</span></td>
+      </tr>
+    `).join("");
+  }
+}
+
+async function loadAdminDashboard() {
+  try {
+    const [bookingsPayload, vehiclesPayload, usersPayload] = await Promise.all([
+      window.RW_API.request("/admin/bookings", { auth: true, params: { limit: 5 } }),
+      window.RW_API.request("/admin/vehicles", { auth: true, params: { limit: 5 } }),
+      window.RW_API.request("/auth/admin/users", { auth: true, params: { limit: 5 } }),
+    ]);
+
+    const bookingRows = Array.isArray(bookingsPayload?.data?.bookings) ? bookingsPayload.data.bookings : [];
+    bookings = bookingRows.map((b) => ({
+      id: b.id,
+      car: b?.vehicle?.name || "Vehicle",
+      owner: b?.vehicle?.owner?.name || "-",
+      bookedBy: b?.renter?.name || "-",
+      start: formatDateISO(b.pickupDate),
+      due: formatDateISO(b.returnDate),
+      insurance: b.insuranceType || "-",
+      price: formatNpr(b.totalAmount),
+    }));
+
+    const userRows = Array.isArray(usersPayload?.data?.users) ? usersPayload.data.users : [];
+    users = userRows.map((u) => ({
+      id: u.id,
+      name: u.name || "-",
+      username: safeUsername(u.email),
+      phone: u.phone || "-",
+      email: u.email || "-",
+    }));
+
+    const vehicleRows = Array.isArray(vehiclesPayload?.data?.vehicles) ? vehiclesPayload.data.vehicles : [];
+    vehicles = vehicleRows.map((v) => ({
+      id: v.id,
+      name: v.name || "Vehicle",
+      owner: v?.owner?.name || "-",
+      dailyPrice: formatNpr(v.dailyPrice),
+      booked: Number(v.activeBookingsCount || 0) > 0,
+      icon: "🚗",
+    }));
+  } catch (err) {
+    if (err?.status === 401) {
+      logout();
+      return;
+    }
+    console.error("Admin dashboard load error:", err);
+  }
+
+  renderAll();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  requireAuth();
+  loadAdminDashboard();
+});
