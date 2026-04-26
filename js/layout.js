@@ -20,7 +20,7 @@ function renderHeader(activeKey) {
     {
       key: "my-bookings",
       label: "My Bookings",
-      href: "../html/my-bookings.html",
+      href: "../html/bookings.html",
     },
     { key: "dashboard", label: "Dashboard", href: "../html/dashboard.html" },
   ];
@@ -70,7 +70,7 @@ function renderFooter() {
           <div class="rw-footer-title">Quick Links</div>
           <a class="rw-footer-item" href="../html/home.html">Home</a>
           <a class="rw-footer-item" href="../html/vehicle.html">Browse Vehicle</a>
-          <a class="rw-footer-item" href="../html/my-bookings.html">Bookings</a>
+          <a class="rw-footer-item" href="../html/bookings.html">Bookings</a>
         </div>
 
         <div class="rw-footer-col">

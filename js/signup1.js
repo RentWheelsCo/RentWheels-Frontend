@@ -1,5 +1,3 @@
-const API_BASE = window.RW_CONFIG?.API_BASE || "http://localhost:5000/api";
-
 function triggerUpload(inputId) {
   document.getElementById(inputId).click();
 }
@@ -107,25 +105,10 @@ async function submitSignup() {
   if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting…'; }
 
   try {
-    const response = await fetch(`${API_BASE}/auth/register`, {
+    const data = await window.RW_API.request('/auth/register', {
       method: 'POST',
       body: formData,
     });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      const message = data?.message || 'Registration failed. Please try again.';
-
-      if (message.toLowerCase().includes('email')) {
-        sessionStorage.setItem('signupError', message);
-        window.location.href = 'signup.html';
-        return;
-      }
-
-      showPageError(message);
-      return;
-    }
 
     if (data?.data?.token) {
       localStorage.setItem('authToken', data.data.token);
@@ -137,6 +120,20 @@ async function submitSignup() {
     window.location.href = 'dashboard.html';
 
   } catch (err) {
+    const message =
+      (err?.data && typeof err.data === 'object' ? err.data.message : null) ||
+      null;
+
+    if (message) {
+      if (message.toLowerCase().includes('email')) {
+        sessionStorage.setItem('signupError', message);
+        window.location.href = 'signup.html';
+        return;
+      }
+      showPageError(message);
+      return;
+    }
+
     console.error('Registration error:', err);
     showPageError('Network error. Please check your connection and try again.');
   } finally {
