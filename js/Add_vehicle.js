@@ -1,5 +1,3 @@
-const API_BASE = window.RW_CONFIG?.API_BASE || "http://localhost:5000/api";
-
 function requireAuth() {
   if (!localStorage.getItem("authToken")) {
     window.location.href = "login.html";
@@ -79,14 +77,13 @@ function previewVehiclePhoto(event) {
 }
 
 async function fetchOptions(type, parentId) {
-  const url = new URL(`${API_BASE}/vehicles/options`);
-  url.searchParams.set("type", type);
-  url.searchParams.set("limit", "50");
-  if (parentId) url.searchParams.set("parentId", String(parentId));
-
-  const res = await fetch(url.toString());
-  const payload = await res.json().catch(() => null);
-  if (!res.ok) throw new Error(payload?.message || `Failed to load ${type} options.`);
+  const payload = await window.RW_API.request("/vehicles/options", {
+    params: {
+      type,
+      limit: 50,
+      parentId: parentId ? String(parentId) : undefined,
+    },
+  });
   return payload?.data?.options || [];
 }
 
@@ -155,7 +152,7 @@ async function initVehicleDropdowns() {
 async function handleSubmit() {
   clearPageError();
 
-  const token = localStorage.getItem("authToken");
+  const token = window.RW_API.getToken();
   if (!token) {
     window.location.href = "login.html";
     return;
@@ -225,16 +222,11 @@ async function handleSubmit() {
 
   setLoading(true);
   try {
-    const res = await fetch(`${API_BASE}/vehicles`, {
+    await window.RW_API.request("/vehicles", {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      auth: true,
       body: fd,
     });
-
-    const payload = await res.json().catch(() => null);
-    if (!res.ok) throw new Error(payload?.message || "Failed to create vehicle.");
 
     alert("Vehicle listed successfully!");
     window.location.href = "Manage_vehicle.html";

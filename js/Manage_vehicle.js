@@ -19,48 +19,7 @@ function bindLogout() {
   });
 }
 
-const vehicleData = [
-  {
-    id: 1,
-    name: "Toyota Corolla",
-    seats: 5,
-    transmission: "automatic",
-    category: "Economy",
-    price: 45,
-    status: "Available",
-    image: "../assets/bmwm3.png"
-  },
-  {
-    id: 2,
-    name: "Honda Civic",
-    seats: 5,
-    transmission: "automatic",
-    category: "Economy",
-    price: 48,
-    status: "Not Available",
-    image: "../assets/TeslaModelX.png"
-  },
-  {
-    id: 3,
-    name: "BMW 3 Series",
-    seats: 5,
-    transmission: "automatic",
-    category: "Luxury",
-    price: 95,
-    status: "Available",
-    image: "../assets/bmwm3.png"
-  },
-  {
-    id: 4,
-    name: "Tesla Model 3",
-    seats: 5,
-    transmission: "automatic",
-    category: "Luxury",
-    price: 120,
-    status: "Available",
-    image: "../assets/TeslaModelX.png"
-  }
-];
+let vehicleData = [];
 
 let pendingDeleteId = null;
 
@@ -71,8 +30,66 @@ function getStatusBadge(status) {
   return `<span class="badge badge-not-available">Not Available</span>`;
 }
 
+function setTableMessage(message) {
+  const tbody = document.getElementById("vehicleTableBody");
+  if (!tbody) return;
+  tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#7b8292;padding:18px;">${message}</td></tr>`;
+}
+
+function uiStatusFromAvailability(status) {
+  return String(status || "").toUpperCase() === "AVAILABLE" ? "Available" : "Not Available";
+}
+
+async function loadVehicles() {
+  setTableMessage("Loading vehicles...");
+
+  try {
+    const [availabilityPayload, myVehiclesPayload] = await Promise.all([
+      window.RW_API.request("/bookings/my-vehicles", { auth: true }),
+      window.RW_API.request("/vehicles/my", { auth: true, params: { limit: 50 } }),
+    ]);
+
+    const mine = Array.isArray(myVehiclesPayload?.data?.vehicles) ? myVehiclesPayload.data.vehicles : [];
+    const mineById = new Map(mine.map((v) => [v.id, v]));
+
+    const availability = Array.isArray(availabilityPayload?.data?.vehicles) ? availabilityPayload.data.vehicles : [];
+    vehicleData = availability.map((row) => {
+      const full = mineById.get(row.id);
+      const photo = Array.isArray(full?.photos) && full.photos.length ? full.photos[0] : null;
+      return {
+        id: row.id,
+        name: row.name || "Vehicle",
+        seats: row.seatingCapacity || "",
+        transmission: row.transmission || "",
+        category: row.category || "",
+        price: Number(row.dailyPrice || 0),
+        status: uiStatusFromAvailability(row.availabilityStatus),
+        image: photo || "../assets/bmwm3.png",
+      };
+    });
+
+    renderVehicles();
+  } catch (err) {
+    if (err?.status === 401) {
+      logout();
+      return;
+    }
+    const message =
+      (err?.data && typeof err.data === "object" ? err.data.message : null) ||
+      err?.message ||
+      "Failed to load vehicles.";
+    console.error("Load vehicles error:", err);
+    setTableMessage(message);
+  }
+}
+
 function renderVehicles() {
   const tbody = document.getElementById("vehicleTableBody");
+  if (!tbody) return;
+  if (!vehicleData.length) {
+    setTableMessage("No vehicles yet.");
+    return;
+  }
   tbody.innerHTML = vehicleData.map((v, i) => `
     <tr data-id="${v.id}" style="animation-delay: ${i * 80}ms">
       <td>
@@ -104,12 +121,7 @@ function renderVehicles() {
 function toggleStatus(id) {
   const v = vehicleData.find(x => x.id === id);
   if (!v) return;
-  v.status = v.status === "Available" ? "Not Available" : "Available";
-  const row = document.querySelector(`tr[data-id="${id}"]`);
-  if (!row) return;
-  row.cells[3].innerHTML = getStatusBadge(v.status);
-  row.querySelector(".btn-icon.toggle-eye img").src =
-    v.status === "Available" ? "../assets/eye.png" : "../assets/eyeClose.png";
+  alert("Availability is based on active bookings and cannot be toggled manually.");
 }
 
 // ── View Modal ──
@@ -142,12 +154,28 @@ function closeDeleteModal() {
   pendingDeleteId = null;
   document.getElementById("deleteModal").style.display = "none";
 }
-function confirmDelete() {
+async function confirmDelete() {
   if (pendingDeleteId === null) return;
-  const idx = vehicleData.findIndex(x => x.id === pendingDeleteId);
-  if (idx !== -1) vehicleData.splice(idx, 1);
-  closeDeleteModal();
-  renderVehicles();
+  const id = pendingDeleteId;
+
+  try {
+    await window.RW_API.request(`/vehicles/${id}`, { method: "DELETE", auth: true });
+    const idx = vehicleData.findIndex(x => x.id === id);
+    if (idx !== -1) vehicleData.splice(idx, 1);
+    closeDeleteModal();
+    renderVehicles();
+  } catch (err) {
+    if (err?.status === 401) {
+      logout();
+      return;
+    }
+    const message =
+      (err?.data && typeof err.data === "object" ? err.data.message : null) ||
+      err?.message ||
+      "Failed to delete vehicle.";
+    console.error("Delete vehicle error:", err);
+    alert(message);
+  }
 }
 
 // ── Nav ──
@@ -265,6 +293,6 @@ function savePhoto() {
 document.addEventListener("DOMContentLoaded", () => {
   requireAuth();
   bindLogout();
-  renderVehicles();
+  loadVehicles();
   initNav();
 });
