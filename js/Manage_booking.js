@@ -19,48 +19,7 @@ function bindLogout() {
   });
 }
 
-const bookingData = [
-  {
-    id: 1,
-    vehicleName: "Toyota Corolla",
-    image: "../assets/bmwm3.png",
-    dateFrom: "4/10/2025",
-    dateTo: "4/15/2025",
-    total: 447,
-    status: "Confirmed",
-    renterPhone: "+977-9801234567"
-  },
-  {
-    id: 2,
-    vehicleName: "Honda Civic",
-    image: "../assets/TeslaModelX.png",
-    dateFrom: "4/10/2025",
-    dateTo: "4/15/2025",
-    total: 447,
-    status: "Confirmed",
-    renterPhone: "+977-9807654321"
-  },
-  {
-    id: 3,
-    vehicleName: "BMW 3 Series",
-    image: "../assets/bmwm3.png",
-    dateFrom: "4/10/2025",
-    dateTo: "4/15/2025",
-    total: 447,
-    status: "Confirmed",
-    renterPhone: "+977-9812345678"
-  },
-  {
-    id: 4,
-    vehicleName: "Tesla Model 3",
-    image: "../assets/TeslaModelX.png",
-    dateFrom: "4/10/2025",
-    dateTo: "4/15/2025",
-    total: 447,
-    status: "Confirmed",
-    renterPhone: "+977-9898765432"
-  }
-];
+let bookingData = [];
 
 let pendingCallId = null;
 
@@ -74,8 +33,68 @@ function getStatusBadge(status) {
   return `<span class="badge ${cls}">${status}</span>`;
 }
 
+function setTableMessage(message) {
+  const tbody = document.getElementById("bookingTableBody");
+  if (!tbody) return;
+  tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#7b8292;padding:18px;">${message}</td></tr>`;
+}
+
+function formatDateShort(value) {
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleDateString();
+}
+
+function uiStatusFromApi(status) {
+  const s = String(status || "").toUpperCase();
+  if (s === "PENDING") return "Pending";
+  if (s === "CANCELLED") return "Cancelled";
+  return "Confirmed";
+}
+
+async function loadBookings() {
+  setTableMessage("Loading bookings...");
+
+  try {
+    const payload = await window.RW_API.request("/bookings/as-owner", {
+      auth: true,
+      params: { limit: 50 },
+    });
+
+    const rows = Array.isArray(payload?.data?.bookings) ? payload.data.bookings : [];
+    bookingData = rows.map((b) => ({
+      id: b.id,
+      vehicleName: b?.vehicle?.name || "Vehicle",
+      image: (Array.isArray(b?.vehicle?.photos) && b.vehicle.photos.length ? b.vehicle.photos[0] : null) || "../assets/bmwm3.png",
+      dateFrom: formatDateShort(b.pickupDate),
+      dateTo: formatDateShort(b.returnDate),
+      total: Number(b.totalAmount || 0),
+      status: uiStatusFromApi(b.status),
+      renterPhone: b?.renter?.phone || "N/A",
+    }));
+
+    renderBookings();
+  } catch (err) {
+    if (err?.status === 401) {
+      logout();
+      return;
+    }
+    const message =
+      (err?.data && typeof err.data === "object" ? err.data.message : null) ||
+      err?.message ||
+      "Failed to load bookings.";
+    console.error("Load bookings error:", err);
+    setTableMessage(message);
+  }
+}
+
 function renderBookings() {
   const tbody = document.getElementById("bookingTableBody");
+  if (!tbody) return;
+  if (!bookingData.length) {
+    setTableMessage("No bookings yet.");
+    return;
+  }
   tbody.innerHTML = bookingData.map((b, i) => `
     <tr data-id="${b.id}" style="animation-delay: ${i * 80}ms">
       <td>
@@ -223,6 +242,6 @@ function savePhoto() {
 document.addEventListener("DOMContentLoaded", () => {
   requireAuth();
   bindLogout();
-  renderBookings();
+  loadBookings();
   initNav();
 });

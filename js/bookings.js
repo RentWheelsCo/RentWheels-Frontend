@@ -2,60 +2,7 @@
 'use strict';
 
 
-const BOOKINGS_DATA = [
-  {
-    id            : 1,
-    bookingNumber : 'Booking #1',
-    status        : 'confirmed',
-    vehicle: {
-      name     : 'BMW M4 COMPETITION',
-      year     : '2022',
-      type     : 'SUV',
-      location : 'Kathmandu',
-      image    : 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&q=80',
-    },
-    rentalPeriod  : { from: '4/10/2025', to: '4/15/2025' },
-    insuranceType : 'Half Insurance',
-    totalPrice    : 475,
-    bookedOn      : '4/1/2025',
-  },
-  {
-    id            : 2,
-    bookingNumber : 'Booking #2',
-    status        : 'confirmed',
-    vehicle: {
-        name     : 'BMW M4 COMPETITION',
-        year     : '2022',
-        type     : 'SUV',
-        location : null,
-        image    : 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&q=80',
-    },
-    rentalPeriod  : { from: '4/10/2025', to: '4/15/2025' },
-    pickupLocation: null,
-    returnLocation: null,
-    insuranceType : 'No insurance',
-    totalPrice    : 475,
-    bookedOn      : '4/1/2026',
-  },
-  {
-    id            : 3,
-    bookingNumber : 'Booking #3',
-    status        : 'confirmed',
-    vehicle: {
-      name     : 'BMW M4 COMPETITION',
-      year     : '2022',
-      type     : 'SUV',
-      location : null,
-      image    : 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=600&q=80',
-    },
-    rentalPeriod  : { from: '4/10/2025', to: '4/15/2025' },
-    pickupLocation: null,
-    returnLocation: null,
-    insuranceType : 'No insurance',
-    totalPrice    : 475,
-    bookedOn      : '4/1/2026',
-  },
-];
+let BOOKINGS_DATA = [];
 
 
 const ICONS = {
@@ -79,6 +26,102 @@ const STATUS_LABELS = { confirmed: 'confirmed', pending: 'pending', cancelled: '
 function statusBadgeHTML(status) {
   const label = STATUS_LABELS[status] ?? status;
   return `<span class="status-badge status-badge--${status}">${label}</span>`;
+}
+
+function requireAuth() {
+  if (!localStorage.getItem("authToken")) {
+    window.location.href = "login.html";
+  }
+}
+
+function logout() {
+  localStorage.removeItem("authToken");
+  localStorage.removeItem("authUser");
+  window.location.href = "login.html";
+}
+
+function formatDateShort(value) {
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleDateString();
+}
+
+function statusKeyFromApi(status) {
+  const s = String(status || "").toUpperCase();
+  if (s === "PENDING") return "pending";
+  if (s === "CANCELLED") return "cancelled";
+  return "confirmed";
+}
+
+function setListMessage(message) {
+  const list = document.getElementById('bookingsList');
+  const emptyState = document.getElementById('emptyState');
+  if (!list || !emptyState) return;
+  emptyState.classList.add('hidden');
+  list.classList.remove('hidden');
+  list.innerHTML = `<div style="color:#7b8292;font-size:14px;padding:10px 2px;">${message}</div>`;
+}
+
+async function loadBookings() {
+  setListMessage("Loading bookings...");
+
+  try {
+    const payload = await window.RW_API.request("/bookings/my", { auth: true, params: { limit: 50 } });
+    const rows = Array.isArray(payload?.data?.bookings) ? payload.data.bookings : [];
+
+    const vehicleIds = Array.from(
+      new Set(rows.map((b) => b?.vehicle?.id).filter((id) => Number.isInteger(id) && id > 0))
+    );
+
+    const vehicleById = new Map();
+    await Promise.all(vehicleIds.map(async (id) => {
+      try {
+        const v = await window.RW_API.request(`/vehicles/${id}`);
+        vehicleById.set(id, v?.data || null);
+      } catch {
+        vehicleById.set(id, null);
+      }
+    }));
+
+    BOOKINGS_DATA = rows.map((b) => {
+      const details = vehicleById.get(b?.vehicle?.id) || null;
+      const image =
+        (Array.isArray(details?.photos) && details.photos.length ? details.photos[0] : null) ||
+        'https://placehold.co/220x155/e5e7eb/9ca3af?text=No+Image';
+
+      return {
+        id: b.id,
+        bookingNumber: `Booking #${b.id}`,
+        status: statusKeyFromApi(b.bookingStatus),
+        vehicle: {
+          name: b?.vehicle?.name || details?.name || "Vehicle",
+          year: String(details?.year ?? b?.vehicle?.year ?? ""),
+          type: details?.type?.value || "",
+          location: details?.location?.value || null,
+          image,
+        },
+        rentalPeriod: { from: formatDateShort(b.pickupDate), to: formatDateShort(b.returnDate) },
+        pickupLocation: null,
+        returnLocation: null,
+        insuranceType: b.insuranceType || "",
+        totalPrice: Number(b.totalAmount || 0),
+        bookedOn: formatDateShort(b.createdAt),
+      };
+    });
+
+    renderBookings(BOOKINGS_DATA);
+  } catch (err) {
+    if (err?.status === 401) {
+      logout();
+      return;
+    }
+    const message =
+      (err?.data && typeof err.data === "object" ? err.data.message : null) ||
+      err?.message ||
+      "Failed to load bookings.";
+    console.error("Load bookings error:", err);
+    setListMessage(message);
+  }
 }
 
 
@@ -163,7 +206,8 @@ function renderBookings(data) {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  renderBookings(BOOKINGS_DATA);
+  requireAuth();
+  loadBookings();
 
   document.getElementById('bookingsList').addEventListener('click', e => {
     const card = e.target.closest('.booking-card');
