@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign Up</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/signup.css">
@@ -13,27 +14,35 @@
 <div class="modal">
 
   <div class="modal-image">
+<<<<<<< Updated upstream
     <img
       src="/assets/Assests/signup-img.jpg" alt="Sign Up Image" width="150" height="150"
       alt="Car on map"
     >
+=======
+    <img src="../assets/signup-img.jpg" alt="Sign Up Image" width="150" height="150">
+>>>>>>> Stashed changes
   </div>
 
   <div class="modal-form-wrap">
     <div class="modal-form-inner">
 
       <div class="profile-icon">
+<<<<<<< Updated upstream
         <img
       src="/assets/Assests/Person-Icon.png" width="60" height="60"
       alt="Person icon"
     >
+=======
+        <img src="../assets/Person-Icon.png" width="60" height="60" alt="Person icon">
+>>>>>>> Stashed changes
       </div>
 
       <h2><span>Get</span> Started !</h2>
 
       <div class="input-group">
         <label>Username</label>
-        <input type="text" id="username" placeholder="Enter you username" required>
+        <input type="text" id="username" placeholder="Enter your username" required>
       </div>
 
       <div class="input-group">
@@ -48,20 +57,31 @@
 
       <div class="input-group">
         <label>New Password</label>
-        <input type="password" id="npassword" placeholder="New password" required>
+        <div class="password-wrapper">
+          <input type="password" id="npassword" placeholder="New password" required>
+          <button type="button" class="eye-btn" id="toggle-npassword" aria-label="Show password"></button>
+        </div>
       </div>
 
       <div class="input-group">
         <label>Confirm Password</label>
-        <input type="password" id="cpassword" placeholder="Confrim password" required>
+        <div class="password-wrapper">
+          <input type="password" id="cpassword" placeholder="Confirm password" required>
+          <button type="button" class="eye-btn" id="toggle-cpassword" aria-label="Show password"></button>
+        </div>
       </div>
+
       <button type="button" class="btn-next" onclick="nextPage()">Next</button>
 
       <button class="btn-google">
+<<<<<<< Updated upstream
         <img
         src="/assets/Assests/google-logo.png"  width="25" height="25"
         alt="google icon"
         >
+=======
+        <img src="../assets/google-logo.png" width="25" height="25" alt="google icon">
+>>>>>>> Stashed changes
         Sign in with Google
       </button>
 
@@ -78,9 +98,13 @@
   </div>
 </div>
 
+<<<<<<< Updated upstream
 
 
 <script src="/js/signup.js"></script>
 
+=======
+<script src="../js/signup.js"></script>
+>>>>>>> Stashed changes
 </body>
 </html>

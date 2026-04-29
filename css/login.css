@@ -223,6 +223,13 @@ input.invalid { border-color: var(--red); }
 }
 .signup-link a:hover { text-decoration: underline; }
 
+/* Hide native browser password reveal button */
+input[type="password"]::-ms-reveal,
+input::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-textfield-decoration-container {
+  display: none !important;
+}
+
 @media (max-width: 540px) {
   .card { flex-direction: column; max-width: 360px; }
   .card-image { width: 100%; height: 200px; }

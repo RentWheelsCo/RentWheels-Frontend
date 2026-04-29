@@ -2,9 +2,16 @@ const form     = document.getElementById('loginForm');
 const emailIn  = document.getElementById('email');
 const pwIn     = document.getElementById('password');
 const togglePw = document.getElementById('togglePw');
+<<<<<<< Updated upstream
 const eyeIcon  = document.getElementById('eyeIcon');
+=======
+>>>>>>> Stashed changes
 const loginErr = document.getElementById('loginError');
 
+togglePw.innerHTML = '<img id="eyeIcon" src="../assets/eye.png" class="eye-icon" width="20" height="20" alt="show password">';
+const eyeIcon = document.getElementById('eyeIcon');
+
+// Hide eye button until user starts typing
 togglePw.style.display = 'none';
 
 function validateEmail(val) {
@@ -31,12 +38,41 @@ function setFieldState(input, errEl, okEl, isValid) {
   }
 }
 
-pwIn.addEventListener('input', () => {
-  togglePw.style.display = pwIn.value.length > 0 ? 'block' : 'none';
+<<<<<<< Updated upstream
+=======
+function clearFieldStates() {
+  [emailIn, pwIn].forEach(input => input.classList.remove('valid', 'invalid'));
+  ['email-err', 'email-ok', 'pw-err', 'pw-ok'].forEach(id => {
+    document.getElementById(id)?.classList.remove('show');
+  });
+}
 
-  if (pwIn.value.length === 0) {
+function setLoading(isLoading) {
+  const btn = form.querySelector('button[type="submit"]');
+  if (!btn) return;
+  btn.disabled = isLoading;
+  btn.textContent = isLoading ? 'Signing in…' : 'Sign In';
+}
+
+function showLoginError(message) {
+  loginErr.textContent = message;
+  loginErr.style.display = 'block';
+}
+
+function hideLoginError() {
+  loginErr.style.display = 'none';
+  loginErr.textContent = '';
+}
+
+>>>>>>> Stashed changes
+pwIn.addEventListener('input', () => {
+  if (pwIn.value.length > 0) {
+    togglePw.style.display = 'block';
+  } else {
+    togglePw.style.display = 'none';
     pwIn.type = 'password';
-    eyeIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+    eyeIcon.src = '../assets/eye.png';
+    eyeIcon.alt = 'show password';
     pwIn.classList.remove('valid', 'invalid');
     document.getElementById('pw-err').classList.remove('show');
   }
@@ -52,10 +88,8 @@ emailIn.addEventListener('input', () => {
 togglePw.addEventListener('click', () => {
   const isText = pwIn.type === 'text';
   pwIn.type = isText ? 'password' : 'text';
-
-  eyeIcon.innerHTML = isText
-    ? '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'
-    : '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+  eyeIcon.src = isText ? '../assets/eye.png' : '../assets/eyeClose.png';
+  eyeIcon.alt = isText ? 'show password' : 'hide password';
 });
 
 form.addEventListener('submit', (e) => {
