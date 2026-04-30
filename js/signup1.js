@@ -51,9 +51,14 @@ function submitSignup() {
 
   if (hasError) return;
 
-  alert('Sign up complete! Redirecting...');
-   window.location.href = 'login.html';
-}
+  // ✅ SHOW SUCCESS POPUP
+const popup = document.getElementById('successPopup');
+popup.classList.add('show');
+
+setTimeout(() => {
+  popup.classList.remove('show');
+  window.location.href = 'login.html?success=true';
+}, 2000);}
 
 function showUploadError(boxEl, message) {
   boxEl.classList.add('upload-error');
