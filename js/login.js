@@ -84,6 +84,11 @@ togglePw.addEventListener('click', () => {
   pwIn.focus();
 });
 
+function goToSignup() {
+  sessionStorage.setItem("signupSource", "login");
+  window.location.href = "../html/signup.html";
+}
+
 /* ── Form submit ── */
 form.addEventListener('submit', (e) => {
   e.preventDefault();
