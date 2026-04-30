@@ -8,10 +8,8 @@
   <link rel="stylesheet" href="../css/login.css"/>
 </head>
 <body>
-
   <div class="page-body">
     <div class="card">
-
       <div class="card-image">
         <img
           src="../assets/car.png"
@@ -19,22 +17,18 @@
           onerror="this.style.display='none'; this.parentElement.classList.add('fallback')"
         />
       </div>
-
       <div class="card-form">
         <div class="avatar-icon">
           <img src="../assets/profile.png" alt="Profile" />
         </div>
         <h2>Welcome</h2>
-
         <form id="loginForm" novalidate>
-
           <div class="field">
             <label for="email">Email</label>
             <input type="email" id="email" name="email" placeholder="Enter your email" autocomplete="email"/>
             <span class="field-msg error"   id="email-err">Please enter a valid email address.</span>
             <span class="field-msg success" id="email-ok"></span>
           </div>
-
           <div class="field">
             <label for="password">Password</label>
             <div class="pw-wrap">
@@ -45,30 +39,23 @@
             <span class="field-msg error"   id="pw-err">Password must be at least 6 characters.</span>
             <span class="field-msg success" id="pw-ok"></span>
           </div>
-
           <a href="../html/forgot-password.html" class="forgot">Forgot password?</a>
-
           <div id="loginError">
             Invalid email or password. Please try again.
           </div>
-
           <button type="submit" class="btn-submit">Login</button>
-
           <button type="button" class="btn-google">
             <img src="../assets/google-logo.png" width="25" height="25" alt="google icon">
             Sign in with Google
           </button>
-
         <p class="signup-link">
           Create an account? 
           <a href="#" onclick="goToSignup()">click here</a>
         </p>
         </form>
       </div>
-
     </div>
   </div>
-
   <script src="../js/login.js"></script>
 </body>
 </html>
