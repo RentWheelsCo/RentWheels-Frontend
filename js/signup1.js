@@ -52,7 +52,7 @@ function submitSignup() {
   if (hasError) return;
 
   alert('Sign up complete! Redirecting...');
-  // window.location.href = 'login.html';
+   window.location.href = 'login.html';
 }
 
 function showUploadError(boxEl, message) {

@@ -4,9 +4,8 @@ const pwIn     = document.getElementById('password');
 const togglePw = document.getElementById('togglePw');
 const loginErr = document.getElementById('loginError');
 
-const EYE_OPEN   = `<img src="/assets/eye.png"  class="eye-icon" width="20" height="20" alt="show password">`;
-const EYE_CLOSED = `<img src="/assets/eyeClose.png"  class="eye-icon" width="20" height="20" alt="show password">`;
-
+const EYE_OPEN   = `<img src="../assets/eye.png"  class="eye-icon" width="20" height="20" alt="show password">`;
+const EYE_CLOSED = `<img src="../assets/eyeClose.png"  class="eye-icon" width="20" height="20" alt="show password">`;
 /* ── Set initial icon & hide toggle until user types ── */
 togglePw.innerHTML = EYE_OPEN;
 togglePw.style.display = 'none';

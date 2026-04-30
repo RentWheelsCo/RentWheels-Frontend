@@ -4,8 +4,8 @@ let currentPage = 0;
 const takenUsernames = ['admin', 'user', 'test', 'root'];
 
 /* ── Eye Icons (inline SVG — no external image needed) ── */
-const EYE_OPEN = `<img src="/assets/eye.png"  class="eye-icon" width="25" height="25" alt="show password">`;
-const EYE_CLOSED = `<img src="/assets/eyeClose.png"  class="eye-icon" width="25" height="25" alt="show password">`;
+const EYE_OPEN = `<img src="../assets/eye.png"  class="eye-icon" width="25" height="25" alt="show password">`;
+const EYE_CLOSED = `<img src="../assets/eyeClose.png"  class="eye-icon" width="25" height="25" alt="show password">`;
 
 /* ── Password Toggle ── */
 function setupPasswordToggle(inputId, btnId) {
