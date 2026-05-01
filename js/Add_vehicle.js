@@ -38,8 +38,8 @@ function showPageError(message) {
     banner.style.cssText =
       "background:#fee2e2;color:#b91c1c;border:1px solid #fca5a5;" +
       "border-radius:8px;padding:10px 14px;margin:0 0 14px 0;font-size:0.9rem;";
-    const container = document.querySelector(".main-content");
-    container.insertBefore(banner, container.firstChild?.nextSibling || container.firstChild);
+    const container = document.querySelector(".form-column");
+    container.insertBefore(banner, container.firstChild);
   }
   banner.textContent = message;
   banner.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -63,17 +63,53 @@ function markInvalid(el, isInvalid) {
   el.style.borderColor = isInvalid ? "#dc2626" : "";
 }
 
-// €€ Vehicle Photo Preview €€
+// ── Vehicle Photo Preview (multiple thumbnails) ──
 function previewVehiclePhoto(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const preview = document.getElementById("vehiclePhotoPreview");
-    preview.src = e.target.result;
-    preview.style.display = "block";
-  };
-  reader.readAsDataURL(file);
+  const files = Array.from(event.target.files);
+  if (!files.length) return;
+  const strip = document.getElementById("photoPreviewStrip");
+  strip.innerHTML = "";
+  files.forEach((file) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = document.createElement("img");
+      img.src = e.target.result;
+      strip.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+  });
+  // Highlight the photos tip as done
+  activateTip("photos");
+}
+
+// ── Quick Tips: highlight the relevant tip when fields are focused ──
+const fieldTipMap = {
+  vehiclePhotos:    "photos",
+  dailyPrice:       "price",
+  description:      "description",
+  categoryId:       "category",
+  locationId:       "location",
+};
+
+function activateTip(tipKey) {
+  document.querySelectorAll(".tip-item").forEach((el) => {
+    el.classList.toggle("tip-active", el.dataset.tip === tipKey);
+  });
+}
+
+function clearActiveTip() {
+  document.querySelectorAll(".tip-item").forEach((el) => el.classList.remove("tip-active"));
+}
+
+function initTipHighlights() {
+  Object.entries(fieldTipMap).forEach(([fieldId, tipKey]) => {
+    const el = document.getElementById(fieldId);
+    if (!el) return;
+    el.addEventListener("focus", () => activateTip(tipKey));
+    el.addEventListener("blur", () => {
+      setTimeout(clearActiveTip, 200);
+    });
+  });
 }
 
 async function fetchOptions(type, parentId) {
@@ -99,13 +135,13 @@ function fillSelect(selectEl, options, placeholder) {
 }
 
 async function initVehicleDropdowns() {
-  const typeSelect = document.getElementById("typeId");
-  const brandSelect = document.getElementById("brandId");
-  const modelSelect = document.getElementById("modelId");
-  const categorySelect = document.getElementById("categoryId");
+  const typeSelect         = document.getElementById("typeId");
+  const brandSelect        = document.getElementById("brandId");
+  const modelSelect        = document.getElementById("modelId");
+  const categorySelect     = document.getElementById("categoryId");
   const transmissionSelect = document.getElementById("transmissionId");
-  const fuelTypeSelect = document.getElementById("fuelTypeId");
-  const locationSelect = document.getElementById("locationId");
+  const fuelTypeSelect     = document.getElementById("fuelTypeId");
+  const locationSelect     = document.getElementById("locationId");
 
   const [types, brands, categories, transmissions, fuelTypes, locations] = await Promise.all([
     fetchOptions("VEHICLE_TYPE"),
@@ -116,12 +152,12 @@ async function initVehicleDropdowns() {
     fetchOptions("LOCATION"),
   ]);
 
-  fillSelect(typeSelect, types, "Select vehicle type");
-  fillSelect(brandSelect, brands, "Select brand");
-  fillSelect(categorySelect, categories, "Select category");
+  fillSelect(typeSelect,         types,         "Select vehicle type");
+  fillSelect(brandSelect,        brands,        "Select brand");
+  fillSelect(categorySelect,     categories,    "Select category");
   fillSelect(transmissionSelect, transmissions, "Select transmission");
-  fillSelect(fuelTypeSelect, fuelTypes, "Select fuel type");
-  fillSelect(locationSelect, locations, "Select location");
+  fillSelect(fuelTypeSelect,     fuelTypes,     "Select fuel type");
+  fillSelect(locationSelect,     locations,     "Select location");
 
   modelSelect.disabled = true;
   modelSelect.innerHTML = `<option value="">Select model</option>`;
@@ -148,7 +184,7 @@ async function initVehicleDropdowns() {
   });
 }
 
-// €€ Submit €€
+// ── Submit ──
 async function handleSubmit() {
   clearPageError();
 
@@ -158,30 +194,23 @@ async function handleSubmit() {
     return;
   }
 
-  const typeId = document.getElementById("typeId");
-  const brandId = document.getElementById("brandId");
-  const modelId = document.getElementById("modelId");
-  const categoryId = document.getElementById("categoryId");
-  const transmissionId = document.getElementById("transmissionId");
-  const fuelTypeId = document.getElementById("fuelTypeId");
-  const locationId = document.getElementById("locationId");
-  const year = document.getElementById("year");
-  const dailyPrice = document.getElementById("dailyPrice");
+  const typeId          = document.getElementById("typeId");
+  const brandId         = document.getElementById("brandId");
+  const modelId         = document.getElementById("modelId");
+  const categoryId      = document.getElementById("categoryId");
+  const transmissionId  = document.getElementById("transmissionId");
+  const fuelTypeId      = document.getElementById("fuelTypeId");
+  const locationId      = document.getElementById("locationId");
+  const year            = document.getElementById("year");
+  const dailyPrice      = document.getElementById("dailyPrice");
   const seatingCapacity = document.getElementById("seatingCapacity");
-  const description = document.getElementById("description");
-  const photosInput = document.getElementById("vehiclePhotos");
+  const description     = document.getElementById("description");
+  const photosInput     = document.getElementById("vehiclePhotos");
 
   const requiredFields = [
-    typeId,
-    brandId,
-    modelId,
-    categoryId,
-    transmissionId,
-    fuelTypeId,
-    locationId,
-    year,
-    dailyPrice,
-    seatingCapacity,
+    typeId, brandId, modelId, categoryId,
+    transmissionId, fuelTypeId, locationId,
+    year, dailyPrice, seatingCapacity,
   ];
 
   let hasError = false;
@@ -195,6 +224,7 @@ async function handleSubmit() {
 
   if (!photosInput?.files?.length) {
     showPageError("Please upload at least one vehicle photo.");
+    activateTip("photos");
     return;
   }
 
@@ -204,15 +234,15 @@ async function handleSubmit() {
   }
 
   const fd = new FormData();
-  fd.append("typeId", typeId.value);
-  fd.append("brandId", brandId.value);
-  fd.append("modelId", modelId.value);
-  fd.append("categoryId", categoryId.value);
-  fd.append("transmissionId", transmissionId.value);
-  fd.append("fuelTypeId", fuelTypeId.value);
-  fd.append("locationId", locationId.value);
-  fd.append("year", year.value);
-  fd.append("dailyPrice", dailyPrice.value);
+  fd.append("typeId",          typeId.value);
+  fd.append("brandId",         brandId.value);
+  fd.append("modelId",         modelId.value);
+  fd.append("categoryId",      categoryId.value);
+  fd.append("transmissionId",  transmissionId.value);
+  fd.append("fuelTypeId",      fuelTypeId.value);
+  fd.append("locationId",      locationId.value);
+  fd.append("year",            year.value);
+  fd.append("dailyPrice",      dailyPrice.value);
   fd.append("seatingCapacity", seatingCapacity.value);
   if (description?.value?.trim()) fd.append("description", description.value.trim());
 
@@ -238,7 +268,7 @@ async function handleSubmit() {
   }
 }
 
-// €€ Modal Controls (identical to dashboard) €€
+// ── Modal Controls ──
 function openModal() {
   showMainOptions();
   document.getElementById("editProfileModal").style.display = "flex";
@@ -247,19 +277,19 @@ function closeModal() {
   document.getElementById("editProfileModal").style.display = "none";
 }
 function showMainOptions() {
-  document.getElementById("mainOptions").style.display = "block";
-  document.getElementById("photoEdit").style.display = "none";
-  document.getElementById("licenseEdit").style.display = "none";
+  document.getElementById("mainOptions").style.display  = "block";
+  document.getElementById("photoEdit").style.display    = "none";
+  document.getElementById("licenseEdit").style.display  = "none";
 }
 function showPhotoEdit() {
-  document.getElementById("mainOptions").style.display = "none";
-  document.getElementById("photoEdit").style.display = "block";
-  document.getElementById("licenseEdit").style.display = "none";
+  document.getElementById("mainOptions").style.display  = "none";
+  document.getElementById("photoEdit").style.display    = "block";
+  document.getElementById("licenseEdit").style.display  = "none";
 }
 function showLicenseEdit() {
-  document.getElementById("mainOptions").style.display = "none";
-  document.getElementById("photoEdit").style.display = "none";
-  document.getElementById("licenseEdit").style.display = "block";
+  document.getElementById("mainOptions").style.display  = "none";
+  document.getElementById("photoEdit").style.display    = "none";
+  document.getElementById("licenseEdit").style.display  = "block";
 }
 
 function previewLicense(event) {
@@ -276,23 +306,23 @@ function previewLicense(event) {
 
 function saveLicense() {
   const licenseInput = document.getElementById("licenseNumber");
-  const expiryInput = document.getElementById("expiryDate");
+  const expiryInput  = document.getElementById("expiryDate");
   let valid = true;
 
   licenseInput.style.borderColor = "";
-  expiryInput.style.borderColor = "";
-  licenseInput.style.color = "";
-  expiryInput.style.color = "";
+  expiryInput.style.borderColor  = "";
+  licenseInput.style.color       = "";
+  expiryInput.style.color        = "";
 
   if (!licenseInput.value.trim()) {
     licenseInput.style.borderColor = "#dc2626";
-    licenseInput.style.color = "#dc2626";
-    licenseInput.placeholder = "License number is required";
+    licenseInput.style.color       = "#dc2626";
+    licenseInput.placeholder       = "License number is required";
     valid = false;
   }
   if (!expiryInput.value) {
     expiryInput.style.borderColor = "#dc2626";
-    expiryInput.style.color = "#dc2626";
+    expiryInput.style.color       = "#dc2626";
     valid = false;
   }
   if (!valid) return;
@@ -323,6 +353,7 @@ document.addEventListener("DOMContentLoaded", () => {
   requireAuth();
   bindLogout();
   setProfileName();
+  initTipHighlights();
 
   initVehicleDropdowns().catch((e) => {
     console.error("Dropdown init error:", e);
@@ -336,4 +367,3 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
-
