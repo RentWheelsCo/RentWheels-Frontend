@@ -1,16 +1,9 @@
-/**
- * admin_Nav.js
- * Renders the RentWheels admin top navigation bar.
- * Set data-page on <body> to one of:
- *   "dashboard" | "users" | "vehicles" | "bookings"
- */
-
 function renderAdminHeader(activeKey) {
   const navItems = [
-    { key: "dashboard", label: "Dashboard", href: "admin-dashboard.html" },
-    { key: "users",     label: "Users",     href: "admin-users.html"     },
-    { key: "vehicles",  label: "Vehicles",  href: "admin-vehicles.html"  },
-    { key: "bookings",  label: "Bookings",  href: "admin-bookings.html"  },
+    { key: "dashboard", label: "Dashboard", href: "../html/admin_Dashboard.html" },
+    { key: "users",     label: "Users",     href: "../html/manage-users.html"     },
+    { key: "vehicles",  label: "Vehicles",  href: "../html/admin_vehicles.html"  },
+    { key: "bookings",  label: "Bookings",  href: "../html/admin_bookings.html"  },
   ];
 
   const navHtml = navItems
@@ -22,7 +15,7 @@ function renderAdminHeader(activeKey) {
 
   return `
     <header class="admin-header">
-      <a class="admin-brand" href="admin-dashboard.html" aria-label="RentWheels home">
+      <a class="admin-brand" href="../html/admin-dashboard.html" aria-label="RentWheels home">
         <img src="../assets/logo.webp" alt="RentWheels" />
       </a>
       <nav class="admin-nav" aria-label="Admin navigation">
@@ -39,7 +32,7 @@ function renderAdminHeader(activeKey) {
 function logout() {
   localStorage.removeItem("authToken");
   localStorage.removeItem("authUser");
-  window.location.href = "login.html";
+  window.location.href = "../html/login.html";
 }
 
 document.addEventListener("DOMContentLoaded", () => {

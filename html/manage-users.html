@@ -4,16 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Manage Users – RentWheels Admin</title>
+  <link rel="stylesheet" href="../css/admin_Nav.css" />
   <link rel="stylesheet" href="../css/manage-users.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
-<body>
+<body data-page="users">
+
+  <div id="admin-header"></div>
 
   <main class="users-page">
     <div class="container">
-
       <div class="page-header">
         <div class="page-header__left">
           <h1 class="page-title">Manage Users</h1>
@@ -30,13 +32,7 @@
             <circle cx="9" cy="9" r="6.5" stroke="#9CA3AF" stroke-width="1.8"/>
             <path d="M14 14l3.5 3.5" stroke="#9CA3AF" stroke-width="1.8" stroke-linecap="round"/>
           </svg>
-          <input
-            type="text"
-            id="searchInput"
-            class="search-input"
-            placeholder="Search by name or email…"
-            autocomplete="off"
-          />
+          <input type="text" id="searchInput" class="search-input" placeholder="Search by name or email…" autocomplete="off" />
           <button class="search-clear hidden" id="searchClear" aria-label="Clear search">✕</button>
         </div>
       </div>
@@ -53,8 +49,7 @@
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody id="usersTableBody">
-          </tbody>
+          <tbody id="usersTableBody"></tbody>
         </table>
       </div>
 
@@ -68,21 +63,21 @@
         <h3 class="empty-state__title" id="emptyTitle">No users found</h3>
         <p class="empty-state__text" id="emptyText">Try adjusting your search.</p>
       </div>
-
     </div>
   </main>
 
+  <!-- View Modal -->
   <div class="modal-overlay hidden" id="viewModal">
     <div class="modal">
       <div class="modal__header">
         <h2 class="modal__title">User Details</h2>
         <button class="modal__close" id="viewModalClose">✕</button>
       </div>
-      <div class="modal__body" id="viewModalBody">
-      </div>
+      <div class="modal__body" id="viewModalBody"></div>
     </div>
   </div>
 
+  <!-- Edit Modal -->
   <div class="modal-overlay hidden" id="editModal">
     <div class="modal">
       <div class="modal__header">
@@ -119,6 +114,7 @@
     </div>
   </div>
 
+  <!-- Delete Modal -->
   <div class="modal-overlay hidden" id="deleteModal">
     <div class="modal modal--sm">
       <div class="modal__header">
@@ -137,8 +133,9 @@
 
   <div class="toast hidden" id="toast" role="status"></div>
 
-<script src="../js/config.js"></script>
-<script src="../js/api.js"></script>
-<script src="../js/manage-users.js"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/admin_Nav.js"></script>
+  <script src="../js/manage-users.js"></script>
 </body>
 </html>

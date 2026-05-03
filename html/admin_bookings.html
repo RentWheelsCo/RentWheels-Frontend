@@ -1,172 +1,136 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Bookings– RentWheels</title>
-    <link rel="stylesheet" href="../css/styles.css" />
-    <link rel="stylesheet" href="../css/admin_bookings.css" />
-    <script src="../js/admin_booking.js" defer></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body data-page="my-bookings" class="rw-page">
-      <div class="container">
-        <!-- Page Header -->
-        <div class="page-header">
-          <h1 class="page-title">Users Bookings</h1>
-          <p class="page-subtitle">View and manage users vehicle bookings</p>
-        </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Bookings – RentWheels</title>
+  <link rel="stylesheet" href="../css/admin_Nav.css" />
+  <link rel="stylesheet" href="../css/admin_bookings.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body data-page="bookings" class="rw-page">
 
-        <!-- Bookings List -->
-        <div class="bookings-list" id="bookingsList">
-          <!-- Cards injected by JS -->
-        </div>
+  <div id="admin-header"></div>
 
-        <!-- Empty State (hidden by default) -->
-        <div class="empty-state hidden" id="emptyState">
-          <div class="empty-state__icon">
-            <svg
-              viewBox="0 0 64 64"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <rect
-                x="8"
-                y="16"
-                width="48"
-                height="36"
-                rx="4"
-                stroke="#CBD5E1"
-                stroke-width="2.5"
-              />
-              <path d="M8 24h48" stroke="#CBD5E1" stroke-width="2.5" />
-              <path
-                d="M20 36h24M20 42h16"
-                stroke="#CBD5E1"
-                stroke-width="2.5"
-                stroke-linecap="round"
-              />
-            </svg>
-          </div>
-          <h3 class="empty-state__title">No bookings yet</h3>
-          <p class="empty-state__text">
-            You haven't made any vehicle bookings. Start exploring our fleet!
-          </p>
-          <a href="../html/home.html" class="btn-primary">Browse Vehicles</a>
-        </div>
-      </div>
-    <div id="rw-footer"></div>
-
-    <!-- Edit Booking Modal -->
-    <div id="editModal" class="modal-overlay hidden">
-      <div class="modal-container">
-        <div class="modal-header">
-          <h2>Edit Booking</h2>
-          <button type="button" class="btn-close-modal" id="cancelEditBtn">&times;</button>
-        </div>
-        <div class="modal-body">
-          <form id="editBookingForm" class="edit-form">
-            <!-- Renter & Rentee Info -->
-            <fieldset>
-              <legend>Participants</legend>
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="edit_r_name">Renter Name</label>
-                  <input type="text" id="edit_r_name" required>
-                </div>
-                <div class="form-group">
-                  <label for="edit_r_phone">Renter Phone</label>
-                  <input type="text" id="edit_r_phone" required>
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="edit_rt_name">Rentee Name</label>
-                  <input type="text" id="edit_rt_name" required>
-                </div>
-                <div class="form-group">
-                  <label for="edit_rt_phone">Rentee Phone</label>
-                  <input type="text" id="edit_rt_phone" required>
-                </div>
-              </div>
-            </fieldset>
-
-            <!-- Vehicle Info -->
-            <fieldset>
-              <legend>Vehicle Details</legend>
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="edit_v_name">Vehicle Name</label>
-                  <input type="text" id="edit_v_name" required>
-                </div>
-                <div class="form-group">
-                  <label for="edit_v_type">Type</label>
-                  <input type="text" id="edit_v_type" required>
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="edit_v_year">Year</label>
-                  <input type="text" id="edit_v_year" required>
-                </div>
-              </div>
-            </fieldset>
-
-            <!-- Rental Details -->
-            <fieldset>
-               <legend>Rental Period</legend>
-               <div class="form-row">
-                 <div class="form-group">
-                   <label for="edit_p_from">From Date</label>
-                   <input type="date" id="edit_p_from" required>
-                 </div>
-                 <div class="form-group">
-                   <label for="edit_p_to">To Date</label>
-                   <input type="date" id="edit_p_to" required>
-                 </div>
-               </div>
-               <div class="form-row">
-               </div>
-            </fieldset>
-
-            <!-- Price & Status -->
-            <fieldset>
-               <legend>Financials & Status</legend>
-               <div class="form-row">
-                 <div class="form-group">
-                   <label for="edit_insuranceType">Insurance Type</label>
-                   <input type="text" id="edit_insuranceType">
-                 </div>
-                 <div class="form-group">
-                   <label for="edit_totalPrice">Total Price (Rs)</label>
-                   <input type="number" id="edit_totalPrice" required>
-                 </div>
-               </div>
-               <div class="form-row">
-                 <div class="form-group">
-                   <label for="edit_status">Booking Status</label>
-                   <select id="edit_status" required>
-                     <option value="pending">Pending</option>
-                     <option value="confirmed">Confirmed</option>
-                     <option value="cancelled">Cancelled</option>
-                   </select>
-                 </div>
-               </div>
-            </fieldset>
-
-            <div class="modal-actions">
-               <button type="submit" class="btn-primary">Save Changes</button>
-            </div>
-          </form>
-        </div>
-      </div>
+  <div class="container">
+    <div class="page-header">
+      <h1 class="page-title">Users Bookings</h1>
+      <p class="page-subtitle">View and manage users vehicle bookings</p>
     </div>
 
-    <script src="../js/admin_booking.js"></script>
-  </body>
+    <div class="bookings-list" id="bookingsList"></div>
+
+    <div class="empty-state hidden" id="emptyState">
+      <div class="empty-state__icon">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="16" width="48" height="36" rx="4" stroke="#CBD5E1" stroke-width="2.5"/>
+          <path d="M8 24h48" stroke="#CBD5E1" stroke-width="2.5"/>
+          <path d="M20 36h24M20 42h16" stroke="#CBD5E1" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h3 class="empty-state__title">No bookings yet</h3>
+      <p class="empty-state__text">No vehicle bookings found.</p>
+    </div>
+  </div>
+
+  <!-- Edit Booking Modal -->
+  <div id="editModal" class="modal-overlay hidden">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2>Edit Booking</h2>
+        <button type="button" class="btn-close-modal" id="cancelEditBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="editBookingForm" class="edit-form">
+          <fieldset>
+            <legend>Participants</legend>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="edit_r_name">Renter Name</label>
+                <input type="text" id="edit_r_name" required>
+              </div>
+              <div class="form-group">
+                <label for="edit_r_phone">Renter Phone</label>
+                <input type="text" id="edit_r_phone" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="edit_rt_name">Rentee Name</label>
+                <input type="text" id="edit_rt_name" required>
+              </div>
+              <div class="form-group">
+                <label for="edit_rt_phone">Rentee Phone</label>
+                <input type="text" id="edit_rt_phone" required>
+              </div>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Vehicle Details</legend>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="edit_v_name">Vehicle Name</label>
+                <input type="text" id="edit_v_name" required>
+              </div>
+              <div class="form-group">
+                <label for="edit_v_type">Type</label>
+                <input type="text" id="edit_v_type" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="edit_v_year">Year</label>
+                <input type="text" id="edit_v_year" required>
+              </div>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Rental Period</legend>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="edit_p_from">From Date</label>
+                <input type="date" id="edit_p_from" required>
+              </div>
+              <div class="form-group">
+                <label for="edit_p_to">To Date</label>
+                <input type="date" id="edit_p_to" required>
+              </div>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Financials & Status</legend>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="edit_insuranceType">Insurance Type</label>
+                <input type="text" id="edit_insuranceType">
+              </div>
+              <div class="form-group">
+                <label for="edit_totalPrice">Total Price (Rs)</label>
+                <input type="number" id="edit_totalPrice" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="edit_status">Booking Status</label>
+                <select id="edit_status" required>
+                  <option value="pending">Pending</option>
+                  <option value="confirmed">Confirmed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </div>
+            </div>
+          </fieldset>
+          <div class="modal-actions">
+            <button type="submit" class="btn-primary">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/admin_Nav.js"></script>
+  <script src="../js/admin_booking.js"></script>
+</body>
 </html>
