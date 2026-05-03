@@ -17,11 +17,7 @@ function renderHeader(activeKey) {
   const navItems = [
     { key: "home", label: "Home", href: "../html/home.html" },
     { key: "vehicle", label: "Vehicle", href: "../html/vehicle.html" },
-    {
-      key: "my-bookings",
-      label: "My Bookings",
-      href: "../html/bookings.html",
-    },
+    { key: "my-bookings", label: "My Bookings", href: "../html/bookings.html" },
     { key: "dashboard", label: "Dashboard", href: "../html/dashboard.html" },
   ];
 
@@ -34,9 +30,13 @@ function renderHeader(activeKey) {
     })
     .join("");
 
+  // On home page, login button opens modal; elsewhere it navigates
+  const isHomePage = activeKey === "home";
   const authActionHtml = isAuthed()
     ? `<button type="button" class="rw-login" id="rw-logout-btn" aria-label="Log out">Log out</button>`
-    : `<a class="rw-login" href="../html/login.html" role="button" aria-label="Log in">Log in</a>`;
+    : isHomePage
+      ? `<button type="button" class="rw-login" id="rw-login-modal-btn" aria-label="Log in">Log in</button>`
+      : `<a class="rw-login" href="../html/login.html" role="button" aria-label="Log in">Log in</a>`;
 
   return `
     <header class="rw-header">
@@ -51,11 +51,24 @@ function renderHeader(activeKey) {
       <div class="rw-actions">
         <div class="rw-search" role="search">
           <img src="${ASSETS.searchIcon}" alt="" />
-          <input type="text" placeholder="Search vehicles" aria-label="Search vehicles" />
+          <input type="text" placeholder="Search vehicles" aria-label="Search vehicles" id="headerSearchInput" />
         </div>
         ${authActionHtml}
       </div>
+
+      <button class="rw-hamburger" id="rw-hamburger" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
     </header>
+
+    <nav class="rw-mobile-nav" id="rw-mobile-nav" aria-label="Mobile navigation">
+      ${navHtml}
+      <div class="rw-search" role="search" style="width:100%;max-width:none;">
+        <img src="${ASSETS.searchIcon}" alt="" />
+        <input type="text" placeholder="Search vehicles" aria-label="Search vehicles" />
+      </div>
+      ${authActionHtml.replace('id="rw-login-modal-btn"', 'id="rw-login-modal-btn-mobile"').replace('id="rw-logout-btn"', 'id="rw-logout-btn-mobile"')}
+    </nav>
   `;
 }
 
@@ -96,6 +109,47 @@ document.addEventListener("DOMContentLoaded", () => {
   if (headerTarget) headerTarget.innerHTML = renderHeader(pageKey);
   if (footerTarget) footerTarget.innerHTML = renderFooter();
 
-  const logoutBtn = document.getElementById("rw-logout-btn");
-  if (logoutBtn) logoutBtn.addEventListener("click", logout);
+  // Logout buttons
+  ["rw-logout-btn", "rw-logout-btn-mobile"].forEach((id) => {
+    const btn = document.getElementById(id);
+    if (btn) btn.addEventListener("click", logout);
+  });
+
+  // Hamburger toggle
+  const hamburger = document.getElementById("rw-hamburger");
+  const mobileNav = document.getElementById("rw-mobile-nav");
+  if (hamburger && mobileNav) {
+    hamburger.addEventListener("click", () => {
+      const open = mobileNav.classList.toggle("open");
+      hamburger.classList.toggle("open", open);
+      hamburger.setAttribute("aria-expanded", String(open));
+    });
+  }
+
+  // Header search → navigate to vehicle page
+  const headerSearchInput = document.getElementById("headerSearchInput");
+  if (headerSearchInput) {
+    headerSearchInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        const q = headerSearchInput.value.trim();
+        if (q) window.location.href = `../html/vehicle.html?search=${encodeURIComponent(q)}`;
+      }
+    });
+  }
+
+  // Login modal trigger (home page only)
+  ["rw-login-modal-btn", "rw-login-modal-btn-mobile"].forEach((id) => {
+    const btn = document.getElementById(id);
+    if (btn) {
+      btn.addEventListener("click", () => {
+        const modal = document.getElementById("loginModal");
+        if (modal) {
+          modal.style.display = "flex";
+          document.body.style.overflow = "hidden";
+          if (mobileNav) mobileNav.classList.remove("open");
+          if (hamburger) { hamburger.classList.remove("open"); hamburger.setAttribute("aria-expanded", "false"); }
+        }
+      });
+    }
+  });
 });
