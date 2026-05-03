@@ -45,13 +45,6 @@ function drawDonutChart(totalVehicles, activeBookings, pending) {
   if (!canvas) return;
   const ctx = canvas.getContext("2d");
 
-  const total = (totalVehicles + activeBookings + pending) || 1;
-  const segments = [
-    { value: totalVehicles,  color: "#3b82f6" },
-    { value: activeBookings, color: "#1e40af" },
-    { value: pending,        color: "#0f2a6e" },
-  ];
-
   const cx = canvas.width / 2;
   const cy = canvas.height / 2;
   const outerR = 76;
@@ -59,8 +52,32 @@ function drawDonutChart(totalVehicles, activeBookings, pending) {
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+  const total = totalVehicles + activeBookings + pending;
+
+  // If no data at all, draw a plain grey donut
+  if (total === 0) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, outerR, 0, 2 * Math.PI);
+    ctx.fillStyle = "#e2e5ec";
+    ctx.fill();
+
+    // Donut hole
+    ctx.beginPath();
+    ctx.arc(cx, cy, innerR, 0, 2 * Math.PI);
+    ctx.fillStyle = "#ffffff";
+    ctx.fill();
+    return;
+  }
+
+  const segments = [
+    { value: totalVehicles,  color: "#3b82f6" },
+    { value: activeBookings, color: "#1e40af" },
+    { value: pending,        color: "#0f2a6e" },
+  ];
+
   let startAngle = -Math.PI / 2;
   segments.forEach(seg => {
+    if (seg.value === 0) return;
     const slice = (seg.value / total) * 2 * Math.PI;
     ctx.beginPath();
     ctx.moveTo(cx, cy);

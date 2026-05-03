@@ -63,52 +63,49 @@ function markInvalid(el, isInvalid) {
   el.style.borderColor = isInvalid ? "#dc2626" : "";
 }
 
-// ── Vehicle Photo Preview (multiple thumbnails) ──
+// ── Vehicle Photo Preview (unlimited, with remove button) ──
+let selectedFiles = [];
+
 function previewVehiclePhoto(event) {
-  const files = Array.from(event.target.files);
-  if (!files.length) return;
+  const newFiles = Array.from(event.target.files);
+  if (!newFiles.length) return;
+
+  selectedFiles = selectedFiles.concat(newFiles);
+  renderPhotoStrip();
+
+  // Reset input so same file can be re-added if removed
+  event.target.value = "";
+}
+
+function removePhoto(index) {
+  selectedFiles.splice(index, 1);
+  renderPhotoStrip();
+}
+
+function renderPhotoStrip() {
   const strip = document.getElementById("photoPreviewStrip");
   strip.innerHTML = "";
-  files.forEach((file) => {
+
+  selectedFiles.forEach((file, i) => {
     const reader = new FileReader();
     reader.onload = (e) => {
+      const wrap = document.createElement("div");
+      wrap.className = "photo-thumb-wrap";
+
       const img = document.createElement("img");
       img.src = e.target.result;
-      strip.appendChild(img);
+
+      const removeBtn = document.createElement("button");
+      removeBtn.className = "photo-remove-btn";
+      removeBtn.innerHTML = "✕";
+      removeBtn.title = "Remove photo";
+      removeBtn.onclick = () => removePhoto(i);
+
+      wrap.appendChild(img);
+      wrap.appendChild(removeBtn);
+      strip.appendChild(wrap);
     };
     reader.readAsDataURL(file);
-  });
-  // Highlight the photos tip as done
-  activateTip("photos");
-}
-
-// ── Quick Tips: highlight the relevant tip when fields are focused ──
-const fieldTipMap = {
-  vehiclePhotos:    "photos",
-  dailyPrice:       "price",
-  description:      "description",
-  categoryId:       "category",
-  locationId:       "location",
-};
-
-function activateTip(tipKey) {
-  document.querySelectorAll(".tip-item").forEach((el) => {
-    el.classList.toggle("tip-active", el.dataset.tip === tipKey);
-  });
-}
-
-function clearActiveTip() {
-  document.querySelectorAll(".tip-item").forEach((el) => el.classList.remove("tip-active"));
-}
-
-function initTipHighlights() {
-  Object.entries(fieldTipMap).forEach(([fieldId, tipKey]) => {
-    const el = document.getElementById(fieldId);
-    if (!el) return;
-    el.addEventListener("focus", () => activateTip(tipKey));
-    el.addEventListener("blur", () => {
-      setTimeout(clearActiveTip, 200);
-    });
   });
 }
 
@@ -205,7 +202,6 @@ async function handleSubmit() {
   const dailyPrice      = document.getElementById("dailyPrice");
   const seatingCapacity = document.getElementById("seatingCapacity");
   const description     = document.getElementById("description");
-  const photosInput     = document.getElementById("vehiclePhotos");
 
   const requiredFields = [
     typeId, brandId, modelId, categoryId,
@@ -222,9 +218,8 @@ async function handleSubmit() {
     }
   });
 
-  if (!photosInput?.files?.length) {
+  if (!selectedFiles.length) {
     showPageError("Please upload at least one vehicle photo.");
-    activateTip("photos");
     return;
   }
 
@@ -246,7 +241,7 @@ async function handleSubmit() {
   fd.append("seatingCapacity", seatingCapacity.value);
   if (description?.value?.trim()) fd.append("description", description.value.trim());
 
-  Array.from(photosInput.files).forEach((file) => {
+  selectedFiles.forEach((file) => {
     fd.append("vehiclePhotos", file);
   });
 
@@ -353,7 +348,6 @@ document.addEventListener("DOMContentLoaded", () => {
   requireAuth();
   bindLogout();
   setProfileName();
-  initTipHighlights();
 
   initVehicleDropdowns().catch((e) => {
     console.error("Dropdown init error:", e);
