@@ -3,18 +3,18 @@
    ============================================ */
 
 :root {
-  --clr-primary:        #2563EB;
-  --clr-bg:             #F9FAFB;
-  --clr-surface:        #FFFFFF;
-  --clr-border:         #E5E7EB;
-  --clr-text:           #111827;
-  --clr-text-muted:     #6B7280;
-  --clr-text-light:     #9CA3AF;
-  
-  --radius-lg:          16px;
-  --radius-md:          12px;
-  --shadow-sm:          0 1px 2px rgba(0,0,0,0.05);
-  --shadow-md:          0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+  --clr-primary: #2563EB;
+  --clr-bg: #F9FAFB;
+  --clr-surface: #FFFFFF;
+  --clr-border: #E5E7EB;
+  --clr-text: #111827;
+  --clr-text-muted: #6B7280;
+  --clr-text-light: #9CA3AF;
+
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .vehicle-detail-page {
@@ -43,6 +43,7 @@
   font-size: 0.95rem;
   transition: color 0.15s;
 }
+
 .vehicle-detail-back:hover {
   color: var(--clr-primary);
 }
@@ -62,12 +63,62 @@
   margin-bottom: 24px;
   background: var(--clr-surface);
   height: 480px;
+  position: relative;
+}
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--clr-text);
+  opacity: 1;
+  transition: background 0.2s, transform 0.2s;
+  box-shadow: var(--shadow-sm);
+  z-index: 10;
+}
+
+.carousel-btn:hover {
+  background: #fff;
+  transform: translateY(-50%) scale(1.05);
+}
+
+.carousel-btn--prev {
+  left: 16px;
+}
+
+.carousel-btn--next {
+  right: 16px;
+}
+
+.carousel-indicator {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  pointer-events: none;
+  z-index: 10;
 }
 
 .vehicle-detail-hero__img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: opacity 0.3s ease;
 }
 
 .vehicle-detail-title {
@@ -157,20 +208,96 @@
   flex-shrink: 0;
 }
 
-.vehicle-detail-comment-form__input {
+.vehicle-detail-comment-form__content {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vehicle-detail-comment-form__preview {
+  position: relative;
+  display: inline-block;
+  width: fit-content;
+}
+.vehicle-detail-comment-form__preview.hidden {
+  display: none;
+}
+.vehicle-detail-comment-form__preview-img {
+  max-width: 100px;
+  max-height: 100px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid var(--clr-border);
+}
+.vehicle-detail-comment-form__preview-remove {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--clr-surface);
+  color: #ef4444;
+  border: 1px solid var(--clr-border);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: transform 0.2s, background 0.2s;
+}
+.vehicle-detail-comment-form__preview-remove:hover {
+  transform: scale(1.1);
+  background: #fee2e2;
+}
+
+.vehicle-detail-comment-form__input-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
   border: 1px solid var(--clr-border);
   border-radius: var(--radius-md);
-  padding: 14px 16px;
-  font-size: 0.95rem;
-  outline: none;
-  font-family: inherit;
+  background: var(--clr-surface);
   transition: border-color 0.2s;
 }
 
-.vehicle-detail-comment-form__input:focus {
+.vehicle-detail-comment-form__input-wrap:focus-within {
   border-color: var(--clr-primary);
   box-shadow: 0 0 0 3px var(--clr-primary-lt);
+}
+
+.vehicle-detail-comment-form__attach {
+  background: transparent;
+  border: none;
+  padding: 0 10px 0 16px;
+  color: var(--clr-text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.vehicle-detail-comment-form__attach svg {
+  width: 24px;
+  height: 24px;
+}
+
+.vehicle-detail-comment-form__attach:hover {
+  color: var(--clr-primary);
+}
+
+.vehicle-detail-comment-form__input {
+  flex: 1;
+  border: none;
+  padding: 14px 16px 14px 10px;
+  font-size: 0.95rem;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
 }
 
 .vehicle-detail-comment-form__post {
@@ -183,6 +310,7 @@
   cursor: pointer;
   transition: background 0.2s;
 }
+
 .vehicle-detail-comment-form__post:hover {
   background: #1D4ED8;
 }
@@ -223,6 +351,16 @@
   line-height: 1.5;
   color: var(--clr-text-muted);
 }
+
+.vehicle-detail-comment__image {
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 8px;
+  margin-top: 8px;
+  object-fit: cover;
+  display: block;
+}
+
 .delete-comment-btn {
   background: #fee2e2;
   color: #991b1b;
@@ -234,7 +372,10 @@
   font-weight: 600;
   transition: 0.2s ease;
 }
-.delete-comment-btn:hover { background: #fca5a5; }
+
+.delete-comment-btn:hover {
+  background: #fca5a5;
+}
 
 /* ---- Right Aside: Booking Card ---- */
 .vehicle-detail-booking__card {
@@ -335,7 +476,11 @@
   cursor: pointer;
   flex: 1;
 }
-.btn-secondary:hover { background: #E5E7EB; }
+
+.btn-secondary:hover {
+  background: #E5E7EB;
+}
+
 .btn-primary {
   background: var(--clr-primary);
   color: #fff;
@@ -346,6 +491,7 @@
   cursor: pointer;
   flex: 1;
 }
+
 .btn-danger {
   background: #fee2e2;
   color: #991b1b;
@@ -360,13 +506,17 @@
 /* Modals */
 .modal-overlay {
   position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
   display: none;
   align-items: center;
   justify-content: center;
   z-index: 1000;
 }
+
 .modal-box {
   background: var(--clr-surface);
   padding: 24px;
@@ -376,13 +526,18 @@
   position: relative;
   text-align: center;
 }
+
 .modal-close {
   position: absolute;
-  top: 16px; right: 16px;
-  border: none; background: transparent; cursor: pointer;
+  top: 16px;
+  right: 16px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
   font-size: 1.2rem;
   color: var(--clr-text-muted);
 }
+
 .modal-box h3 {
   margin-top: 16px;
   margin-bottom: 8px;
@@ -397,6 +552,7 @@
   margin-bottom: 12px;
   font-size: 1rem;
 }
+
 .edit-mode-textarea {
   resize: vertical;
   min-height: 80px;
@@ -406,9 +562,11 @@
   .vehicle-detail-layout {
     grid-template-columns: 1fr;
   }
+
   .vehicle-detail-booking {
     position: static;
   }
+
   .vehicle-detail-hero {
     height: 320px;
   }

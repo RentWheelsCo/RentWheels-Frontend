@@ -200,6 +200,7 @@
   }
 
   function renderComment(c) {
+    const imageHtml = c.image ? `<img src="${c.image}" class="vehicle-detail-comment__image" alt="Attached image" />` : '';
     return `
       <div class="vehicle-detail-comment">
         <img class="vehicle-detail-comment__avatar" src="${c.avatar}" alt="" width="53" height="55" />
@@ -207,6 +208,7 @@
           <div class="vehicle-detail-comment__bubble">
             <p class="vehicle-detail-comment__name">${c.name}</p>
             <p class="vehicle-detail-comment__text">${c.text}</p>
+            ${imageHtml}
           </div>
           <div class="vehicle-detail-comment__actions">
             <button type="button" class="vehicle-detail-comment__action action-like">Like</button>
@@ -242,10 +244,70 @@
 
     document.title = `${d.title} – RentWheels`;
 
+    const images = d.images || [
+      d.image,
+      "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=800&q=80"
+    ];
+    let currentImgIndex = 0;
+    
     const hero = document.getElementById("detailHeroImg");
-    if (hero) {
-      hero.src = d.image;
-      hero.alt = d.title;
+    const indicator = document.getElementById("carouselIndicator");
+    const prevBtn = document.getElementById("carouselPrev");
+    const nextBtn = document.getElementById("carouselNext");
+    const carouselArea = document.getElementById("heroCarousel");
+
+    function updateCarousel() {
+      if (hero) {
+        hero.style.opacity = '0.5';
+        setTimeout(() => {
+          hero.src = images[currentImgIndex];
+          hero.alt = `${d.title} - Image ${currentImgIndex + 1}`;
+          hero.style.opacity = '1';
+        }, 150);
+      }
+      if (indicator) {
+        indicator.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="margin-right: 2px; vertical-align: middle; margin-bottom: 2px;">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+            <circle cx="12" cy="13" r="4"></circle>
+          </svg>
+          ${currentImgIndex + 1} / ${images.length}
+        `;
+      }
+    }
+
+    if (hero && carouselArea && prevBtn && nextBtn) {
+      hero.src = images[currentImgIndex];
+      hero.alt = `${d.title} - Image 1`;
+      if (indicator) {
+        indicator.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="margin-right: 2px; vertical-align: middle; margin-bottom: 2px;">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+            <circle cx="12" cy="13" r="4"></circle>
+          </svg>
+          1 / ${images.length}
+        `;
+      }
+
+      const nextSlide = () => {
+        currentImgIndex = (currentImgIndex + 1) % images.length;
+        updateCarousel();
+      };
+      const prevSlide = () => {
+        currentImgIndex = (currentImgIndex - 1 + images.length) % images.length;
+        updateCarousel();
+      };
+
+      nextBtn.addEventListener("click", nextSlide);
+      prevBtn.addEventListener("click", prevSlide);
+
+      let slideInterval = setInterval(nextSlide, 3500);
+      
+      carouselArea.addEventListener("mouseenter", () => clearInterval(slideInterval));
+      carouselArea.addEventListener("mouseleave", () => {
+        slideInterval = setInterval(nextSlide, 3500);
+      });
     }
     const meta = document.getElementById("detailMeta");
     if (meta) meta.textContent = d.meta;
@@ -326,7 +388,7 @@
         const insSelect = document.getElementById("insuranceType");
         const insType = insSelect ? insSelect.value : "none";
         let insCostPerDay = 0;
-        if (insType === "basic") insCostPerDay = 15;
+        if (insType === "half") insCostPerDay = 15;
         if (insType === "full") insCostPerDay = 30;
         const insuranceCost = insCostPerDay * days;
 
@@ -378,23 +440,65 @@
       }
     }
 
+    const attachBtn = document.getElementById("attachBtn");
+    const imageInput = document.getElementById("commentImageInput");
+    const previewWrap = document.getElementById("commentImagePreviewWrap");
+    const previewImg = document.getElementById("commentImagePreview");
+    const removePreviewBtn = document.getElementById("commentImageRemove");
+    
+    let currentAttachmentDataUrl = null;
+
+    if (attachBtn && imageInput) {
+      attachBtn.addEventListener("click", () => {
+        imageInput.click();
+      });
+
+      imageInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            currentAttachmentDataUrl = ev.target.result;
+            if (previewImg) previewImg.src = currentAttachmentDataUrl;
+            if (previewWrap) previewWrap.classList.remove("hidden");
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      if (removePreviewBtn) {
+        removePreviewBtn.addEventListener("click", () => {
+          currentAttachmentDataUrl = null;
+          imageInput.value = "";
+          if (previewWrap) previewWrap.classList.add("hidden");
+        });
+      }
+    }
+
     const postBtn = document.getElementById("commentPost");
     const input = document.getElementById("commentInput");
     if (postBtn && input && list) {
       postBtn.addEventListener("click", () => {
         const text = input.value.trim();
-        if (!text) {
-          showToast("Write a comment first");
+        if (!text && !currentAttachmentDataUrl) {
+          showToast("Write a comment or attach an image");
           return;
         }
         const c = {
           name: "You",
           text,
+          image: currentAttachmentDataUrl,
           avatar: "https://randomuser.me/api/portraits/men/99.jpg",
           time: "now",
         };
         list.insertAdjacentHTML("afterbegin", renderComment(c));
+        
+        // Reset form
         input.value = "";
+        currentAttachmentDataUrl = null;
+        if (imageInput) imageInput.value = "";
+        if (previewWrap) previewWrap.classList.add("hidden");
+        
         showToast("Comment posted");
       });
     }
