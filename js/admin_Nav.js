@@ -15,16 +15,46 @@ function renderAdminHeader(activeKey) {
 
   return `
     <header class="admin-header">
-      <a class="admin-brand" href="../html/admin-dashboard.html" aria-label="RentWheels home">
+      <a class="admin-brand" href="../html/admin_Dashboard.html" aria-label="RentWheels home">
         <img src="../assets/logo.webp" alt="RentWheels" />
       </a>
+
+      <!-- Hamburger toggle (mobile only) -->
+      <button
+        type="button"
+        class="nav-hamburger"
+        id="rw-hamburger"
+        aria-label="Open navigation"
+        aria-expanded="false"
+        aria-controls="rw-mobile-menu"
+      >
+        <span class="ham-bar"></span>
+        <span class="ham-bar"></span>
+        <span class="ham-bar"></span>
+      </button>
+
+      <!-- Desktop nav -->
       <nav class="admin-nav" aria-label="Admin navigation">
         ${navHtml}
         <button type="button" class="nav-logout" id="rw-admin-logout" aria-label="Logout">
-          <img src="../assets/logout.png" alt="RentWheels" width="20" height="20" />
+          <img src="../assets/logout.png" alt="" width="16" height="16" />
           Logout
         </button>
       </nav>
+
+      <!-- Mobile drawer -->
+      <div class="mobile-menu" id="rw-mobile-menu" role="dialog" aria-label="Navigation menu" hidden>
+        <nav class="mobile-nav" aria-label="Admin navigation mobile">
+          ${navHtml}
+          <button type="button" class="nav-logout mobile-logout" id="rw-admin-logout-mobile" aria-label="Logout">
+            <img src="../assets/logout.png" alt="" width="16" height="16" />
+            Logout
+          </button>
+        </nav>
+      </div>
+
+      <!-- Overlay -->
+      <div class="mobile-overlay" id="rw-overlay" aria-hidden="true"></div>
     </header>
   `;
 }
@@ -40,6 +70,51 @@ document.addEventListener("DOMContentLoaded", () => {
   const headerTarget = document.getElementById("admin-header");
   if (headerTarget) headerTarget.innerHTML = renderAdminHeader(pageKey);
 
+  // Desktop logout
   const logoutBtn = document.getElementById("rw-admin-logout");
   if (logoutBtn) logoutBtn.addEventListener("click", logout);
+
+  // Mobile logout
+  const logoutBtnMobile = document.getElementById("rw-admin-logout-mobile");
+  if (logoutBtnMobile) logoutBtnMobile.addEventListener("click", logout);
+
+  // Hamburger toggle
+  const hamburger  = document.getElementById("rw-hamburger");
+  const mobileMenu = document.getElementById("rw-mobile-menu");
+  const overlay    = document.getElementById("rw-overlay");
+
+  function openMenu() {
+    mobileMenu.hidden = false;
+    overlay.classList.add("visible");
+    hamburger.setAttribute("aria-expanded", "true");
+    hamburger.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeMenu() {
+    mobileMenu.hidden = true;
+    overlay.classList.remove("visible");
+    hamburger.setAttribute("aria-expanded", "false");
+    hamburger.classList.remove("open");
+    document.body.style.overflow = "";
+  }
+
+  if (hamburger) {
+    hamburger.addEventListener("click", () => {
+      const isOpen = hamburger.getAttribute("aria-expanded") === "true";
+      isOpen ? closeMenu() : openMenu();
+    });
+  }
+
+  if (overlay) overlay.addEventListener("click", closeMenu);
+
+  // Close menu on nav-link click (SPA-friendly)
+  document.querySelectorAll(".mobile-nav .nav-link").forEach(link => {
+    link.addEventListener("click", closeMenu);
+  });
+
+  // Close on Escape
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeMenu();
+  });
 });
