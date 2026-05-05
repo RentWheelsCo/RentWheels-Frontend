@@ -18,7 +18,7 @@ function renderHeader(activeKey) {
   const navItems = [
     { key: "home",        label: "Home",        href: "../html/home.html"     },
     { key: "vehicle",     label: "Vehicle",     href: "../html/vehicle.html"  },
-    { key: "my-bookings", label: "My Bookings", href: "../html/bookings.html" },
+    { key: "my-bookings", label: "My Bookings", href: "../html/my-bookings.html" },
   ];
 
   const navHtml = navItems

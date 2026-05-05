@@ -482,6 +482,8 @@ function showToast(message, type = "success") {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  requireAuth();
-  loadUsers();
+
+  filteredUsers = [...USERS_DATA];
+  renderTable(filteredUsers);   // ← render static data immediately
+  loadUsers();                  // ← then fetch & refresh from server
 });
