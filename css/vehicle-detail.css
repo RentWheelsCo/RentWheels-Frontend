@@ -551,6 +551,7 @@
   cursor: pointer;
   margin-top: 12px;
   transition: all 0.2s;
+  padding-top: 12px; 
 }
 
 .vehicle-detail-book-now:hover {
