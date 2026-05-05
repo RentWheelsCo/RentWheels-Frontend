@@ -200,7 +200,11 @@
   }
 
   function renderComment(c) {
-    const imageHtml = c.image ? `<img src="${c.image}" class="vehicle-detail-comment__image" alt="Attached image" />` : '';
+    const imageMarkup = c.image
+      ? `<button type="button" class="vehicle-detail-comment__photo-btn" aria-label="Expand image">
+            <img class="vehicle-detail-comment__photo-thumb" src="${c.image}" alt="Comment image" />
+         </button>`
+      : "";
     return `
       <div class="vehicle-detail-comment">
         <img class="vehicle-detail-comment__avatar" src="${c.avatar}" alt="" width="53" height="55" />
@@ -208,7 +212,7 @@
           <div class="vehicle-detail-comment__bubble">
             <p class="vehicle-detail-comment__name">${c.name}</p>
             <p class="vehicle-detail-comment__text">${c.text}</p>
-            ${imageHtml}
+            ${imageMarkup}
           </div>
           <div class="vehicle-detail-comment__actions">
             <button type="button" class="vehicle-detail-comment__action action-like">Like</button>
@@ -230,6 +234,87 @@
     alert(message);
   }
 
+  function resizeImageDataUrl(file, maxWidth = 1280, maxHeight = 1280) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const scale = Math.min(maxWidth / img.width, maxHeight / img.height, 1);
+          const targetW = Math.round(img.width * scale);
+          const targetH = Math.round(img.height * scale);
+
+          const canvas = document.createElement("canvas");
+          canvas.width = targetW;
+          canvas.height = targetH;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            reject(new Error("Could not process image"));
+            return;
+          }
+          ctx.drawImage(img, 0, 0, targetW, targetH);
+          resolve(canvas.toDataURL("image/jpeg", 0.9));
+        };
+        img.onerror = () => reject(new Error("Invalid image file"));
+        img.src = reader.result;
+      };
+      reader.onerror = () => reject(new Error("Failed to read image file"));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function createHeroSlides(id, d) {
+    const allVehicleImages = Object.keys(DETAILS).map((key) => DETAILS[key].image);
+    const uniqueImages = [...new Set([d.image, ...allVehicleImages])];
+    const fallbackSlides = [d.image, d.image, d.image, d.image, d.image];
+    const slides = uniqueImages.slice(0, 5);
+    return slides.length >= 2 ? slides : fallbackSlides;
+  }
+
+  function setupHeroCarousel(id, d) {
+    const heroImg = document.getElementById("detailHeroImg");
+    const prevBtn = document.getElementById("detailHeroPrev");
+    const nextBtn = document.getElementById("detailHeroNext");
+    const dotsWrap = document.getElementById("detailHeroDots");
+    if (!heroImg || !prevBtn || !nextBtn || !dotsWrap) return;
+
+    const slides = createHeroSlides(id, d);
+    let active = 0;
+
+    function renderDots() {
+      dotsWrap.innerHTML = slides
+        .map(
+          (_, index) =>
+            `<button type="button" class="vehicle-detail-hero__dot ${
+              index === active ? "is-active" : ""
+            }" data-index="${index}" aria-label="Go to image ${index + 1}"></button>`,
+        )
+        .join("");
+    }
+
+    function setSlide(index) {
+      active = (index + slides.length) % slides.length;
+      heroImg.classList.add("is-fading");
+      heroImg.src = slides[active];
+      heroImg.alt = `${d.title} view ${active + 1}`;
+      renderDots();
+      window.setTimeout(() => {
+        heroImg.classList.remove("is-fading");
+      }, 120);
+    }
+
+    prevBtn.addEventListener("click", () => setSlide(active - 1));
+    nextBtn.addEventListener("click", () => setSlide(active + 1));
+    dotsWrap.addEventListener("click", (e) => {
+      const btn = e.target.closest(".vehicle-detail-hero__dot");
+      if (!btn) return;
+      const idx = Number(btn.dataset.index);
+      if (Number.isFinite(idx)) setSlide(idx);
+    });
+
+    setSlide(0);
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     const params = new URLSearchParams(window.location.search);
     const id = resolveId(params.get("id"));
@@ -244,71 +329,7 @@
 
     document.title = `${d.title} – RentWheels`;
 
-    const images = d.images || [
-      d.image,
-      "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=800&q=80",
-      "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=800&q=80"
-    ];
-    let currentImgIndex = 0;
-    
-    const hero = document.getElementById("detailHeroImg");
-    const indicator = document.getElementById("carouselIndicator");
-    const prevBtn = document.getElementById("carouselPrev");
-    const nextBtn = document.getElementById("carouselNext");
-    const carouselArea = document.getElementById("heroCarousel");
-
-    function updateCarousel() {
-      if (hero) {
-        hero.style.opacity = '0.5';
-        setTimeout(() => {
-          hero.src = images[currentImgIndex];
-          hero.alt = `${d.title} - Image ${currentImgIndex + 1}`;
-          hero.style.opacity = '1';
-        }, 150);
-      }
-      if (indicator) {
-        indicator.innerHTML = `
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="margin-right: 2px; vertical-align: middle; margin-bottom: 2px;">
-            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-            <circle cx="12" cy="13" r="4"></circle>
-          </svg>
-          ${currentImgIndex + 1} / ${images.length}
-        `;
-      }
-    }
-
-    if (hero && carouselArea && prevBtn && nextBtn) {
-      hero.src = images[currentImgIndex];
-      hero.alt = `${d.title} - Image 1`;
-      if (indicator) {
-        indicator.innerHTML = `
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="margin-right: 2px; vertical-align: middle; margin-bottom: 2px;">
-            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-            <circle cx="12" cy="13" r="4"></circle>
-          </svg>
-          1 / ${images.length}
-        `;
-      }
-
-      const nextSlide = () => {
-        currentImgIndex = (currentImgIndex + 1) % images.length;
-        updateCarousel();
-      };
-      const prevSlide = () => {
-        currentImgIndex = (currentImgIndex - 1 + images.length) % images.length;
-        updateCarousel();
-      };
-
-      nextBtn.addEventListener("click", nextSlide);
-      prevBtn.addEventListener("click", prevSlide);
-
-      let slideInterval = setInterval(nextSlide, 3500);
-      
-      carouselArea.addEventListener("mouseenter", () => clearInterval(slideInterval));
-      carouselArea.addEventListener("mouseleave", () => {
-        slideInterval = setInterval(nextSlide, 3500);
-      });
-    }
+    setupHeroCarousel(id, d);
     const meta = document.getElementById("detailMeta");
     if (meta) meta.textContent = d.meta;
     const title = document.getElementById("detailTitle");
@@ -327,6 +348,61 @@
     if (feats) feats.innerHTML = renderFeatures(d.features);
 
     const list = document.getElementById("detailCommentsList");
+    const imageBtn = document.getElementById("commentImageBtn");
+    const imageInput = document.getElementById("commentImageInput");
+    const attachment = document.getElementById("commentImageAttachment");
+    const attachmentThumb = document.getElementById("commentImageAttachmentThumb");
+    const imageRemoveBtn = document.getElementById("commentImageRemove");
+    const imageModal = document.getElementById("commentImageModal");
+    const imageModalImg = document.getElementById("commentImageModalImg");
+    const imageModalClose = document.getElementById("commentImageModalClose");
+    let selectedImage = "";
+
+    function clearImageSelection() {
+      selectedImage = "";
+      if (imageInput) imageInput.value = "";
+      if (attachment) attachment.hidden = true;
+      if (attachmentThumb) attachmentThumb.src = "";
+    }
+
+    if (imageBtn && imageInput) {
+      imageBtn.addEventListener("click", () => imageInput.click());
+      imageInput.addEventListener("change", async () => {
+        const file = imageInput.files && imageInput.files[0];
+        if (!file) return;
+        if (!file.type.startsWith("image/")) {
+          showToast("Please choose an image file.");
+          clearImageSelection();
+          return;
+        }
+        try {
+          selectedImage = await resizeImageDataUrl(file);
+          if (attachmentThumb) attachmentThumb.src = selectedImage;
+          if (attachment) attachment.hidden = false;
+        } catch (error) {
+          showToast("Could not load image. Try another one.");
+          clearImageSelection();
+        }
+      });
+    }
+
+    if (imageRemoveBtn) {
+      imageRemoveBtn.addEventListener("click", clearImageSelection);
+    }
+
+    if (imageModal && imageModalClose) {
+      imageModalClose.addEventListener("click", () => {
+        imageModal.setAttribute("hidden", "");
+        if (imageModalImg) imageModalImg.src = "";
+      });
+      imageModal.addEventListener("click", (e) => {
+        if (e.target === imageModal) {
+          imageModal.setAttribute("hidden", "");
+          if (imageModalImg) imageModalImg.src = "";
+        }
+      });
+    }
+
     if (list) {
       list.innerHTML = renderComment(d.commentSample);
 
@@ -349,6 +425,15 @@
           if (input) {
             input.value = `@${name} ` + input.value;
             input.focus();
+          }
+        } else {
+          const imageThumb = e.target.closest(".vehicle-detail-comment__photo-btn");
+          if (imageThumb && imageModal && imageModalImg) {
+            const img = imageThumb.querySelector(".vehicle-detail-comment__photo-thumb");
+            if (img && img.src) {
+              imageModalImg.src = img.src;
+              imageModal.removeAttribute("hidden");
+            }
           }
         }
       });
@@ -440,65 +525,25 @@
       }
     }
 
-    const attachBtn = document.getElementById("attachBtn");
-    const imageInput = document.getElementById("commentImageInput");
-    const previewWrap = document.getElementById("commentImagePreviewWrap");
-    const previewImg = document.getElementById("commentImagePreview");
-    const removePreviewBtn = document.getElementById("commentImageRemove");
-    
-    let currentAttachmentDataUrl = null;
-
-    if (attachBtn && imageInput) {
-      attachBtn.addEventListener("click", () => {
-        imageInput.click();
-      });
-
-      imageInput.addEventListener("change", (e) => {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = (ev) => {
-            currentAttachmentDataUrl = ev.target.result;
-            if (previewImg) previewImg.src = currentAttachmentDataUrl;
-            if (previewWrap) previewWrap.classList.remove("hidden");
-          };
-          reader.readAsDataURL(file);
-        }
-      });
-
-      if (removePreviewBtn) {
-        removePreviewBtn.addEventListener("click", () => {
-          currentAttachmentDataUrl = null;
-          imageInput.value = "";
-          if (previewWrap) previewWrap.classList.add("hidden");
-        });
-      }
-    }
-
     const postBtn = document.getElementById("commentPost");
     const input = document.getElementById("commentInput");
     if (postBtn && input && list) {
       postBtn.addEventListener("click", () => {
         const text = input.value.trim();
-        if (!text && !currentAttachmentDataUrl) {
-          showToast("Write a comment or attach an image");
+        if (!text && !selectedImage) {
+          showToast("Write a comment or attach an image first");
           return;
         }
         const c = {
           name: "You",
-          text,
-          image: currentAttachmentDataUrl,
+          text: text || " ",
           avatar: "https://randomuser.me/api/portraits/men/99.jpg",
           time: "now",
+          image: selectedImage || "",
         };
         list.insertAdjacentHTML("afterbegin", renderComment(c));
-        
-        // Reset form
         input.value = "";
-        currentAttachmentDataUrl = null;
-        if (imageInput) imageInput.value = "";
-        if (previewWrap) previewWrap.classList.add("hidden");
-        
+        clearImageSelection();
         showToast("Comment posted");
       });
     }
