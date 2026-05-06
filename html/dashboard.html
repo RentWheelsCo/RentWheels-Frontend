@@ -9,104 +9,136 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/layout.css">
 </head>
+<script>
+  window.addEventListener("load", () => {
+    const canvas = document.getElementById("fleetChart");
+    
+    if (!canvas) { console.error("NO CANVAS FOUND"); return; }
+    
+    canvas.width = 180;
+    canvas.height = 180;
+    canvas.style.display = "block";
+    
+    const ctx = canvas.getContext("2d");
+    console.log("CTX:", ctx);
+    
+    ctx.beginPath();
+    ctx.arc(90, 90, 76, 0, 2 * Math.PI);
+    ctx.fillStyle = "#e2e5ec";
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.arc(90, 90, 50, 0, 2 * Math.PI);
+    ctx.fillStyle = "#ffffff";
+    ctx.fill();
+  
+  });
+</script>
 <body>
 
-  <aside class="sidebar">
-    <div class="sidebar-profile">
-      <div class="avatar-wrapper">
-        <div class="avatar">
-          <img src="../assets/Person-Icon.png" width="40" height="40">
+  <!-- Top navigation rendered by layout.js -->
+  <div id="rw-header"></div>
+
+  <div class="rw-page-body">
+
+    <aside class="sidebar">
+      <div class="sidebar-profile">
+        <div class="avatar-wrapper">
+          <div class="avatar">
+            <img src="../assets/Person-Icon.png" width="40" height="40">
+          </div>
+          <div class="avatar-edit" onclick="event.stopPropagation(); event.preventDefault(); openModal();" style="position:absolute;top:-4px;right:-4px;width:18px;height:18px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid #fff;">
+            <img src="../assets/edit.png" width="15" height="15">
+          </div>
         </div>
-        <div class="avatar-edit" onclick="openModal()" style="position:absolute;top:-4px;right:-4px;width:18px;height:18px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid #fff;">
-          <img src="../assets/edit.png" width="15" height="15">
-        </div>
+        <span class="profile-name">Lasta Maharjan</span>
       </div>
-      <span class="profile-name">Lasta Maharjan</span>
-    </div>
 
-    <nav class="sidebar-nav">
-      <a href="dashboard.html" class="nav-item active" data-page="dashboard">
-        <span class="nav-icon"><img src="../assets/dashboard.png" width="20" height="20"></span>
-        Dashboard
-      </a>
-      <a href="Add_vehicle.html" class="nav-item" data-page="add-vehicle">
-        <span class="nav-icon"><img src="../assets/add.png" width="20" height="20"></span>
-        Add Vehicle
-      </a>
-      <a href="Manage_vehicle.html" class="nav-item" data-page="manage_vehicle">
-        <span class="nav-icon"><img src="../assets/carGrey.png" width="20" height="20"></span>
-        Manage Vehicle
-      </a>
-      <a href="Manage_booking.html" class="nav-item" data-page="manage_booking">
-        <span class="nav-icon"><img src="../assets/clipboardGrey.png" width="20" height="20"></span>
-        Manage Bookings
-      </a>
-      <a href="#" class="nav-item nav-logout" id="rw-sidebar-logout">
-        <span class="nav-icon"><img src="../assets/logout.png" width="20" height="20"></span>
-        Logout
-      </a>
-    </nav>
-  </aside>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item active" data-page="dashboard">
+          <span class="nav-icon"><img src="../assets/dashboard.png" width="20" height="20"></span>
+          Dashboard
+        </a>
+        <a href="Add_vehicle.html" class="nav-item" data-page="add-vehicle">
+          <span class="nav-icon"><img src="../assets/add.png" width="20" height="20"></span>
+          Add Vehicle
+        </a>
+        <a href="Manage_vehicle.html" class="nav-item" data-page="manage_vehicle">
+          <span class="nav-icon"><img src="../assets/carGrey.png" width="20" height="20"></span>
+          Manage Vehicle
+        </a>
+        <a href="Manage_booking.html" class="nav-item" data-page="manage_booking">
+          <span class="nav-icon"><img src="../assets/clipboardGrey.png" width="20" height="20"></span>
+          Manage Bookings
+        </a>
 
-  <main class="main-content">
-    <header class="page-header">
-      <h1 class="page-title">Admin Dashboard</h1>
-      <p class="page-subtitle">Monitor overall platform performance including total vehicles, bookings, revenue, and recent activities</p>
-    </header>
+      </nav>
+    </aside>
 
-    <div class="dashboard-grid">
+    <main class="main-content">
+      <header class="page-header">
+        <h1 class="page-title">Admin Dashboard</h1>
+        <p class="page-subtitle">Monitor overall platform performance including total vehicles, bookings, revenue, and recent activities</p>
+      </header>
 
-      <div class="stats-and-bookings">
-        <div class="stats-row">
-          <div class="stat-card">
-            <span class="stat-label">Total Vehicles</span>
-            <span class="stat-value" id="totalVehicles">8</span>
+      <div class="dashboard-grid">
+
+        <div class="stats-and-bookings">
+          <div class="stats-row">
+            <div class="stat-card">
+              <span class="stat-label">Total Vehicles</span>
+              <span class="stat-value" id="totalVehicles">0</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Active Bookings</span>
+              <span class="stat-value" id="totalBookings">0</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Monthly Revenue</span>
+              <span class="stat-value" id="monthlyRevenue">Rs 0</span>
+            </div>
           </div>
-          <div class="stat-card">
-            <span class="stat-label">Active Bookings</span>
-            <span class="stat-value" id="totalBookings">8</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-label">Monthly Revenue</span>
-            <span class="stat-value" id="monthlyRevenue">Rs 3000</span>
+
+          <div class="card bookings-card">
+            <div class="card-header">
+              <h2 class="card-title">Recent Bookings</h2>
+              <p class="card-subtitle">Latest customer bookings</p>
+            </div>
+            <div class="bookings-list" id="bookingsList"></div>
           </div>
         </div>
 
-        <div class="card bookings-card">
+        <!-- Fleet at a glance -->
+        <div class="card fleet-card">
           <div class="card-header">
-            <h2 class="card-title">Recent Bookings</h2>
-            <p class="card-subtitle">Latest customer bookings</p>
+            <h2 class="card-title">Fleet at a glance</h2>
           </div>
-          <div class="bookings-list" id="bookingsList"></div>
+          <div class="chart-wrap">
+            <canvas id="fleetChart" width="180" height="180"></canvas>
+          </div>
+          <div class="fleet-legend">
+            <div class="legend-item">
+              <span class="legend-dot" style="background:#3b82f6;"></span>
+              <span>Total Vehicle</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" style="background:#1e40af;"></span>
+              <span>Active Booking</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" style="background:#0f2a6e;"></span>
+              <span>Pending</span>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <!-- Fleet at a glance -->
-      <div class="card fleet-card">
-        <div class="card-header">
-          <h2 class="card-title">Fleet at a glance</h2>
-        </div>
-        <div class="chart-wrap">
-          <canvas id="fleetChart" width="180" height="180"></canvas>
-        </div>
-        <div class="fleet-legend">
-          <div class="legend-item">
-            <span class="legend-dot" style="background:#3b82f6;"></span>
-            <span>Total Vehicle</span>
-          </div>
-          <div class="legend-item">
-            <span class="legend-dot" style="background:#1e40af;"></span>
-            <span>Active Booking</span>
-          </div>
-          <div class="legend-item">
-            <span class="legend-dot" style="background:#0f2a6e;"></span>
-            <span>Pending</span>
-          </div>
-        </div>
       </div>
+    </main>
 
-    </div>
-  </main>
+  </div><!-- /.rw-page-body -->
+
+  <!-- Footer rendered by layout.js -->
+  <div id="rw-footer"></div>
 
   <!-- Edit Profile Modal -->
   <div id="editProfileModal">
@@ -173,6 +205,8 @@
 
   <script src="../js/config.js"></script>
   <script src="../js/api.js"></script>
+  <!-- layout.js must come before dashboard.js so renderHeader/renderFooter are available -->
+  <script src="../js/layout.js"></script>
   <script src="../js/dashboard.js"></script>
 </body>
 </html>
