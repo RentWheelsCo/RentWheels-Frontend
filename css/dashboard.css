@@ -11,18 +11,36 @@
   --shadow:       0 1px 4px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.06);
   --radius:       12px;
   --sidebar-w:    210px;
+  /* Height of the top nav bar rendered by layout.js — adjust to match layout.css */
+  --header-h:     64px;
 }
 
 body {
-  display: flex;
   min-height: 100vh;
   background: var(--bg);
   font-family: 'Nunito', sans-serif;
   color: var(--text);
   font-size: 14px;
   line-height: 1.5;
+  display: flex;
+  flex-direction: column;
 }
 
+/* ── Top header placeholder (rendered by layout.js) ── */
+#rw-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+/* ── Page body: sidebar + main sit side-by-side below the header ── */
+.rw-page-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── Sidebar ── */
 .sidebar {
   width: var(--sidebar-w);
   background: var(--card-bg);
@@ -30,9 +48,13 @@ body {
   display: flex;
   flex-direction: column;
   padding: 28px 0 24px;
-  position: fixed;
-  inset: 0 auto 0 0;
-  z-index: 10;
+  /* Sticky so it stays visible while main scrolls */
+  position: sticky;
+  top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  flex-shrink: 0;
+  z-index: 25 ;
 }
 
 .sidebar-profile {
@@ -45,7 +67,11 @@ body {
   margin-bottom: 16px;
 }
 
-.avatar-wrapper { position: relative; display: inline-block; }
+.avatar-wrapper {
+  position: relative;
+  display: inline-block;
+  z-index: 30; 
+}
 
 .avatar {
   width: 52px; height: 52px;
@@ -65,6 +91,7 @@ body {
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
   box-shadow: 0 1px 4px rgba(0,0,0,.15);
+  z-index: 30; 
 }
 
 .profile-name { font-size: 13px; font-weight: 600; color: var(--text); text-align: center; }
@@ -88,11 +115,12 @@ body {
 
 .nav-icon { width: 18px; height: 18px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 
+/* ── Main content ── */
 .main-content {
-  margin-left: var(--sidebar-w);
   flex: 1;
   padding: 36px 32px 48px;
   min-width: 0;
+  overflow-y: auto;
 }
 
 /* Page header */
@@ -200,6 +228,7 @@ body {
 
 .legend-dot { width: 13px; height: 13px; border-radius: 50%; flex-shrink: 0; }
 
+/* ── Edit Profile Modal ── */
 #editProfileModal {
   display: none;
   position: fixed;
@@ -240,7 +269,7 @@ body {
 }
 .modal-btn-primary:hover { background: #1d4ed8; }
 .modal-btn-secondary {
-  width: 100%; background: var(--border); color: var(--text-primary);
+  width: 100%; background: var(--border); color: var(--text);
   border: none; border-radius: 10px; padding: 12px;
   font-size: 14px; font-weight: 600;
   font-family: 'Nunito', sans-serif;
@@ -248,14 +277,14 @@ body {
 }
 .modal-btn-secondary:hover { background: #d1d5db; }
 .modal-panel { display: none; }
-.modal-panel h3 { font-size: 15px; font-weight: 700; margin-bottom: 16px; color: var(--text-primary); }
+.modal-panel h3 { font-size: 15px; font-weight: 700; margin-bottom: 16px; color: var(--text); }
 .modal-form { display: flex; flex-direction: column; gap: 12px; }
-.modal-form label { font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px; }
+.modal-form label { font-size: 12px; font-weight: 600; color: var(--muted); display: block; margin-bottom: 4px; }
 .modal-form input[type="text"],
 .modal-form input[type="date"] {
   width: 100%; padding: 10px 12px;
   border: 1px solid var(--border); border-radius: 8px;
-  font-size: 13px; outline: none; color: var(--text-primary);
+  font-size: 13px; outline: none; color: var(--text);
   font-family: 'Nunito', sans-serif;
   transition: border-color .15s;
 }
@@ -304,6 +333,7 @@ body {
 }
 .modal-row .btn-save:hover { background: #1d4ed8; }
 
+/* ── Responsive ── */
 @media (max-width: 1024px) {
   .dashboard-grid {
     grid-template-columns: 1fr 240px;
@@ -328,7 +358,7 @@ body {
 
 @media (max-width: 640px) {
   .sidebar { display: none; }
-  .main-content { margin-left: 0; padding: 20px 16px 40px; }
+  .main-content { padding: 20px 16px 40px; }
   .stats-row { grid-template-columns: 1fr; gap: 10px; }
   .page-title { font-size: 18px; }
 }

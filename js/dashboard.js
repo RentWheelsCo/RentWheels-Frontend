@@ -2,16 +2,6 @@ const clipboard = `<img src="../assets/clipboard.png" alt="Booking" width="25" h
 
 function getToken() { return localStorage.getItem("authToken"); }
 
-function requireAuth() {
-  if (!getToken()) window.location.href = "login.html";
-}
-
-function logout() {
-  localStorage.removeItem("authToken");
-  localStorage.removeItem("authUser");
-  window.location.href = "login.html";
-}
-
 function bindLogout() {
   const logoutLink = document.getElementById("rw-sidebar-logout");
   if (!logoutLink) return;
@@ -39,60 +29,32 @@ function setProfileName() {
   } catch { /* ignore */ }
 }
 
-/* ── Donut Chart ── */
-function drawDonutChart(totalVehicles, activeBookings, pending) {
-  const canvas = document.getElementById("fleetChart");
-  if (!canvas) return;
-  const ctx = canvas.getContext("2d");
+function drawDonutChart() {
+  requestAnimationFrame(() => {
+    const canvas = document.getElementById("fleetChart");
+    if (!canvas) return;
 
-  const cx = canvas.width / 2;
-  const cy = canvas.height / 2;
-  const outerR = 76;
-  const innerR = 50;
+    canvas.width  = 180;
+    canvas.height = 180;
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-  const total = totalVehicles + activeBookings + pending;
+    ctx.clearRect(0, 0, 180, 180);
 
-  // If no data at all, draw a plain grey donut
-  if (total === 0) {
     ctx.beginPath();
-    ctx.arc(cx, cy, outerR, 0, 2 * Math.PI);
+    ctx.arc(90, 90, 76, 0, 2 * Math.PI);
     ctx.fillStyle = "#e2e5ec";
     ctx.fill();
 
-    // Donut hole
+    ctx.globalCompositeOperation = "destination-out";
     ctx.beginPath();
-    ctx.arc(cx, cy, innerR, 0, 2 * Math.PI);
-    ctx.fillStyle = "#ffffff";
+    ctx.arc(90, 90, 50, 0, 2 * Math.PI);
+    ctx.fillStyle = "rgba(0,0,0,1)";
     ctx.fill();
-    return;
-  }
 
-  const segments = [
-    { value: totalVehicles,  color: "#3b82f6" },
-    { value: activeBookings, color: "#1e40af" },
-    { value: pending,        color: "#0f2a6e" },
-  ];
-
-  let startAngle = -Math.PI / 2;
-  segments.forEach(seg => {
-    if (seg.value === 0) return;
-    const slice = (seg.value / total) * 2 * Math.PI;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.arc(cx, cy, outerR, startAngle, startAngle + slice);
-    ctx.closePath();
-    ctx.fillStyle = seg.color;
-    ctx.fill();
-    startAngle += slice;
+    ctx.globalCompositeOperation = "source-over";
   });
-
-  // Donut hole
-  ctx.beginPath();
-  ctx.arc(cx, cy, innerR, 0, 2 * Math.PI);
-  ctx.fillStyle = "#ffffff";
-  ctx.fill();
 }
 
 function renderDashboard(data) {
@@ -102,13 +64,10 @@ function renderDashboard(data) {
   const revenue = Number(data?.monthlyRevenue || 0);
   document.getElementById("monthlyRevenue").textContent = "Rs " + revenue.toLocaleString();
 
-  const totalV   = Number(data?.totalVehicles  || 0);
-  const totalB   = Number(data?.totalBookings  || 0);
-  const bookings = Array.isArray(data?.recentBookings) ? data.recentBookings : [];
-  const pending  = bookings.filter(b => String(b.status || "").toUpperCase() === "PENDING").length;
-  drawDonutChart(totalV, totalB, pending);
+  drawDonutChart();
 
   const list   = document.getElementById("bookingsList");
+  const bookings = Array.isArray(data?.recentBookings) ? data.recentBookings : [];
   const recent = bookings.slice(0, 4);
 
   if (recent.length === 0) {
@@ -173,16 +132,28 @@ document.addEventListener("DOMContentLoaded", () => {
   bindLogout();
   setProfileName();
   initNav();
+  drawDonutChart();
   loadDashboard().catch((err) => {
     console.error("Dashboard load error:", err);
     const list = document.getElementById("bookingsList");
     if (list) list.innerHTML = `<div style="color:#b91c1c;font-size:13px;">${err?.message || "Failed to load dashboard."}</div>`;
   });
+
+  // ✅ FIX 1: Attach avatar edit button click via JS (not inline onclick)
+  document.querySelector(".avatar-edit-btn")?.addEventListener("click", function (e) {
+    e.stopPropagation();
+    openModal();
+  });
+
+  // ✅ FIX 2: Modal backdrop click to close — moved inside DOMContentLoaded to avoid null crash
+  document.getElementById("editProfileModal")?.addEventListener("click", function (e) {
+    if (e.target === this) closeModal();
+  });
 });
 
 /* ── Modal controls ── */
-function openModal() { showMainOptions(); document.getElementById("editProfileModal").style.display = "flex"; }
-function closeModal() { document.getElementById("editProfileModal").style.display = "none"; }
+function openModal()       { showMainOptions(); document.getElementById("editProfileModal").style.display = "flex"; }
+function closeModal()      { document.getElementById("editProfileModal").style.display = "none"; }
 function showMainOptions() {
   document.getElementById("mainOptions").style.display = "block";
   document.getElementById("photoEdit").style.display   = "none";
@@ -226,6 +197,3 @@ function savePhoto() {
   if (preview.src) document.querySelector(".avatar img").src = preview.src;
   closeModal();
 }
-document.getElementById("editProfileModal").addEventListener("click", function (e) {
-  if (e.target === this) closeModal();
-});

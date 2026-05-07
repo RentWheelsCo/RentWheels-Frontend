@@ -14,11 +14,10 @@ function logout() {
 }
 
 function renderHeader(activeKey) {
-  // Dashboard is intentionally kept out of the center nav — it lives in the actions area
   const navItems = [
-    { key: "home",        label: "Home",        href: "../html/home.html"     },
-    { key: "vehicle",     label: "Vehicle",     href: "../html/vehicle.html"  },
-    { key: "my-bookings", label: "My Bookings", href: "../html/bookings.html" },
+    { key: "home",        label: "Home",        href: "../html/home.html"        },
+    { key: "vehicle",     label: "Vehicle",     href: "../html/vehicle.html"     },
+    { key: "my-bookings", label: "My Bookings", href: "../html/my-bookings.html" },
   ];
 
   const navHtml = navItems
@@ -56,17 +55,14 @@ function renderHeader(activeKey) {
         ${navHtml}
       </nav>
 
-
-
-        <!-- Notification bell (between search and dashboard) -->
+      <!-- Actions: notification, dashboard link, login/logout -->
+      <div class="rw-actions">
         ${notificationBellHtml}
 
-        <!-- Dashboard link -->
         <a class="rw-dashboard-link${activeKey === "dashboard" ? " active" : ""}"
            href="../html/dashboard.html"
            aria-label="Dashboard">Dashboard</a>
 
-        <!-- Login / Logout -->
         ${authActionHtml}
       </div>
     </header>
