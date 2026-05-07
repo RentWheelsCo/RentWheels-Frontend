@@ -1,14 +1,6 @@
-function requireAuth() {
-  if (!localStorage.getItem("authToken")) {
-    window.location.href = "login.html";
-  }
-}
 
-function logout() {
-  localStorage.removeItem("authToken");
-  localStorage.removeItem("authUser");
-  window.location.href = "login.html";
-}
+
+
 
 function bindLogout() {
   const logoutLink = document.getElementById("rw-sidebar-logout");
