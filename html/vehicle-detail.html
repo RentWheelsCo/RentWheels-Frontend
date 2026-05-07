@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Vehicle details – RentWheels</title>
     <link rel="stylesheet" href="../css/styles.css" />
+    <link rel="stylesheet" href="../css/layout.css">
     <link rel="stylesheet" href="../css/home.css" />
-    <link rel="stylesheet" href="../css/layout.css" />
     <link rel="stylesheet" href="../css/vehicle-detail.css" />
     <script src="../js/layout.js" defer></script>
     <script src="../js/home.js" defer></script>
@@ -24,12 +24,33 @@
         <div class="vehicle-detail-layout">
           <div class="vehicle-detail-primary">
             <div class="vehicle-detail-hero">
+              <button
+                type="button"
+                class="vehicle-detail-hero__control vehicle-detail-hero__control--prev"
+                id="detailHeroPrev"
+                aria-label="Previous image"
+              >
+                &#10094;
+              </button>
               <img
                 id="detailHeroImg"
                 src="../assets/bmwx5.png"
                 alt=""
                 class="vehicle-detail-hero__img"
               />
+              <button
+                type="button"
+                class="vehicle-detail-hero__control vehicle-detail-hero__control--next"
+                id="detailHeroNext"
+                aria-label="Next image"
+              >
+                &#10095;
+              </button>
+              <div
+                class="vehicle-detail-hero__dots"
+                id="detailHeroDots"
+                aria-label="Image slides"
+              ></div>
             </div>
             <h1 class="vehicle-detail-title" id="detailTitle">BMW X5</h1>
             <p class="vehicle-detail-meta" id="detailMeta">2022 • SUV</p>
@@ -79,19 +100,43 @@
                 Comments
               </h2>
               <div class="vehicle-detail-comment-form">
-                <img
-                  class="vehicle-detail-comment-form__avatar"
-                  src="https://randomuser.me/api/portraits/men/32.jpg"
-                  alt=""
-                  width="56"
-                  height="52"
-                />
+                <div class="vehicle-detail-comment-form__field">
+                  <input
+                    type="text"
+                    class="vehicle-detail-comment-form__input"
+                    id="commentInput"
+                    placeholder="Write a comment"
+                    autocomplete="off"
+                  />
+                  <button
+                    type="button"
+                    class="vehicle-detail-comment-form__upload"
+                    id="commentImageBtn"
+                    aria-label="Upload image"
+                    title="Upload image"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path
+                        d="M4 8.5A2.5 2.5 0 0 1 6.5 6h4l1.3 1.5H17.5A2.5 2.5 0 0 1 20 10v6.5A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5v-8z"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M9 14.2 11.2 12l1.8 1.8 2.4-2.4L18 14"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </button>
+                </div>
                 <input
-                  type="text"
-                  class="vehicle-detail-comment-form__input"
-                  id="commentInput"
-                  placeholder="Write a comment"
-                  autocomplete="off"
+                  type="file"
+                  id="commentImageInput"
+                  accept="image/*"
+                  hidden
                 />
                 <button
                   type="button"
@@ -99,6 +144,25 @@
                   id="commentPost"
                 >
                   Post
+                </button>
+              </div>
+              <div
+                class="vehicle-detail-comment-form__attachment"
+                id="commentImageAttachment"
+                hidden
+              >
+                <img
+                  class="vehicle-detail-comment-form__attachment-thumb"
+                  id="commentImageAttachmentThumb"
+                  src=""
+                  alt="Selected comment image"
+                />
+                <button
+                  type="button"
+                  class="vehicle-detail-comment-form__attachment-remove"
+                  id="commentImageRemove"
+                >
+                  Remove image
                 </button>
               </div>
               <div
@@ -147,8 +211,8 @@
                   id="insuranceType"
                 >
                   <option value="none">No insurance</option>
-                  <option value="basic">Basic coverage</option>
-                  <option value="full">Full coverage</option>
+                  <option value="half">Half insurance</option>
+                  <option value="full">Full insurance</option>
                 </select>
               </label>
 
@@ -213,6 +277,23 @@
           Complete & Pay
         </button>
       </div>
+    </div>
+
+    <div class="vehicle-detail-image-modal" id="commentImageModal" hidden>
+      <button
+        type="button"
+        class="vehicle-detail-image-modal__close"
+        id="commentImageModalClose"
+        aria-label="Close image"
+      >
+        ×
+      </button>
+      <img
+        class="vehicle-detail-image-modal__img"
+        id="commentImageModalImg"
+        src=""
+        alt="Expanded comment image"
+      />
     </div>
   </body>
 </html>
