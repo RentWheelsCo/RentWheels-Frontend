@@ -414,85 +414,135 @@
     </div>
   </section>
 
-  <section class="testimonials" id="testimonials">
+  <section class="recommendations" id="recommendations">
     <div class="container">
       <div class="section-header">
-        <h2 class="section-title">What Our Customers Say</h2>
-        <p class="section-subtitle">
-          Discover why discerning travelers choose RentWheels for their
-          premium vehicle experience around the world.
-        </p>
+        <div class="rec-label">
+          <svg viewBox="0 0 20 20" fill="none" style="width:14px;height:14px;" aria-hidden="true">
+            <path d="M10 2l2.39 4.84L18 7.64l-4 3.9.94 5.46L10 14.27l-4.94 2.73L6 11.54 2 7.64l5.61-.8L10 2z" fill="currentColor"/>
+          </svg>
+          Personalized Picks
+        </div>
+        <h2 class="section-title">Recommended For You</h2>
+        <p class="section-subtitle">Handpicked vehicles based on top ratings, popularity and best availability.</p>
       </div>
 
-      <div class="testimonials-grid" id="testimonialsGrid">
-        <div class="testimonial-card">
-          <div class="testimonial-card__header">
-            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Emma Rodriguez"
-              class="testimonial-card__avatar" />
-            <div class="testimonial-card__meta">
-              <span class="testimonial-card__name">Emma Rodriguez</span>
-              <span class="testimonial-card__location">Barcelona, Spain</span>
-            </div>
-          </div>
-          <div class="testimonial-card__stars">
-            <span class="star filled">★</span>
-            <span class="star filled">★</span>
-            <span class="star filled">★</span>
-            <span class="star filled">★</span>
-            <span class="star filled">★</span>
-          </div>
-          <p class="testimonial-card__text">
-            "I've used many booking platforms before, but none compare to the
-            personalized experience and attention to detail that RentWheels
-            provides."
-          </p>
-        </div>
+      <div class="rec-carousel-wrap">
+        <button class="rec-arrow rec-arrow--prev" id="recPrev" aria-label="Scroll left">&#8249;</button>
+        <div class="rec-carousel" id="recCarousel">
 
-        <div class="testimonial-card">
-          <div class="testimonial-card__header">
-            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Emma Rodriguez"
-              class="testimonial-card__avatar" />
-            <div class="testimonial-card__meta">
-              <span class="testimonial-card__name">Emma Rodriguez</span>
-              <span class="testimonial-card__location">Barcelona, Spain</span>
+          <div class="rec-card" data-id="1">
+            <div class="rec-card__img-wrap">
+              <span class="rec-price">$100/day</span>
+              <img src="../assets/bmwx5.png" alt="BMW X5" class="rec-card__img" />
+            </div>
+            <div class="rec-card__body">
+              <div class="rec-card__title-row">
+                <h3 class="rec-card__name">BMW X5</h3>
+              </div>
+              <p class="rec-card__type">Sedan &middot; Kathmandu</p>
+              <div class="rec-card__specs">
+                <span class="rec-spec-pill">4 Seats</span>
+                <span class="rec-spec-pill">Gasoline</span>
+                <span class="rec-spec-pill">Automatic</span>
+              </div>
+              <a href="../html/vehicle-detail.html?id=1" class="rec-btn" id="recBtnBmwX5">
+                View Details
+                <svg viewBox="0 0 20 20" fill="none" style="width:15px;height:15px;" aria-hidden="true"><path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
             </div>
           </div>
-          <div class="testimonial-card__stars">
-            <span class="star filled">★</span>
-            <span class="star filled">★</span>
-            <span class="star filled">★</span>
-            <span class="star filled">★</span>
-            <span class="star">★</span>
-          </div>
-          <p class="testimonial-card__text">
-            "I've used many booking platforms before, but none compare to the
-            personalized experience and attention to detail that RentWheels
-            provides."
-          </p>
-        </div>
 
-        <div class="testimonial-card">
-          <div class="testimonial-card__header">
-            <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Emma Rodriguez"
-              class="testimonial-card__avatar" />
-            <div class="testimonial-card__meta">
-              <span class="testimonial-card__name">Emma Rodriguez</span>
-              <span class="testimonial-card__location">Barcelona, Spain</span>
+          <div class="rec-card" data-id="3">
+            <div class="rec-card__img-wrap">
+              <span class="rec-price">$100/day</span>
+              <img src="../assets/TeslaModelX.png" alt="Tesla Model X" class="rec-card__img" />
+            </div>
+            <div class="rec-card__body">
+              <div class="rec-card__title-row">
+                <h3 class="rec-card__name">Tesla Model X</h3>
+              </div>
+              <p class="rec-card__type">Sedan &middot; Kathmandu</p>
+              <div class="rec-card__specs">
+                <span class="rec-spec-pill">4 Seats</span>
+                <span class="rec-spec-pill">Electric</span>
+                <span class="rec-spec-pill">Automatic</span>
+              </div>
+              <a href="../html/vehicle-detail.html?id=3" class="rec-btn" id="recBtnTesla">
+                View Details
+                <svg viewBox="0 0 20 20" fill="none" style="width:15px;height:15px;" aria-hidden="true"><path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
             </div>
           </div>
-          <div class="testimonial-card__stars">
-            <span class="star filled">★</span>
-            <span class="star filled">★</span>
-            <span class="star filled">★</span>
-            <span class="star filled">★</span>
-            <span class="star filled">★</span>
+
+          <div class="rec-card" data-id="2">
+            <div class="rec-card__img-wrap">
+              <span class="rec-price">$100/day</span>
+              <img src="../assets/bmwm3.png" alt="BMW M3" class="rec-card__img" />
+            </div>
+            <div class="rec-card__body">
+              <div class="rec-card__title-row">
+                <h3 class="rec-card__name">BMW M3</h3>
+              </div>
+              <p class="rec-card__type">Sedan &middot; Kathmandu</p>
+              <div class="rec-card__specs">
+                <span class="rec-spec-pill">4 Seats</span>
+                <span class="rec-spec-pill">Gasoline</span>
+                <span class="rec-spec-pill">Automatic</span>
+              </div>
+              <a href="../html/vehicle-detail.html?id=2" class="rec-btn" id="recBtnBmwM3">
+                View Details
+                <svg viewBox="0 0 20 20" fill="none" style="width:15px;height:15px;" aria-hidden="true"><path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </div>
           </div>
-          <p class="testimonial-card__text">
-            "I've used many booking platforms before, but none compare to the
-            personalized experience and attention to detail that RentWheels
-            provides."
-          </p>
+
+          <div class="rec-card" data-id="5">
+            <div class="rec-card__img-wrap">
+              <span class="rec-price">$22/day</span>
+              <img src="../assets/streetfighterV4S.png" alt="Ducati Streetfighter V4S" class="rec-card__img" />
+            </div>
+            <div class="rec-card__body">
+              <div class="rec-card__title-row">
+                <h3 class="rec-card__name">Ducati Streetfighter V4S</h3>
+              </div>
+              <p class="rec-card__type">Sports &middot; Kathmandu</p>
+              <div class="rec-card__specs">
+                <span class="rec-spec-pill">1 Seat</span>
+                <span class="rec-spec-pill">Petrol</span>
+                <span class="rec-spec-pill">Manual</span>
+              </div>
+              <a href="../html/vehicle-detail.html?id=5" class="rec-btn" id="recBtnDucati">
+                View Details
+                <svg viewBox="0 0 20 20" fill="none" style="width:15px;height:15px;" aria-hidden="true"><path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <div class="rec-card" data-id="6">
+            <div class="rec-card__img-wrap">
+              <span class="rec-price">$15/day</span>
+              <img src="../assets/RoyalEnfield350.png" alt="Royal Enfield Classic 350" class="rec-card__img" />
+            </div>
+            <div class="rec-card__body">
+              <div class="rec-card__title-row">
+                <h3 class="rec-card__name">Royal Enfield Classic 350</h3>
+              </div>
+              <p class="rec-card__type">Cruiser &middot; Kathmandu</p>
+              <div class="rec-card__specs">
+                <span class="rec-spec-pill">2 Seats</span>
+                <span class="rec-spec-pill">Petrol</span>
+                <span class="rec-spec-pill">Manual</span>
+              </div>
+              <a href="../html/vehicle-detail.html?id=6" class="rec-btn" id="recBtnEnfield">
+                View Details
+                <svg viewBox="0 0 20 20" fill="none" style="width:15px;height:15px;" aria-hidden="true"><path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </div>
+          </div>
+
         </div>
+        <button class="rec-arrow rec-arrow--next" id="recNext" aria-label="Scroll right">&#8250;</button>
       </div>
     </div>
   </section>

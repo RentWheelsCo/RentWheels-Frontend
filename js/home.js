@@ -100,6 +100,41 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("[RentWheels] Navigate → all bikes");
   });
 
+  /* ── Recommendations carousel ────────────────────────────── */
+  const recCarousel = document.getElementById("recCarousel");
+  const recPrev = document.getElementById("recPrev");
+  const recNext = document.getElementById("recNext");
+  if (recCarousel && recPrev && recNext) {
+    const SCROLL_AMT = 292;
+    function updateRecArrows() {
+      const atStart = recCarousel.scrollLeft <= 4;
+      const atEnd = recCarousel.scrollLeft >= recCarousel.scrollWidth - recCarousel.clientWidth - 4;
+      recPrev.style.opacity = atStart ? "0.38" : "1";
+      recPrev.style.pointerEvents = atStart ? "none" : "auto";
+      recNext.style.opacity = atEnd ? "0.38" : "1";
+      recNext.style.pointerEvents = atEnd ? "none" : "auto";
+    }
+    recPrev.addEventListener("click", () => {
+      recCarousel.scrollBy({ left: -SCROLL_AMT, behavior: "smooth" });
+    });
+    recNext.addEventListener("click", () => {
+      recCarousel.scrollBy({ left: SCROLL_AMT, behavior: "smooth" });
+    });
+    recCarousel.addEventListener("scroll", updateRecArrows);
+    updateRecArrows();
+  }
+
+  /* ── Recommendation card clicks ─────────────────────────── */
+  document.querySelectorAll(".rec-card").forEach((card) => {
+    card.addEventListener("click", (e) => {
+      if (e.target.closest(".rec-btn")) return;
+      const vehicleId = card.dataset.id;
+      const name = card.querySelector(".rec-card__name")?.textContent ?? "Vehicle";
+      showToast(`Viewing details for ${name}`, "info");
+      console.log(`[RentWheels] Rec card clicked: ${name} (id=${vehicleId})`);
+    });
+  });
+
   /* ── Featured vehicles text search ─────────────────────── */
   const vehiclesSearch = document.getElementById("vehiclesSearch");
   if (vehiclesSearch) {
@@ -261,7 +296,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* ── Scroll reveal ─────────────────────────────────────── */
-  const revealTargets = document.querySelectorAll(".vehicle-card, .testimonial-card, .section-header");
+  const revealTargets = document.querySelectorAll(".vehicle-card, .rec-card, .section-header");
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
