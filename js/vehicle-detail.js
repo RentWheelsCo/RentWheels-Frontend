@@ -442,30 +442,60 @@
     const bookBtn = document.getElementById("bookNowBtn");
     const modal = document.getElementById("bookingModal");
     const modalContent = document.getElementById("bookingModalContent");
+    const pickupInput = document.getElementById("pickupDate");
+    const returnInput = document.getElementById("returnDate");
+    const pickupError = document.getElementById("pickupDateError");
+    const returnError = document.getElementById("returnDateError");
+
+    function setDateError(inputEl, errorEl, message) {
+      if (!inputEl || !errorEl) return;
+      errorEl.textContent = message;
+      inputEl.classList.toggle("vehicle-detail-field__control--error", !!message);
+    }
+
+    function clearDateErrors() {
+      setDateError(pickupInput, pickupError, "");
+      setDateError(returnInput, returnError, "");
+    }
 
     if (bookBtn && modal && modalContent) {
+      if (pickupInput && pickupError) {
+        pickupInput.addEventListener("input", () =>
+          setDateError(pickupInput, pickupError, ""),
+        );
+      }
+      if (returnInput && returnError) {
+        returnInput.addEventListener("input", () =>
+          setDateError(returnInput, returnError, ""),
+        );
+      }
       bookBtn.addEventListener("click", () => {
-        const pDate = document.getElementById("pickupDate").value;
-        const rDate = document.getElementById("returnDate").value;
+        const pDate = pickupInput ? pickupInput.value : "";
+        const rDate = returnInput ? returnInput.value : "";
+        clearDateErrors();
 
-        let days = 5;
-        let periodStr = "4/10/2025 - 4/15/2025 (5 Days)";
-
-        if (pDate && rDate) {
-          const start = new Date(pDate);
-          const end = new Date(rDate);
-          const diffSpan = end - start;
-          if (diffSpan > 0) {
-            days = Math.ceil(diffSpan / (1000 * 60 * 60 * 24));
-            periodStr = `${start.toLocaleDateString()} - ${end.toLocaleDateString()} (${days} Days)`;
-          } else {
-            showToast("Return date must be after pickup date.");
-            return;
-          }
-        } else if (pDate || rDate) {
-          showToast("Please select both Pickup and Return dates.");
+        if (!pDate) {
+          setDateError(pickupInput, pickupError, "**Pickup date is required.");
+        }
+        if (!rDate) {
+          setDateError(returnInput, returnError, "**Return date is required.");
+        }
+        if (!pDate || !rDate) {
           return;
         }
+        const start = new Date(pDate);
+        const end = new Date(rDate);
+        const diffSpan = end - start;
+        if (diffSpan <= 0) {
+          setDateError(
+            returnInput,
+            returnError,
+            "Return date must be after pickup date.",
+          );
+          return;
+        }
+        const days = Math.ceil(diffSpan / (1000 * 60 * 60 * 24));
+        const periodStr = `${start.toLocaleDateString()} - ${end.toLocaleDateString()} (${days} Days)`;
 
         const basePrice = parseInt(d.price.replace(/[^0-9]/g, ""), 10) || 80;
         const carCost = basePrice * days;
