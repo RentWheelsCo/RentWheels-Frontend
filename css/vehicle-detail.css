@@ -4,6 +4,7 @@
 
    :root {
     --clr-primary: #2563EB;
+    --danger-color: #dc3545;
     --clr-bg: #F9FAFB;
     --clr-surface: #FFFFFF;
     --clr-border: #E5E7EB;
@@ -558,6 +559,15 @@
   
   .vehicle-detail-field__control:focus {
     border-color: var(--clr-primary);
+  }
+
+  .vehicle-detail-field__control--error {
+    border-color: var(--danger-color);
+  }
+  
+  .vehicle-detail-field__error {
+      color: var(--danger-color);
+      font-size: 0.78rem;
   }
   
   .vehicle-detail-book-now {
