@@ -6,83 +6,78 @@
   <title>Manage Bookings</title>
   <link rel="stylesheet" href="../css/Manage_booking.css" />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../css/layout.css">
 </head>
 <body>
 
-  <!-- Top navigation rendered by layout.js -->
-  <div id="rw-header"></div>
-
-  <div class="rw-page-body">
-
-    <aside class="sidebar">
-      <div class="sidebar-profile">
-        <div class="avatar-wrapper">
-          <div class="avatar">
-            <img src="../assets/Person-Icon.png" width="40" height="40">
-          </div>
-          <div class="avatar-edit" onclick="openModal()" style="position:absolute; top:-4px; right:-4px; width:18px; height:18px; background:#ffffff; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; border:2px solid #fff;">
-            <img src="../assets/edit.png" width="15" height="15">
-          </div>
+  <aside class="sidebar">
+    <div class="sidebar-profile">
+      <div class="avatar-wrapper">
+        <div class="avatar">
+          <img src="../assets/Person-Icon.png" width="40" height="40">
         </div>
-        <span class="profile-name">Lasta Maharjan</span>
+        <div class="avatar-edit" onclick="openModal()" style="position:absolute; top:-4px; right:-4px; width:18px; height:18px; background:#ffffff; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; border:2px solid #fff;">
+          <img src="../assets/edit.png" width="15" height="15">
+        </div>
       </div>
+      <span class="profile-name">Lasta Maharjan</span>
+    </div>
 
-      <nav class="sidebar-nav">
-        <a href="dashboard.html" class="nav-item" data-page="dashboard">
-          <span class="nav-icon">
-            <img src="../assets/dashboardGrey.png" width="20" height="20">
-          </span>
-          Dashboard
-        </a>
-        <a href="Add_vehicle.html" class="nav-item" data-page="add-vehicle">
-          <span class="nav-icon">
-            <img src="../assets/add.png" width="20" height="20">
-          </span>
-          Add Vehicle
-        </a>
-        <a href="Manage_vehicle.html" class="nav-item" data-page="manage_vehicle">
-          <span class="nav-icon">
-            <img src="../assets/carGrey.png" width="20" height="20">
-          </span>
-          Manage Vehicle
-        </a>
-        <a href="Manage_booking.html" class="nav-item active" data-page="manage-bookings">
-          <span class="nav-icon">
-            <img src="../assets/clipboard.png" width="20" height="20">
-          </span>
-          Manage Bookings
-        </a>
-      </nav>
-    </aside>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item" data-page="dashboard">
+        <span class="nav-icon">
+          <img src="../assets/dashboardGrey.png" width="20" height="20">
+        </span>
+        Dashboard
+      </a>
+      <a href="Add_vehicle.html" class="nav-item" data-page="add-vehicle">
+        <span class="nav-icon">
+          <img src="../assets/add.png" width="20" height="20">
+        </span>
+        Add Vehicle
+      </a>
+      <a href="Manage_vehicle.html" class="nav-item" data-page="manage_vehicle">
+        <span class="nav-icon">
+          <img src="../assets/carGrey.png" width="20" height="20">
+        </span>
+        Manage Vehicle
+      </a>
+      <a href="Manage_booking.html" class="nav-item active" data-page="manage-bookings">
+        <span class="nav-icon">
+          <img src="../assets/clipboard.png" width="20" height="20">
+        </span>
+        Manage Bookings
+      </a>
+      <a href="#" class="nav-item nav-logout" id="rw-sidebar-logout">
+        <span class="nav-icon">
+          <img src="../assets/logout.png" width="20" height="20">
+        </span>
+        Logout
+      </a>
+    </nav>
+  </aside>
 
-    <main class="main-content">
-      <header class="page-header">
-        <h1 class="page-title">Manage Bookings</h1>
-        <p class="page-subtitle">Track all customer bookings, approve or cancel requests, and manage booking statuses</p>
-      </header>
+  <main class="main-content">
+    <header class="page-header">
+      <h1 class="page-title">Manage Bookings</h1>
+      <p class="page-subtitle">Track all customer bookings, approve or cancel requests, and manage booking statuses</p>
+    </header>
 
-      <div class="table-card">
-        <table class="booking-table">
-          <thead>
-            <tr>
-              <th>Vehicle</th>
-              <th>Date Range</th>
-              <th>Total</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="bookingTableBody">
-          </tbody>
-        </table>
-      </div>
-    </main>
-
-  </div><!-- /.rw-page-body -->
-
-  <!-- Footer rendered by layout.js -->
-  <div id="rw-footer"></div>
+    <div class="table-card">
+      <table class="booking-table">
+        <thead>
+          <tr>
+            <th>Vehicle</th>
+            <th>Date Range</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="bookingTableBody">
+        </tbody>
+      </table>
+    </div>
+  </main>
 
   <!-- Edit Profile Modal -->
   <div id="editProfileModal">
@@ -159,10 +154,8 @@
       <p class="call-number" id="callNumber"></p>
     </div>
   </div>
-
-  <script src="../js/config.js"></script>
-  <script src="../js/api.js"></script>
-  <script src="../js/layout.js"></script>
-  <script src="../js/Manage_booking.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/Manage_booking.js"></script>
 </body>
 </html>

@@ -1,6 +1,14 @@
+function requireAuth() {
+  if (!localStorage.getItem("authToken")) {
+    window.location.href = "login.html";
+  }
+}
 
-
-
+function logout() {
+  localStorage.removeItem("authToken");
+  localStorage.removeItem("authUser");
+  window.location.href = "login.html";
+}
 
 function bindLogout() {
   const logoutLink = document.getElementById("rw-sidebar-logout");
@@ -12,6 +20,7 @@ function bindLogout() {
 }
 
 let vehicleData = [];
+
 let pendingDeleteId = null;
 
 function getStatusBadge(status) {
@@ -61,10 +70,14 @@ async function loadVehicles() {
 
     renderVehicles();
   } catch (err) {
-    if (err?.status === 401) { logout(); return; }
+    if (err?.status === 401) {
+      logout();
+      return;
+    }
     const message =
       (err?.data && typeof err.data === "object" ? err.data.message : null) ||
-      err?.message || "Failed to load vehicles.";
+      err?.message ||
+      "Failed to load vehicles.";
     console.error("Load vehicles error:", err);
     setTableMessage(message);
   }
@@ -73,8 +86,10 @@ async function loadVehicles() {
 function renderVehicles() {
   const tbody = document.getElementById("vehicleTableBody");
   if (!tbody) return;
-  if (!vehicleData.length) { setTableMessage("No vehicles yet."); return; }
-
+  if (!vehicleData.length) {
+    setTableMessage("No vehicles yet.");
+    return;
+  }
   tbody.innerHTML = vehicleData.map((v, i) => `
     <tr data-id="${v.id}" style="animation-delay: ${i * 80}ms">
       <td>
@@ -91,7 +106,7 @@ function renderVehicles() {
       <td>${getStatusBadge(v.status)}</td>
       <td>
         <div class="action-btns">
-          <button class="btn-icon toggle-eye" title="${v.status === 'Available' ? 'Mark as Unavailable' : 'Mark as Available'}" onclick="toggleStatus(${v.id}, this)">
+          <button class="btn-icon toggle-eye" title="Toggle availability" onclick="toggleStatus(${v.id})">
             <img src="${v.status === 'Available' ? '../assets/eye.png' : '../assets/eyeClose.png'}" width="20" height="20">
           </button>
           <button class="btn-icon delete" title="Remove vehicle" onclick="openDeleteModal(${v.id})">
@@ -103,48 +118,10 @@ function renderVehicles() {
   `).join("");
 }
 
-async function toggleStatus(id, btn) {
+function toggleStatus(id) {
   const v = vehicleData.find(x => x.id === id);
   if (!v) return;
-
-  const newStatus = v.status === "Available" ? "Not Available" : "Available";
-  const apiStatus = newStatus === "Available" ? "AVAILABLE" : "NOT_AVAILABLE";
-
-  // Optimistic update
-  v.status = newStatus;
-  const img = btn.querySelector("img");
-  if (img) img.src = newStatus === "Available" ? "../assets/eye.png" : "../assets/eyeClose.png";
-  btn.title = newStatus === "Available" ? "Mark as Unavailable" : "Mark as Available";
-
-  // Update badge in the same row
-  const row = btn.closest("tr");
-  if (row) {
-    const badgeCell = row.cells[3];
-    if (badgeCell) badgeCell.innerHTML = getStatusBadge(newStatus);
-  }
-
-  try {
-    await window.RW_API.request(`/vehicles/${id}`, {
-      method: "PATCH",
-      auth: true,
-      body: JSON.stringify({ availabilityStatus: apiStatus }),
-      headers: { "Content-Type": "application/json" },
-    });
-  } catch (err) {
-    if (err?.status === 401) { logout(); return; }
-    // Revert on failure
-    v.status = newStatus === "Available" ? "Not Available" : "Available";
-    if (img) img.src = v.status === "Available" ? "../assets/eye.png" : "../assets/eyeClose.png";
-    btn.title = v.status === "Available" ? "Mark as Unavailable" : "Mark as Available";
-    if (row) {
-      const badgeCell = row.cells[3];
-      if (badgeCell) badgeCell.innerHTML = getStatusBadge(v.status);
-    }
-    const message =
-      (err?.data && typeof err.data === "object" ? err.data.message : null) ||
-      err?.message || "Failed to update availability.";
-    alert(message);
-  }
+  alert("Availability is based on active bookings and cannot be toggled manually.");
 }
 
 // ── View Modal ──
@@ -188,10 +165,14 @@ async function confirmDelete() {
     closeDeleteModal();
     renderVehicles();
   } catch (err) {
-    if (err?.status === 401) { logout(); return; }
+    if (err?.status === 401) {
+      logout();
+      return;
+    }
     const message =
       (err?.data && typeof err.data === "object" ? err.data.message : null) ||
-      err?.message || "Failed to delete vehicle.";
+      err?.message ||
+      "Failed to delete vehicle.";
     console.error("Delete vehicle error:", err);
     alert(message);
   }
@@ -203,9 +184,20 @@ function initNav() {
     if (item.classList.contains("nav-logout")) return;
     item.addEventListener("click", function (e) {
       const page = this.dataset.page;
-      if (page === "dashboard")      { window.location.href = "dashboard.html";    return; }
-      if (page === "add-vehicle")    { window.location.href = "Add_vehicle.html";  return; }
-      if (page === "manage_booking") { window.location.href = "Manage_booking.html"; return; }
+
+      if (page === "dashboard") {
+        window.location.href = "dashboard.html";
+        return;
+      }
+      if (page === "add-vehicle") {
+        window.location.href = "Add_vehicle.html";
+        return;
+      }
+      if (page === "manage_booking") {
+        window.location.href = "Manage_booking.html";
+        return;
+      }
+
       e.preventDefault();
       document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
       this.classList.add("active");
@@ -214,8 +206,13 @@ function initNav() {
 }
 
 // ── Edit Profile Modal ──
-function openModal() { showMainOptions(); document.getElementById("editProfileModal").style.display = "flex"; }
-function closeModal() { document.getElementById("editProfileModal").style.display = "none"; }
+function openModal() {
+  showMainOptions();
+  document.getElementById("editProfileModal").style.display = "flex";
+}
+function closeModal() {
+  document.getElementById("editProfileModal").style.display = "none";
+}
 function showMainOptions() {
   document.getElementById("mainOptions").style.display = "block";
   document.getElementById("photoEdit").style.display   = "none";
@@ -232,34 +229,58 @@ function showLicenseEdit() {
   document.getElementById("licenseEdit").style.display = "block";
 }
 function previewLicense(event) {
-  const file = event.target.files[0]; if (!file) return;
+  const file = event.target.files[0];
+  if (!file) return;
   const reader = new FileReader();
-  reader.onload = e => { const p = document.getElementById("licensePreview"); p.src = e.target.result; p.style.display = "block"; };
+  reader.onload = e => {
+    const preview = document.getElementById("licensePreview");
+    preview.src = e.target.result;
+    preview.style.display = "block";
+  };
   reader.readAsDataURL(file);
 }
 function saveLicense() {
   const licenseInput = document.getElementById("licenseNumber");
   const expiryInput  = document.getElementById("expiryDate");
   let valid = true;
-  licenseInput.style.borderColor = ""; expiryInput.style.borderColor = "";
-  licenseInput.style.color = ""; expiryInput.style.color = "";
-  if (!licenseInput.value.trim()) { licenseInput.style.borderColor = "#dc2626"; licenseInput.style.color = "#dc2626"; licenseInput.placeholder = "License number is required"; valid = false; }
-  if (!expiryInput.value) { expiryInput.style.borderColor = "#dc2626"; expiryInput.style.color = "#dc2626"; valid = false; }
+  licenseInput.style.borderColor = "";
+  expiryInput.style.borderColor  = "";
+  licenseInput.style.color       = "";
+  expiryInput.style.color        = "";
+  if (!licenseInput.value.trim()) {
+    licenseInput.style.borderColor = "#dc2626";
+    licenseInput.style.color       = "#dc2626";
+    licenseInput.placeholder       = "License number is required";
+    valid = false;
+  }
+  if (!expiryInput.value) {
+    expiryInput.style.borderColor = "#dc2626";
+    expiryInput.style.color       = "#dc2626";
+    valid = false;
+  }
   if (!valid) return;
   closeModal();
 }
 function previewPhoto(event) {
-  const file = event.target.files[0]; if (!file) return;
+  const file = event.target.files[0];
+  if (!file) return;
   const reader = new FileReader();
-  reader.onload = e => { const p = document.getElementById("photoPreview"); p.src = e.target.result; p.style.display = "block"; };
+  reader.onload = e => {
+    const preview = document.getElementById("photoPreview");
+    preview.src = e.target.result;
+    preview.style.display = "block";
+  };
   reader.readAsDataURL(file);
 }
 function savePhoto() {
   const preview = document.getElementById("photoPreview");
-  if (preview.src) document.querySelector(".avatar img").src = preview.src;
+  if (preview.src) {
+    document.querySelector(".avatar img").src = preview.src;
+  }
   closeModal();
 }
 
+// Close modals on backdrop click
 ["editProfileModal", "viewVehicleModal", "deleteModal"].forEach(id => {
   document.getElementById(id).addEventListener("click", function (e) {
     if (e.target === this) {
