@@ -127,13 +127,20 @@ function nextPage() {
   if (!email) {
     showError(emailEl, 'Email is required.');
     hasError = true;
+  } else if (!email.endsWith('@gmail.com')) {
+    showError(emailEl, 'Email must be a @gmail.com address.');
+    hasError = true;
   }
   if (!phone || !/^\d{10}$/.test(phone)) {
     showError(phoneEl, 'Phone must be 10 digits.');
     hasError = true;
   }
-  if (!password || password.length < 6) {
-    showError(passwordEl, 'Password must be at least 6 characters.');
+  const pwErrors = validatePassword(password);
+  if (!password) {
+    showError(passwordEl, 'Password is required.');
+    hasError = true;
+  } else if (pwErrors.length > 0) {
+    showError(passwordEl, 'Password needs: ' + pwErrors.join(', ') + '.');
     hasError = true;
   }
   if (confirmPassword !== password) {
@@ -157,4 +164,25 @@ document.addEventListener('DOMContentLoaded', () => {
   setupPasswordToggle('npassword', 'toggle-npassword');
   setupPasswordToggle('cpassword', 'toggle-cpassword');
   sessionStorage.removeItem("signupSource");
+ 
+const pwInput = document.getElementById('npassword');
+const pwHint = document.createElement('div');
+pwHint.id = 'pw-strength-hint';
+pwHint.style.cssText = 'margin-top:6px;font-size:0.75rem;font-weight:600;line-height:1.6;';
+pwInput.closest('.input-group').appendChild(pwHint);
+
+pwInput.addEventListener('input', () => {
+  const val = pwInput.value;
+  if (!val) { pwHint.innerHTML = ''; return; }
+  const rules = [
+    { ok: val.length >= 6,        text: 'At least 6 characters' },
+    { ok: /[A-Z]/.test(val),      text: 'One uppercase letter (A–Z)' },
+    { ok: /[0-9]/.test(val),      text: 'One number (0–9)' },
+  ];
+  pwHint.innerHTML = rules.map(r =>
+    `<span style="color:${r.ok ? '#22c55e' : '#ef4444'}">
+      ${r.ok ? '✓' : '✗'} ${r.text}
+    </span>`
+  ).join('<br>');
+});
 });
