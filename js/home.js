@@ -461,10 +461,11 @@ if (recCarousel && recPrev && recNext) {
     }
   }
 
-  const vehiclesSearch = document.getElementById('vehiclesSearch');
+ const vehiclesSearch = document.getElementById('vehiclesSearch');
   if (vehiclesSearch) {
     vehiclesSearch.addEventListener('input', e => {
       const query = String(e.target.value || '').trim().toLowerCase();
+
       document.querySelectorAll('.vehicle-card').forEach(card => {
         const name = card.querySelector('.vehicle-card__name')?.textContent?.toLowerCase() || '';
         const type = card.querySelector('.vehicle-card__type')?.textContent?.toLowerCase() || '';
@@ -474,6 +475,33 @@ if (recCarousel && recPrev && recNext) {
         const matches = !query || name.includes(query) || type.includes(query) || specs.includes(query);
         card.style.display = matches ? '' : 'none';
       });
+
+      // Count visible cards per grid
+      const visibleCars  = [...document.querySelectorAll('#carsGrid .vehicle-card')]
+        .filter(c => c.style.display !== 'none').length;
+      const visibleBikes = [...document.querySelectorAll('#bikesGrid .vehicle-card')]
+        .filter(c => c.style.display !== 'none').length;
+
+      // Show/hide explore buttons
+      const exploreCarsBtn  = document.getElementById('exploreCars')?.closest('.explore-cta');
+      const exploreBikesBtn = document.getElementById('exploreBikes')?.closest('.explore-cta');
+      if (exploreCarsBtn)  exploreCarsBtn.style.display  = visibleCars  > 0 ? '' : 'none';
+      if (exploreBikesBtn) exploreBikesBtn.style.display = visibleBikes > 0 ? '' : 'none';
+
+      // No results message
+      let noResult = document.getElementById('rw-no-results');
+      if (visibleCars === 0 && visibleBikes === 0 && query) {
+        if (!noResult) {
+          noResult = document.createElement('p');
+          noResult.id = 'rw-no-results';
+          noResult.style.cssText = 'text-align:center;color:#64748b;font-size:1rem;padding:40px 0;grid-column:1/-1;';
+          noResult.textContent = 'No vehicles found matching your search.';
+          document.querySelector('.vehicles-grid')?.parentElement?.appendChild(noResult);
+        }
+        noResult.style.display = '';
+      } else {
+        if (noResult) noResult.style.display = 'none';
+      }
     });
   }
 
