@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,72 +8,82 @@
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/signup.css">
 </head>
+
 <body>
-<div class="rw-home-backdrop" aria-hidden="true">
-  <iframe class="rw-home-iframe" src="home.html" title="" tabindex="-1"></iframe>
-</div>
-<div class="rw-home-dim" aria-hidden="true"></div>
-<div class="signup-modal-layer">
-<div class="modal">
-  <div class="modal-image">
-    <img src="../assets/Assests/signup-img.jpg" alt="Car on map">
+  <div class="rw-home-backdrop" aria-hidden="true">
+    <iframe class="rw-home-iframe" src="home.html" title="" tabindex="-1"></iframe>
   </div>
-  <div class="modal-form-wrap">
-    <div class="modal-form-inner">
-      <div class="profile-icon">
-        <img src="../assets/Assests/Person-Icon.png" width="60" height="60" alt="Person icon">
+  <div class="rw-home-dim" aria-hidden="true"></div>
+  <div class="signup-modal-layer">
+    <div class="modal">
+      <div class="modal-image">
+        <img src="../assets/Assests/signup-img.jpg" alt="Car on map">
       </div>
-      <h2><span>Get</span> Started !</h2>
-      <div class="input-group">
-        <label>Profile Picture <span>*</span></label>
-        <div class="upload-box" id="profileBox" onclick="triggerUpload('profileInput')">
-          <div class="upload-preview" id="profilePreview">
-            <div class="upload-icon-wrap">
-              <img src="../assets/Assests/file-icon.png" class="upload-default-icon" width="100" height="100" alt="upload">
-            </div>
-            <p class="upload-hint">Please upload a recent formal photo where your face is clearly seen.</p>
+      <div class="modal-form-wrap">
+        <div class="modal-form-inner">
+          <div class="profile-icon">
+            <img src="../assets/Assests/Person-Icon.png" width="60" height="60" alt="Person icon">
           </div>
-          <input type="file" id="profileInput" accept="image/*" hidden onchange="handleUpload(this, 'profilePreview', 'profileBox')">
-        </div>
-      </div>
-      <div class="input-group">
-        <label>Upload License <span>*</span></label>
-        <div class="upload-box" id="licenseBox" onclick="triggerUpload('licenseInput')">
-          <div class="upload-preview" id="licensePreview">
-            <div class="upload-icon-wrap">
-              <img src="../assets/Assests/file-icon.png" class="upload-default-icon" width="100" height="100" alt="upload">
+          <h2><span>Get</span> Started !</h2>
+          <div class="input-group">
+            <label>Profile Picture <span>*</span></label>
+            <div class="upload-box" id="profileBox" onclick="triggerUpload('profileInput')">
+              <div class="upload-preview" id="profilePreview">
+                <div class="upload-icon-wrap">
+                  <img src="../assets/Assests/file-icon.png" class="upload-default-icon" width="100" height="100"
+                    alt="upload">
+                </div>
+                <p class="upload-hint">Please upload a recent formal photo where your face is clearly seen.</p>
+              </div>
+              <input type="file" id="profileInput" accept="image/*" hidden
+                onchange="handleUpload(this, 'profilePreview', 'profileBox')">
             </div>
-            <p class="upload-hint">Please upload a clear image of the front side of your license.</p>
           </div>
-          <input type="file" id="licenseInput" accept="image/*" hidden onchange="handleUpload(this, 'licensePreview', 'licenseBox')">
+          <div class="input-group">
+            <label>Upload License <span>*</span></label>
+            <div class="upload-box" id="licenseBox" onclick="triggerUpload('licenseInput')">
+              <div class="upload-preview" id="licensePreview">
+                <div class="upload-icon-wrap">
+                  <img src="../assets/Assests/file-icon.png" class="upload-default-icon" width="100" height="100"
+                    alt="upload">
+                </div>
+                <p class="upload-hint">Please upload a clear image of the front side of your license.</p>
+              </div>
+              <input type="file" id="licenseInput" accept="image/*" hidden
+                onchange="handleUpload(this, 'licensePreview', 'licenseBox')">
+            </div>
+          </div>
+          <p class="switch-text">
+            Already have an account? <span onclick="goToLogin()">click here</span>
+          </p>
+          <button type="button" class="btn-next" onclick="submitSignup()">Sign In</button>
+          <div class="page-dots">
+            <div class="dot" onclick="goBack()"></div>
+            <div class="dot active"></div>
+          </div>
         </div>
-      </div>
-      <p class="switch-text">
-        Already have an account? <span onclick="goToLogin()">click here</span>
-      </p>
-      <button type="button" class="btn-next" onclick="submitSignup()">Sign In</button>
-      <div class="page-dots">
-        <div class="dot" onclick="goBack()"></div>
-        <div class="dot active"></div>
       </div>
     </div>
   </div>
-</div>
-</div>
-<div class="overlay" id="signupSuccessOverlay">
-  <div class="popup">
-    <div class="popup-check">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-      </svg>
+  <div class="overlay" id="signupSuccessOverlay">
+    <div class="popup">
+      <div class="popup-check">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+      </div>
+      <h3>Account Created!</h3>
+      <p>Your registration is complete. You can now log in to start renting your favorite wheels.</p>
+      <div class="popup-countdown">Redirecting to login in <span id="signupRedirectCount">5</span>s…</div>
+      <button class="btn-submit" id="goLoginBtn" style="margin-top:0;">Go to Login</button>
     </div>
-    <h3>Account Created!</h3>
-    <p>Your registration is complete. You can now log in to start renting your favorite wheels.</p>
-    <div class="popup-countdown">Redirecting to login in <span id="signupRedirectCount">5</span>s…</div>
-    <button class="btn-submit" id="goLoginBtn" style="margin-top:0;">Go to Login</button>
   </div>
-</div>
-<script src="../js/signup1.js"></script>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/signup1.js"></script>
 </body>
+
 </html>
