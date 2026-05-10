@@ -3,78 +3,71 @@
 
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign Up</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/signup.css">
 </head>
 
 <body>
-
-  <div class="overlay-bg"></div>
-
-  <div class="modal">
-
-    <div class="modal-image">
-      <img src="../assets/signup-img.jpg" alt="Sign Up Image" width="150" height="150" alt="Car on map">
-    </div>
-
-    <div class="modal-form-wrap">
-      <div class="modal-form-inner">
-
-        <div class="profile-icon">
-          <img src="../assets/Person-Icon.png" width="60" height="60" alt="Person icon">
+  <div class="rw-home-backdrop" aria-hidden="true">
+    <iframe class="rw-home-iframe" src="home.html" title="" tabindex="-1"></iframe>
+  </div>
+  <div class="rw-home-dim" aria-hidden="true"></div>
+  <div class="signup-modal-layer">
+    <div class="modal">
+      <div class="modal-image">
+        <img src="../assets/signup-img.jpg" alt="Sign Up Image" width="150" height="150">
+      </div>
+      <div class="modal-form-wrap">
+        <div class="modal-form-inner">
+          <div class="profile-icon">
+            <img src="../assets/Person-Icon.png" width="60" height="60" alt="Person icon">
+          </div>
+          <h2><span>Get</span> Started !</h2>
+          <div class="input-group">
+            <label>Username</label>
+            <input type="text" id="username" placeholder="Enter your username" required>
+          </div>
+          <div class="input-group">
+            <label>Email</label>
+            <input type="email" id="email" placeholder="Enter your email" required>
+          </div>
+          <div class="input-group">
+            <label>Phone Number</label>
+            <input type="tel" id="phone" placeholder="Enter your phone number" required>
+          </div>
+          <div class="input-group">
+            <label>New Password</label>
+            <div class="password-wrapper">
+              <input type="password" id="npassword" placeholder="New password" required>
+              <button type="button" class="eye-btn" id="toggle-npassword" aria-label="Show password"></button>
+            </div>
+          </div>
+          <div class="input-group">
+            <label>Confirm Password</label>
+            <div class="password-wrapper">
+              <input type="password" id="cpassword" placeholder="Confirm password" required>
+              <button type="button" class="eye-btn" id="toggle-cpassword" aria-label="Show password"></button>
+            </div>
+          </div>
+          <button type="button" class="btn-next" onclick="nextPage()">Next</button>
+          <button class="btn-google">
+            <img src="../assets/google-logo.png" width="25" height="25" alt="google icon">
+            Sign in with Google
+          </button>
+          <p class="switch-text">
+            Already have an account? <span onclick="goToLogin()">click here</span>
+          </p>
+          <div class="page-dots">
+            <div class="dot active"></div>
+            <div class="dot"></div>
+          </div>
         </div>
-
-        <h2><span>Get</span> Started !</h2>
-
-        <div class="input-group">
-          <label>Username</label>
-          <input type="text" id="username" placeholder="Enter you username" required>
-        </div>
-
-        <div class="input-group">
-          <label>Email</label>
-          <input type="email" id="email" placeholder="Enter your email" required>
-        </div>
-
-        <div class="input-group">
-          <label>Phone Number</label>
-          <input type="tel" id="phone" placeholder="Enter your phone number" required>
-        </div>
-
-        <div class="input-group">
-          <label>New Password</label>
-          <input type="password" id="npassword" placeholder="New password" required>
-        </div>
-
-        <div class="input-group">
-          <label>Confirm Password</label>
-          <input type="password" id="cpassword" placeholder="Confrim password" required>
-        </div>
-        <button type="button" class="btn-next" onclick="nextPage()">Next</button>
-
-        <button class="btn-google">
-          <img src="../assets/google-logo.png" width="25" height="25" alt="google icon">
-          Sign in with Google
-        </button>
-
-        <p class="switch-text">
-          Already have an account? <span onclick="goToLogin()">click here</span>
-        </p>
-
-        <div class="page-dots">
-          <div class="dot active"></div>
-          <div class="dot"></div>
-        </div>
-
       </div>
     </div>
   </div>
-
-
-
   <script src="../js/signup.js"></script>
-
 </body>
 
 </html>
