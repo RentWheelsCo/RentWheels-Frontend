@@ -13,31 +13,31 @@
   /* ─── DOM refs ───────────────────────────────────────── */
   const $ = id => document.getElementById(id);
 
-  const insuranceBtn      = $('insuranceSelect');
-  const insuranceValue    = $('insuranceValue');
+  const insuranceBtn = $('insuranceSelect');
+  const insuranceValue = $('insuranceValue');
   const insuranceDropdown = $('insuranceDropdown');
-  const insuranceField    = $('insuranceField');
+  const insuranceField = $('insuranceField');
 
-  const pickupInput    = $('pickupDate');
-  const pickupCalBtn   = $('pickupCalBtn');
-  const pickupField    = $('pickupField');
+  const pickupInput = $('pickupDate');
+  const pickupCalBtn = $('pickupCalBtn');
+  const pickupField = $('pickupField');
 
-  const returnInput    = $('returnDate');
-  const returnCalBtn   = $('returnCalBtn');
-  const returnField    = $('returnField');
+  const returnInput = $('returnDate');
+  const returnCalBtn = $('returnCalBtn');
+  const returnField = $('returnField');
 
-  const searchBtn      = $('searchBtn');
-  const calendarPopup  = $('calendarPopup');
-  const calDays        = $('calDays');
-  const calMonthYear   = $('calMonthYear');
-  const prevMonthBtn   = $('prevMonth');
-  const nextMonthBtn   = $('nextMonth');
-  const searchBar      = $('searchBar');
+  const searchBtn = $('searchBtn');
+  const calendarPopup = $('calendarPopup');
+  const calDays = $('calDays');
+  const calMonthYear = $('calMonthYear');
+  const prevMonthBtn = $('prevMonth');
+  const nextMonthBtn = $('nextMonth');
+  const searchBar = $('searchBar');
 
   /* ─── Helpers ─────────────────────────────────────────── */
   const MONTHS = [
-    'January','February','March','April','May','June',
-    'July','August','September','October','November','December'
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
   function formatDate(date) {

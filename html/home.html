@@ -1,712 +1,665 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RentWheels – Vehicles on Rent</title>
-    <link rel="stylesheet" href="../css/home.css" />
-    <link rel="stylesheet" href="../css/styles.css" />
-    <script src="../js/layout.js" defer></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <div id="rw-header"></div>
-    <section class="hero" id="hero">
-      <div class="hero__content">
-        <h1 class="hero__title">Vehicles on Rent</h1>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RentWheels – Vehicles on Rent</title>
+  <link rel="stylesheet" href="../css/home.css" />
+  <link rel="stylesheet" href="../css/styles.css" />
+  <link rel="stylesheet" href="../css/layout.css">
+  <script src="../js/layout.js" defer></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+</head>
+
+<body data-page="home">
+  <div id="rw-header"></div>
+  <section class="hero" id="hero">
+    <div class="hero__content">
+      <h1 class="hero__title">Vehicles on Rent</h1>
+
+      <!-- Hero Search Widget -->
+      <div class="hero-search" id="heroSearch" role="search">
+        <!-- Insurance -->
+        <div class="hero-search__field" id="hs-insuranceField">
+          <label class="hero-search__label" for="hs-insuranceBtn">Insurance Type</label>
+          <div class="hs-select-wrap">
+            <button class="hs-select-btn" id="hs-insuranceBtn" type="button" aria-haspopup="listbox"
+              aria-expanded="false" aria-label="Select insurance type">
+              <span class="hs-select-value" id="hs-insuranceValue">Select insurance</span>
+              <svg viewBox="0 0 20 20" fill="none" class="hs-chevron" aria-hidden="true">
+                <path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </button>
+            <ul class="hs-dropdown" id="hs-insuranceDropdown" role="listbox">
+              <li class="hs-dropdown__item" data-value="none" role="option">No Insurance</li>
+              <li class="hs-dropdown__item" data-value="half" role="option">Half Insurance</li>
+              <li class="hs-dropdown__item" data-value="full" role="option">Full Insurance</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="hero-search__divider" aria-hidden="true"></div>
+
+        <!-- Pick-up Date -->
+        <div class="hero-search__field" id="hs-pickupField">
+          <label class="hero-search__label" for="hs-pickupDate">Pick-up Date</label>
+          <div class="hs-date-wrap">
+            <input type="text" class="hs-date-input" id="hs-pickupDate" placeholder="mm/dd/yyyy" readonly
+              aria-label="Pick-up date" />
+            <button class="hs-cal-btn" id="hs-pickupCalBtn" type="button" aria-label="Open pick-up date calendar">
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <rect x="3" y="5" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.5" />
+                <path d="M3 9h14" stroke="currentColor" stroke-width="1.5" />
+                <path d="M7 3v3M13 3v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="hero-search__divider" aria-hidden="true"></div>
+
+        <!-- Return Date -->
+        <div class="hero-search__field" id="hs-returnField">
+          <label class="hero-search__label" for="hs-returnDate">Return Date</label>
+          <div class="hs-date-wrap">
+            <input type="text" class="hs-date-input" id="hs-returnDate" placeholder="mm/dd/yyyy" readonly
+              aria-label="Return date" />
+            <button class="hs-cal-btn" id="hs-returnCalBtn" type="button" aria-label="Open return date calendar">
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <rect x="3" y="5" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.5" />
+                <path d="M3 9h14" stroke="currentColor" stroke-width="1.5" />
+                <path d="M7 3v3M13 3v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Search Button -->
+        <button class="hs-search-btn" id="hs-searchBtn" type="button" aria-label="Search vehicles">
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <circle cx="9" cy="9" r="5.5" stroke="currentColor" stroke-width="1.8" />
+            <path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          </svg>
+          <span>Search</span>
+        </button>
       </div>
 
-      <div class="hero__visual">
-        <div class="hero__car-wrap">
-          <img
-            src="../assets/homecar.png"
-            alt="Featured car"
-            class="hero__car-img"
-            id="heroCar"
-          />
+      <!-- Calendar Popup -->
+      <div class="hs-cal-popup" id="hs-calPopup" style="display:none;" role="dialog" aria-modal="true"
+        aria-label="Date picker">
+        <div class="hs-cal-header">
+          <button class="hs-cal-nav" id="hs-prevMonth" type="button" aria-label="Previous month">&#8249;</button>
+          <span class="hs-cal-month" id="hs-calMonthYear"></span>
+          <button class="hs-cal-nav" id="hs-nextMonth" type="button" aria-label="Next month">&#8250;</button>
+        </div>
+        <div class="hs-cal-weekdays" aria-hidden="true">
+          <span>Su</span><span>Mo</span><span>Tu</span>
+          <span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+        </div>
+        <div class="hs-cal-days" id="hs-calDays"></div>
+      </div>
+    </div>
+
+    <div class="hero__visual">
+      <div class="hero__car-wrap">
+        <img src="../assets/homecar.png" alt="Featured car" class="hero__car-img" id="heroCar" />
+      </div>
+    </div>
+  </section>
+
+  <section class="featured" id="featured">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Featured Vehicles</h2>
+        <p class="section-subtitle">
+          Explore our selection of premium vehicles available for your next
+          adventure.
+        </p>
+        <!-- Text search bar below section header -->
+        <div class="vehicles-search-wrap" role="search" aria-label="Filter vehicles">
+          <svg class="vehicles-search-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <circle cx="9" cy="9" r="5.7" stroke="currentColor" stroke-width="1.6" />
+            <path d="M13.1 13.2L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+          </svg>
+          <input id="vehiclesSearch" type="search" class="vehicles-search-input"
+            placeholder="Search vehicles by name, type or fuel…" aria-label="Search featured vehicles" />
         </div>
       </div>
-    </section>
 
-    <section class="featured" id="featured">
-      <div class="container">
-        <div class="section-header">
-          <h2 class="section-title">Featured Vehicles</h2>
-          <p class="section-subtitle">
-            Explore our selection of premium vehicles available for your next
-            adventure.
-          </p>
-        </div>
-
-        <div class="vehicles-grid" id="carsGrid">
-          <div class="vehicle-card" data-id="1">
-            <div class="vehicle-card__img-wrap">
-              <span class="badge badge--available">Available Now</span>
-              <span class="badge badge--price">$100/day</span>
-              <img
-                src="../assets/bmwx5.png"
-                alt="BMW X5"
-                class="vehicle-card__img"
-              />
-            </div>
-            <div class="vehicle-card__body">
-              <h3 class="vehicle-card__name">BMW X5</h3>
-              <p class="vehicle-card__type">Sedan</p>
-              <div class="vehicle-card__specs">
-                <span class="spec">
-                  <svg viewBox="0 0 16 16" fill="none">
-                    <path
-                      d="M8 2a6 6 0 100 12A6 6 0 008 2z"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                    <path
-                      d="M8 5v3l2 2"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                      stroke-linecap="round"
-                    />
-                  </svg>
-                  4 Seats
-                </span>
-                <span class="spec">
-                  <svg viewBox="0 0 16 16" fill="none">
-                    <path
-                      d="M3 13s0-6 5-6 5 6 5 6"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                      stroke-linecap="round"
-                    />
-                    <circle
-                      cx="8"
-                      cy="5"
-                      r="2"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                  </svg>
-                  Gasoline
-                </span>
-                <span class="spec">
-                  <svg viewBox="0 0 16 16" fill="none">
-                    <rect
-                      x="2"
-                      y="5"
-                      width="12"
-                      height="8"
-                      rx="1.5"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                    <path
-                      d="M5 5V4a3 3 0 016 0v1"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                  </svg>
-                  Automatic
-                </span>
-                <span class="spec">
-                  <svg viewBox="0 0 16 16" fill="none">
-                    <path
-                      d="M8 2C5.24 2 3 4.24 3 7c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5z"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                    <circle
-                      cx="8"
-                      cy="7"
-                      r="1.5"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                  </svg>
-                  Kathmandu
-                </span>
-              </div>
-            </div>
+      <div class="vehicles-grid" id="carsGrid">
+        <div class="vehicle-card" data-id="1">
+          <div class="vehicle-card__img-wrap">
+            <span class="badge badge--available">Available Now</span>
+            <span class="badge badge--price">$100/day</span>
+            <img src="../assets/bmwx5.png" alt="BMW X5" class="vehicle-card__img" />
           </div>
-
-          <div class="vehicle-card" data-id="2">
-            <div class="vehicle-card__img-wrap">
-              <span class="badge badge--available">Available Now</span>
-              <span class="badge badge--price">$100/day</span>
-              <img
-                src="../assets/bmwm3.png"
-                alt="BMW M3"
-                class="vehicle-card__img"
-              />
-            </div>
-            <div class="vehicle-card__body">
-              <h3 class="vehicle-card__name">BMW M3</h3>
-              <p class="vehicle-card__type">Sedan</p>
-              <div class="vehicle-card__specs">
-                <span class="spec">
-                  <svg viewBox="0 0 16 16" fill="none">
-                    <path
-                      d="M8 2a6 6 0 100 12A6 6 0 008 2z"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                    <path
-                      d="M8 5v3l2 2"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                      stroke-linecap="round"
-                    />
-                  </svg>
-                  4 Seats
-                </span>
-                <span class="spec">
-                  <svg viewBox="0 0 16 16" fill="none">
-                    <path
-                      d="M3 13s0-6 5-6 5 6 5 6"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                      stroke-linecap="round"
-                    />
-                    <circle
-                      cx="8"
-                      cy="5"
-                      r="2"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                  </svg>
-                  Gasoline
-                </span>
-                <span class="spec">
-                  <svg viewBox="0 0 16 16" fill="none">
-                    <rect
-                      x="2"
-                      y="5"
-                      width="12"
-                      height="8"
-                      rx="1.5"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                    <path
-                      d="M5 5V4a3 3 0 016 0v1"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                  </svg>
-                  Automatic
-                </span>
-                <span class="spec">
-                  <svg viewBox="0 0 16 16" fill="none">
-                    <path
-                      d="M8 2C5.24 2 3 4.24 3 7c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5z"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                    <circle
-                      cx="8"
-                      cy="7"
-                      r="1.5"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                  </svg>
-                  Kathmandu
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div class="vehicle-card" data-id="3">
-            <div class="vehicle-card__img-wrap">
-              <span class="badge badge--available">Available Now</span>
-              <span class="badge badge--price">$100/day</span>
-              <img
-                src="../assets/TeslaModelX.png"
-                alt="Tesla Model X"
-                class="vehicle-card__img"
-              />
-            </div>
-            <div class="vehicle-card__body">
-              <h3 class="vehicle-card__name">Tesla Model X</h3>
-              <p class="vehicle-card__type">Sedan</p>
-              <div class="vehicle-card__specs">
-                <span class="spec">
-                  <svg viewBox="0 0 16 16" fill="none">
-                    <path
-                      d="M8 2a6 6 0 100 12A6 6 0 008 2z"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                    <path
-                      d="M8 5v3l2 2"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                      stroke-linecap="round"
-                    />
-                  </svg>
-                  4 Seats
-                </span>
-                <span class="spec">
-                  <svg viewBox="0 0 16 16" fill="none">
-                    <path
-                      d="M3 13s0-6 5-6 5 6 5 6"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                      stroke-linecap="round"
-                    />
-                    <circle
-                      cx="8"
-                      cy="5"
-                      r="2"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                  </svg>
-                  Electric
-                </span>
-                <span class="spec">
-                  <svg viewBox="0 0 16 16" fill="none">
-                    <rect
-                      x="2"
-                      y="5"
-                      width="12"
-                      height="8"
-                      rx="1.5"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                    <path
-                      d="M5 5V4a3 3 0 016 0v1"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                  </svg>
-                  Automatic
-                </span>
-                <span class="spec">
-                  <svg viewBox="0 0 16 16" fill="none">
-                    <path
-                      d="M8 2C5.24 2 3 4.24 3 7c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5z"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                    <circle
-                      cx="8"
-                      cy="7"
-                      r="1.5"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                  </svg>
-                  Kathmandu
-                </span>
-              </div>
+          <div class="vehicle-card__body">
+            <h3 class="vehicle-card__name">BMW X5</h3>
+            <p class="vehicle-card__type">Sedan</p>
+            <div class="vehicle-card__specs">
+              <span class="spec">
+                <svg viewBox="0 0 16 16" fill="none">
+                  <path d="M8 2a6 6 0 100 12A6 6 0 008 2z" stroke="currentColor" stroke-width="1.3" />
+                  <path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+                </svg>
+                4 Seats
+              </span>
+              <span class="spec">
+                <svg viewBox="0 0 16 16" fill="none">
+                  <path d="M3 13s0-6 5-6 5 6 5 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+                  <circle cx="8" cy="5" r="2" stroke="currentColor" stroke-width="1.3" />
+                </svg>
+                Gasoline
+              </span>
+              <span class="spec">
+                <svg viewBox="0 0 16 16" fill="none">
+                  <rect x="2" y="5" width="12" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3" />
+                  <path d="M5 5V4a3 3 0 016 0v1" stroke="currentColor" stroke-width="1.3" />
+                </svg>
+                Automatic
+              </span>
+              <span class="spec">
+                <svg viewBox="0 0 16 16" fill="none">
+                  <path d="M8 2C5.24 2 3 4.24 3 7c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5z" stroke="currentColor"
+                    stroke-width="1.3" />
+                  <circle cx="8" cy="7" r="1.5" stroke="currentColor" stroke-width="1.3" />
+                </svg>
+                Kathmandu
+              </span>
             </div>
           </div>
         </div>
 
-        <div class="explore-cta">
-          <a href="../html/vehicle.html?view=cars" class="btn-explore" id="exploreCars">
-            Explore all cars
-            <svg
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M4 10h12M12 6l4 4-4 4"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-          </a>
-        </div>
-
-        <div class="vehicles-grid" id="bikesGrid">
-          <div class="vehicle-card" data-id="4">
-            <div class="vehicle-card__img-wrap">
-              <span class="badge badge--available">Available Now</span>
-              <span class="badge badge--price">$20/day</span>
-              <img
-                src="../assets/bmws1krr.png"
-                alt="Cbr 600rr"
-                class="vehicle-card__img"
-              />
-            </div>
-            <div class="vehicle-card__body">
-              <h3 class="vehicle-card__name">BMW s1000rr</h3>
-              <p class="vehicle-card__type">Sports</p>
-              <div class="vehicle-card__specs">
-                <span class="spec">
-                  <svg viewBox="0 0 16 16" fill="none">
-                    <path
-                      d="M8 2a6 6 0 100 12A6 6 0 008 2z"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                    <path
-                      d="M8 5v3l2 2"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                      stroke-linecap="round"
-                    />
-                  </svg>
-                  1 Seat
-                </span>
-                <span class="spec">
-                  <svg viewBox="0 0 16 16" fill="none">
-                    <path
-                      d="M3 13s0-6 5-6 5 6 5 6"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                      stroke-linecap="round"
-                    />
-                    <circle
-                      cx="8"
-                      cy="5"
-                      r="2"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                  </svg>
-                  Petrol
-                </span>
-                <span class="spec">
-                  <svg viewBox="0 0 16 16" fill="none">
-                    <rect
-                      x="2"
-                      y="5"
-                      width="12"
-                      height="8"
-                      rx="1.5"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                    <path
-                      d="M5 5V4a3 3 0 016 0v1"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                  </svg>
-                  Manual
-                </span>
-                <span class="spec">
-                  <svg viewBox="0 0 16 16" fill="none">
-                    <path
-                      d="M8 2C5.24 2 3 4.24 3 7c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5z"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                    <circle
-                      cx="8"
-                      cy="7"
-                      r="1.5"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                  </svg>
-                  Kathmandu
-                </span>
-              </div>
-            </div>
+        <div class="vehicle-card" data-id="2">
+          <div class="vehicle-card__img-wrap">
+            <span class="badge badge--available">Available Now</span>
+            <span class="badge badge--price">$100/day</span>
+            <img src="../assets/bmwm3.png" alt="BMW M3" class="vehicle-card__img" />
           </div>
-
-          <div class="vehicle-card" data-id="5">
-            <div class="vehicle-card__img-wrap">
-              <span class="badge badge--available">Available Now</span>
-              <span class="badge badge--price">$22/day</span>
-              <img
-                src="../assets/streetfighterV4S.png"
-                alt="Ducati 1089"
-                class="vehicle-card__img"
-              />
-            </div>
-            <div class="vehicle-card__body">
-              <h3 class="vehicle-card__name">Ducati streetfighter V4S</h3>
-              <p class="vehicle-card__type">Sports</p>
-              <div class="vehicle-card__specs">
-                <span class="spec">
-                  <svg viewBox="0 0 16 16" fill="none">
-                    <path
-                      d="M8 2a6 6 0 100 12A6 6 0 008 2z"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                    <path
-                      d="M8 5v3l2 2"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                      stroke-linecap="round"
-                    />
-                  </svg>
-                  1 Seat
-                </span>
-                <span class="spec">
-                  <svg viewBox="0 0 16 16" fill="none">
-                    <path
-                      d="M3 13s0-6 5-6 5 6 5 6"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                      stroke-linecap="round"
-                    />
-                    <circle
-                      cx="8"
-                      cy="5"
-                      r="2"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                  </svg>
-                  Petrol
-                </span>
-                <span class="spec">
-                  <svg viewBox="0 0 16 16" fill="none">
-                    <rect
-                      x="2"
-                      y="5"
-                      width="12"
-                      height="8"
-                      rx="1.5"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                    <path
-                      d="M5 5V4a3 3 0 016 0v1"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                  </svg>
-                  Manual
-                </span>
-                <span class="spec">
-                  <svg viewBox="0 0 16 16" fill="none">
-                    <path
-                      d="M8 2C5.24 2 3 4.24 3 7c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5z"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                    <circle
-                      cx="8"
-                      cy="7"
-                      r="1.5"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                  </svg>
-                  Kathmandu
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div class="vehicle-card" data-id="6">
-            <div class="vehicle-card__img-wrap">
-              <span class="badge badge--available">Available Now</span>
-              <span class="badge badge--price">$15/day</span>
-              <img
-                src="../assets/RoyalEnfield350.png"
-                alt="Royal Enfield 350"
-                class="vehicle-card__img"
-              />
-            </div>
-            <div class="vehicle-card__body">
-              <h3 class="vehicle-card__name">Royal Enfield Classic 350</h3>
-              <p class="vehicle-card__type">Cruiser</p>
-              <div class="vehicle-card__specs">
-                <span class="spec">
-                  <svg viewBox="0 0 16 16" fill="none">
-                    <path
-                      d="M8 2a6 6 0 100 12A6 6 0 008 2z"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                    <path
-                      d="M8 5v3l2 2"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                      stroke-linecap="round"
-                    />
-                  </svg>
-                  2 Seats
-                </span>
-                <span class="spec">
-                  <svg viewBox="0 0 16 16" fill="none">
-                    <path
-                      d="M3 13s0-6 5-6 5 6 5 6"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                      stroke-linecap="round"
-                    />
-                    <circle
-                      cx="8"
-                      cy="5"
-                      r="2"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                  </svg>
-                  Petrol
-                </span>
-                <span class="spec">
-                  <svg viewBox="0 0 16 16" fill="none">
-                    <rect
-                      x="2"
-                      y="5"
-                      width="12"
-                      height="8"
-                      rx="1.5"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                    <path
-                      d="M5 5V4a3 3 0 016 0v1"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                  </svg>
-                  Manual
-                </span>
-                <span class="spec">
-                  <svg viewBox="0 0 16 16" fill="none">
-                    <path
-                      d="M8 2C5.24 2 3 4.24 3 7c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5z"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                    <circle
-                      cx="8"
-                      cy="7"
-                      r="1.5"
-                      stroke="currentColor"
-                      stroke-width="1.3"
-                    />
-                  </svg>
-                  Kathmandu
-                </span>
-              </div>
+          <div class="vehicle-card__body">
+            <h3 class="vehicle-card__name">BMW M3</h3>
+            <p class="vehicle-card__type">Sedan</p>
+            <div class="vehicle-card__specs">
+              <span class="spec">
+                <svg viewBox="0 0 16 16" fill="none">
+                  <path d="M8 2a6 6 0 100 12A6 6 0 008 2z" stroke="currentColor" stroke-width="1.3" />
+                  <path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+                </svg>
+                4 Seats
+              </span>
+              <span class="spec">
+                <svg viewBox="0 0 16 16" fill="none">
+                  <path d="M3 13s0-6 5-6 5 6 5 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+                  <circle cx="8" cy="5" r="2" stroke="currentColor" stroke-width="1.3" />
+                </svg>
+                Gasoline
+              </span>
+              <span class="spec">
+                <svg viewBox="0 0 16 16" fill="none">
+                  <rect x="2" y="5" width="12" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3" />
+                  <path d="M5 5V4a3 3 0 016 0v1" stroke="currentColor" stroke-width="1.3" />
+                </svg>
+                Automatic
+              </span>
+              <span class="spec">
+                <svg viewBox="0 0 16 16" fill="none">
+                  <path d="M8 2C5.24 2 3 4.24 3 7c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5z" stroke="currentColor"
+                    stroke-width="1.3" />
+                  <circle cx="8" cy="7" r="1.5" stroke="currentColor" stroke-width="1.3" />
+                </svg>
+                Kathmandu
+              </span>
             </div>
           </div>
         </div>
 
-        <div class="explore-cta">
-          <a href="vehicle.html?view=bikes" class="btn-explore" id="exploreBikes">
-            Explore all bikes
-            <svg
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M4 10h12M12 6l4 4-4 4"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <section class="testimonials" id="testimonials">
-      <div class="container">
-        <div class="section-header">
-          <h2 class="section-title">What Our Customers Say</h2>
-          <p class="section-subtitle">
-            Discover why discerning travelers choose RentWheels for their
-            premium vehicle experience around the world.
-          </p>
-        </div>
-
-        <div class="testimonials-grid" id="testimonialsGrid">
-          <div class="testimonial-card">
-            <div class="testimonial-card__header">
-              <img
-                src="https://randomuser.me/api/portraits/women/44.jpg"
-                alt="Emma Rodriguez"
-                class="testimonial-card__avatar"
-              />
-              <div class="testimonial-card__meta">
-                <span class="testimonial-card__name">Emma Rodriguez</span>
-                <span class="testimonial-card__location">Barcelona, Spain</span>
-              </div>
-            </div>
-            <div class="testimonial-card__stars">
-              <span class="star filled">★</span>
-              <span class="star filled">★</span>
-              <span class="star filled">★</span>
-              <span class="star filled">★</span>
-              <span class="star filled">★</span>
-            </div>
-            <p class="testimonial-card__text">
-              "I've used many booking platforms before, but none compare to the
-              personalized experience and attention to detail that RentWheels
-              provides."
-            </p>
+        <div class="vehicle-card" data-id="3">
+          <div class="vehicle-card__img-wrap">
+            <span class="badge badge--available">Available Now</span>
+            <span class="badge badge--price">$100/day</span>
+            <img src="../assets/TeslaModelX.png" alt="Tesla Model X" class="vehicle-card__img" />
           </div>
-
-          <div class="testimonial-card">
-            <div class="testimonial-card__header">
-              <img
-                src="https://randomuser.me/api/portraits/women/68.jpg"
-                alt="Emma Rodriguez"
-                class="testimonial-card__avatar"
-              />
-              <div class="testimonial-card__meta">
-                <span class="testimonial-card__name">Emma Rodriguez</span>
-                <span class="testimonial-card__location">Barcelona, Spain</span>
-              </div>
+          <div class="vehicle-card__body">
+            <h3 class="vehicle-card__name">Tesla Model X</h3>
+            <p class="vehicle-card__type">Sedan</p>
+            <div class="vehicle-card__specs">
+              <span class="spec">
+                <svg viewBox="0 0 16 16" fill="none">
+                  <path d="M8 2a6 6 0 100 12A6 6 0 008 2z" stroke="currentColor" stroke-width="1.3" />
+                  <path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+                </svg>
+                4 Seats
+              </span>
+              <span class="spec">
+                <svg viewBox="0 0 16 16" fill="none">
+                  <path d="M3 13s0-6 5-6 5 6 5 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+                  <circle cx="8" cy="5" r="2" stroke="currentColor" stroke-width="1.3" />
+                </svg>
+                Electric
+              </span>
+              <span class="spec">
+                <svg viewBox="0 0 16 16" fill="none">
+                  <rect x="2" y="5" width="12" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3" />
+                  <path d="M5 5V4a3 3 0 016 0v1" stroke="currentColor" stroke-width="1.3" />
+                </svg>
+                Automatic
+              </span>
+              <span class="spec">
+                <svg viewBox="0 0 16 16" fill="none">
+                  <path d="M8 2C5.24 2 3 4.24 3 7c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5z" stroke="currentColor"
+                    stroke-width="1.3" />
+                  <circle cx="8" cy="7" r="1.5" stroke="currentColor" stroke-width="1.3" />
+                </svg>
+                Kathmandu
+              </span>
             </div>
-            <div class="testimonial-card__stars">
-              <span class="star filled">★</span>
-              <span class="star filled">★</span>
-              <span class="star filled">★</span>
-              <span class="star filled">★</span>
-              <span class="star">★</span>
-            </div>
-            <p class="testimonial-card__text">
-              "I've used many booking platforms before, but none compare to the
-              personalized experience and attention to detail that RentWheels
-              provides."
-            </p>
-          </div>
-
-          <div class="testimonial-card">
-            <div class="testimonial-card__header">
-              <img
-                src="https://randomuser.me/api/portraits/women/32.jpg"
-                alt="Emma Rodriguez"
-                class="testimonial-card__avatar"
-              />
-              <div class="testimonial-card__meta">
-                <span class="testimonial-card__name">Emma Rodriguez</span>
-                <span class="testimonial-card__location">Barcelona, Spain</span>
-              </div>
-            </div>
-            <div class="testimonial-card__stars">
-              <span class="star filled">★</span>
-              <span class="star filled">★</span>
-              <span class="star filled">★</span>
-              <span class="star filled">★</span>
-              <span class="star filled">★</span>
-            </div>
-            <p class="testimonial-card__text">
-              "I've used many booking platforms before, but none compare to the
-              personalized experience and attention to detail that RentWheels
-              provides."
-            </p>
           </div>
         </div>
       </div>
-    </section>
-    <div id="rw-footer"></div>
-    <script src="../js/home.js"></script>
-  </body>
+
+      <div class="explore-cta">
+        <a href="../html/vehicle.html?view=cars" class="btn-explore" id="exploreCars">
+          Explore all cars
+          <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </a>
+      </div>
+
+      <div class="vehicles-grid" id="bikesGrid">
+        <div class="vehicle-card" data-id="4">
+          <div class="vehicle-card__img-wrap">
+            <span class="badge badge--available">Available Now</span>
+            <span class="badge badge--price">$20/day</span>
+            <img src="../assets/bmws1krr.png" alt="Cbr 600rr" class="vehicle-card__img" />
+          </div>
+          <div class="vehicle-card__body">
+            <h3 class="vehicle-card__name">BMW s1000rr</h3>
+            <p class="vehicle-card__type">Sports</p>
+            <div class="vehicle-card__specs">
+              <span class="spec">
+                <svg viewBox="0 0 16 16" fill="none">
+                  <path d="M8 2a6 6 0 100 12A6 6 0 008 2z" stroke="currentColor" stroke-width="1.3" />
+                  <path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+                </svg>
+                1 Seat
+              </span>
+              <span class="spec">
+                <svg viewBox="0 0 16 16" fill="none">
+                  <path d="M3 13s0-6 5-6 5 6 5 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+                  <circle cx="8" cy="5" r="2" stroke="currentColor" stroke-width="1.3" />
+                </svg>
+                Petrol
+              </span>
+              <span class="spec">
+                <svg viewBox="0 0 16 16" fill="none">
+                  <rect x="2" y="5" width="12" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3" />
+                  <path d="M5 5V4a3 3 0 016 0v1" stroke="currentColor" stroke-width="1.3" />
+                </svg>
+                Manual
+              </span>
+              <span class="spec">
+                <svg viewBox="0 0 16 16" fill="none">
+                  <path d="M8 2C5.24 2 3 4.24 3 7c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5z" stroke="currentColor"
+                    stroke-width="1.3" />
+                  <circle cx="8" cy="7" r="1.5" stroke="currentColor" stroke-width="1.3" />
+                </svg>
+                Kathmandu
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="vehicle-card" data-id="5">
+          <div class="vehicle-card__img-wrap">
+            <span class="badge badge--available">Available Now</span>
+            <span class="badge badge--price">$22/day</span>
+            <img src="../assets/streetfighterV4S.png" alt="Ducati 1089" class="vehicle-card__img" />
+          </div>
+          <div class="vehicle-card__body">
+            <h3 class="vehicle-card__name">Ducati streetfighter V4S</h3>
+            <p class="vehicle-card__type">Sports</p>
+            <div class="vehicle-card__specs">
+              <span class="spec">
+                <svg viewBox="0 0 16 16" fill="none">
+                  <path d="M8 2a6 6 0 100 12A6 6 0 008 2z" stroke="currentColor" stroke-width="1.3" />
+                  <path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+                </svg>
+                1 Seat
+              </span>
+              <span class="spec">
+                <svg viewBox="0 0 16 16" fill="none">
+                  <path d="M3 13s0-6 5-6 5 6 5 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+                  <circle cx="8" cy="5" r="2" stroke="currentColor" stroke-width="1.3" />
+                </svg>
+                Petrol
+              </span>
+              <span class="spec">
+                <svg viewBox="0 0 16 16" fill="none">
+                  <rect x="2" y="5" width="12" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3" />
+                  <path d="M5 5V4a3 3 0 016 0v1" stroke="currentColor" stroke-width="1.3" />
+                </svg>
+                Manual
+              </span>
+              <span class="spec">
+                <svg viewBox="0 0 16 16" fill="none">
+                  <path d="M8 2C5.24 2 3 4.24 3 7c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5z" stroke="currentColor"
+                    stroke-width="1.3" />
+                  <circle cx="8" cy="7" r="1.5" stroke="currentColor" stroke-width="1.3" />
+                </svg>
+                Kathmandu
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="vehicle-card" data-id="6">
+          <div class="vehicle-card__img-wrap">
+            <span class="badge badge--available">Available Now</span>
+            <span class="badge badge--price">$15/day</span>
+            <img src="../assets/RoyalEnfield350.png" alt="Royal Enfield 350" class="vehicle-card__img" />
+          </div>
+          <div class="vehicle-card__body">
+            <h3 class="vehicle-card__name">Royal Enfield Classic 350</h3>
+            <p class="vehicle-card__type">Cruiser</p>
+            <div class="vehicle-card__specs">
+              <span class="spec">
+                <svg viewBox="0 0 16 16" fill="none">
+                  <path d="M8 2a6 6 0 100 12A6 6 0 008 2z" stroke="currentColor" stroke-width="1.3" />
+                  <path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+                </svg>
+                2 Seats
+              </span>
+              <span class="spec">
+                <svg viewBox="0 0 16 16" fill="none">
+                  <path d="M3 13s0-6 5-6 5 6 5 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+                  <circle cx="8" cy="5" r="2" stroke="currentColor" stroke-width="1.3" />
+                </svg>
+                Petrol
+              </span>
+              <span class="spec">
+                <svg viewBox="0 0 16 16" fill="none">
+                  <rect x="2" y="5" width="12" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3" />
+                  <path d="M5 5V4a3 3 0 016 0v1" stroke="currentColor" stroke-width="1.3" />
+                </svg>
+                Manual
+              </span>
+              <span class="spec">
+                <svg viewBox="0 0 16 16" fill="none">
+                  <path d="M8 2C5.24 2 3 4.24 3 7c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5z" stroke="currentColor"
+                    stroke-width="1.3" />
+                  <circle cx="8" cy="7" r="1.5" stroke="currentColor" stroke-width="1.3" />
+                </svg>
+                Kathmandu
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="explore-cta">
+        <a href="vehicle.html?view=bikes" class="btn-explore" id="exploreBikes">
+          Explore all bikes
+          <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="recommendations" id="recommendations">
+    <div class="container">
+      <div class="section-header">
+        <div class="rec-label">
+          <svg viewBox="0 0 20 20" fill="none" style="width:14px;height:14px;" aria-hidden="true">
+            <path d="M10 2l2.39 4.84L18 7.64l-4 3.9.94 5.46L10 14.27l-4.94 2.73L6 11.54 2 7.64l5.61-.8L10 2z" fill="currentColor"/>
+          </svg>
+          Personalized Picks
+        </div>
+        <h2 class="section-title">Recommended For You</h2>
+        <p class="section-subtitle">Handpicked vehicles based on top ratings, popularity and best availability.</p>
+      </div>
+
+      <div class="rec-carousel-wrap">
+        <button class="rec-arrow rec-arrow--prev" id="recPrev" aria-label="Scroll left">&#8249;</button>
+        <div class="rec-carousel" id="recCarousel">
+
+          <div class="rec-card" data-id="1">
+            <div class="rec-card__img-wrap">
+              <span class="rec-price">$100/day</span>
+              <img src="../assets/bmwx5.png" alt="BMW X5" class="rec-card__img" />
+            </div>
+            <div class="rec-card__body">
+              <div class="rec-card__title-row">
+                <h3 class="rec-card__name">BMW X5</h3>
+              </div>
+              <p class="rec-card__type">Sedan &middot; Kathmandu</p>
+              <div class="rec-card__specs">
+                <span class="rec-spec-pill">4 Seats</span>
+                <span class="rec-spec-pill">Gasoline</span>
+                <span class="rec-spec-pill">Automatic</span>
+              </div>
+              <a href="../html/vehicle-detail.html?id=1" class="rec-btn" id="recBtnBmwX5">
+                View Details
+                <svg viewBox="0 0 20 20" fill="none" style="width:15px;height:15px;" aria-hidden="true"><path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <div class="rec-card" data-id="3">
+            <div class="rec-card__img-wrap">
+              <span class="rec-price">$100/day</span>
+              <img src="../assets/TeslaModelX.png" alt="Tesla Model X" class="rec-card__img" />
+            </div>
+            <div class="rec-card__body">
+              <div class="rec-card__title-row">
+                <h3 class="rec-card__name">Tesla Model X</h3>
+              </div>
+              <p class="rec-card__type">Sedan &middot; Kathmandu</p>
+              <div class="rec-card__specs">
+                <span class="rec-spec-pill">4 Seats</span>
+                <span class="rec-spec-pill">Electric</span>
+                <span class="rec-spec-pill">Automatic</span>
+              </div>
+              <a href="../html/vehicle-detail.html?id=3" class="rec-btn" id="recBtnTesla">
+                View Details
+                <svg viewBox="0 0 20 20" fill="none" style="width:15px;height:15px;" aria-hidden="true"><path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <div class="rec-card" data-id="2">
+            <div class="rec-card__img-wrap">
+              <span class="rec-price">$100/day</span>
+              <img src="../assets/bmwm3.png" alt="BMW M3" class="rec-card__img" />
+            </div>
+            <div class="rec-card__body">
+              <div class="rec-card__title-row">
+                <h3 class="rec-card__name">BMW M3</h3>
+              </div>
+              <p class="rec-card__type">Sedan &middot; Kathmandu</p>
+              <div class="rec-card__specs">
+                <span class="rec-spec-pill">4 Seats</span>
+                <span class="rec-spec-pill">Gasoline</span>
+                <span class="rec-spec-pill">Automatic</span>
+              </div>
+              <a href="../html/vehicle-detail.html?id=2" class="rec-btn" id="recBtnBmwM3">
+                View Details
+                <svg viewBox="0 0 20 20" fill="none" style="width:15px;height:15px;" aria-hidden="true"><path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <div class="rec-card" data-id="5">
+            <div class="rec-card__img-wrap">
+              <span class="rec-price">$22/day</span>
+              <img src="../assets/streetfighterV4S.png" alt="Ducati Streetfighter V4S" class="rec-card__img" />
+            </div>
+            <div class="rec-card__body">
+              <div class="rec-card__title-row">
+                <h3 class="rec-card__name">Ducati Streetfighter V4S</h3>
+              </div>
+              <p class="rec-card__type">Sports &middot; Kathmandu</p>
+              <div class="rec-card__specs">
+                <span class="rec-spec-pill">1 Seat</span>
+                <span class="rec-spec-pill">Petrol</span>
+                <span class="rec-spec-pill">Manual</span>
+              </div>
+              <a href="../html/vehicle-detail.html?id=5" class="rec-btn" id="recBtnDucati">
+                View Details
+                <svg viewBox="0 0 20 20" fill="none" style="width:15px;height:15px;" aria-hidden="true"><path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <div class="rec-card" data-id="6">
+            <div class="rec-card__img-wrap">
+              <span class="rec-price">$15/day</span>
+              <img src="../assets/RoyalEnfield350.png" alt="Royal Enfield Classic 350" class="rec-card__img" />
+            </div>
+            <div class="rec-card__body">
+              <div class="rec-card__title-row">
+                <h3 class="rec-card__name">Royal Enfield Classic 350</h3>
+              </div>
+              <p class="rec-card__type">Cruiser &middot; Kathmandu</p>
+              <div class="rec-card__specs">
+                <span class="rec-spec-pill">2 Seats</span>
+                <span class="rec-spec-pill">Petrol</span>
+                <span class="rec-spec-pill">Manual</span>
+              </div>
+              <a href="../html/vehicle-detail.html?id=6" class="rec-btn" id="recBtnEnfield">
+                View Details
+                <svg viewBox="0 0 20 20" fill="none" style="width:15px;height:15px;" aria-hidden="true"><path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </div>
+          </div>
+
+        </div>
+        <button class="rec-arrow rec-arrow--next" id="recNext" aria-label="Scroll right">&#8250;</button>
+      </div>
+    </div>
+  </section>
+  <div id="rw-footer"></div>
+
+  <!-- ── Login Modal ───────────────────────────────────── -->
+  <div class="rw-modal-overlay" id="loginModal" role="dialog" aria-modal="true" aria-label="Login"
+    style="display:none;">
+    <div class="rw-modal-card">
+      <div class="rw-modal-img">
+        <img src="../assets/car_login.png" alt="Futuristic car on map" onerror="this.style.display='none'" />
+      </div>
+      <div class="rw-modal-form">
+        <button class="rw-modal-close" id="loginModalClose" aria-label="Close login">&times;</button>
+        <div class="rw-modal-avatar">
+          <img src="../assets/profile.png" alt="Profile icon" />
+        </div>
+        <h2 class="rw-modal-title">Welcome</h2>
+        <form id="loginForm" novalidate>
+          <div class="rw-field">
+            <label for="loginEmail">Email</label>
+            <input type="email" id="loginEmail" placeholder="Enter your email" autocomplete="email" />
+            <span class="rw-field-err" id="loginEmailErr">Please enter a valid email.</span>
+          </div>
+          <div class="rw-field">
+            <label for="loginPw">Password</label>
+            <div class="rw-pw-wrap">
+              <input type="password" id="loginPw" placeholder="Enter your password" autocomplete="current-password" />
+              <button type="button" class="rw-toggle-pw" id="loginTogglePw" aria-label="Show/hide password">
+                <svg viewBox="0 0 20 20" fill="none">
+                  <path d="M2 10s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6z" stroke="currentColor" stroke-width="1.5" />
+                  <circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5" />
+                </svg>
+              </button>
+            </div>
+            <span class="rw-field-err" id="loginPwErr">Password must be at least 6 characters.</span>
+          </div>
+          <a href="../html/forgot-password.html" class="rw-forgot">Forgot password?</a>
+          <span class="rw-field-err" id="loginGlobalErr" style="display:none;margin-bottom:8px;">Invalid email or
+            password.</span>
+          <button type="submit" class="rw-btn-submit">Login</button>
+          <button type="button" class="rw-btn-google" id="loginGoogle">
+            <img src="../assets/google-logo.png" width="20" height="20" alt="Google" />
+            Sign in with Google
+          </button>
+          <p class="rw-switch-text">Create an account? <a href="#" id="switchToSignup">click here</a></p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Signup Modal ──────────────────────────────────── -->
+  <div class="rw-modal-overlay" id="signupModal" role="dialog" aria-modal="true" aria-label="Sign Up"
+    style="display:none;">
+    <div class="rw-modal-card">
+      <div class="rw-modal-img">
+        <img src="../assets/signup-img.jpg" alt="Car on map" onerror="this.style.display='none'" />
+      </div>
+      <div class="rw-modal-form rw-modal-form--scroll">
+        <button class="rw-modal-close" id="signupModalClose" aria-label="Close sign up">&times;</button>
+        <div class="rw-modal-avatar">
+          <img src="../assets/Person-Icon.png" alt="Person icon" />
+        </div>
+        <h2 class="rw-modal-title rw-modal-title--signup"><span class="rw-modal-title-lead">Get</span><span
+            class="rw-modal-title-rest"> Started!</span></h2>
+        <form id="signupForm" novalidate>
+          <div class="rw-field">
+            <label for="signupUsername">Username</label>
+            <input type="text" id="signupUsername" placeholder="Enter your username" required />
+          </div>
+          <div class="rw-field">
+            <label for="signupEmail">Email</label>
+            <input type="email" id="signupEmail" placeholder="Enter your email" required />
+          </div>
+          <div class="rw-field">
+            <label for="signupPhone">Phone Number</label>
+            <input type="tel" id="signupPhone" placeholder="Enter your phone number" required />
+          </div>
+          <div class="rw-field">
+            <label for="signupPw">New Password</label>
+            <div class="rw-pw-wrap">
+              <input type="password" id="signupPw" placeholder="New password" required />
+              <button type="button" class="rw-toggle-pw" id="signupTogglePw" aria-label="Show/hide password">
+                <svg viewBox="0 0 20 20" fill="none">
+                  <path d="M2 10s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6z" stroke="currentColor" stroke-width="1.5" />
+                  <circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="rw-field">
+            <label for="signupCpw">Confirm Password</label>
+            <div class="rw-pw-wrap">
+              <input type="password" id="signupCpw" placeholder="Confirm password" required />
+              <button type="button" class="rw-toggle-pw" id="signupToggleCpw" aria-label="Show/hide password">
+                <svg viewBox="0 0 20 20" fill="none">
+                  <path d="M2 10s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6z" stroke="currentColor" stroke-width="1.5" />
+                  <circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <span class="rw-field-err" id="signupErr" style="display:none;margin-bottom:8px;"></span>
+          <button type="submit" class="rw-btn-submit">Next</button>
+          <button type="button" class="rw-btn-google">
+            <img src="../assets/google-logo.png" width="20" height="20" alt="Google" />
+            Sign in with Google
+          </button>
+          <p class="rw-switch-text">Already have an account? <a href="#" id="switchToLogin">click here</a></p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/home.js"></script>
+  <script src="../js/SearchBar.js"></script>
+</body>
+
 </html>

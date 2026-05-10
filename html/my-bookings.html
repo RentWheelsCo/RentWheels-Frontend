@@ -1,17 +1,52 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta http-equiv="refresh" content="0; URL=bookings.html" />
-    <title>My Bookings - RentWheels</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Bookings – RentWheels</title>
     <link rel="stylesheet" href="../css/styles.css" />
+    <link rel="stylesheet" href="../css/home.css" />
+    <link rel="stylesheet" href="../css/layout.css" />
+    <link rel="stylesheet" href="../css/bookings.css" />
     <script src="../js/layout.js" defer></script>
+    <script src="../js/home.js" defer></script>
   </head>
   <body data-page="my-bookings" class="rw-page">
     <div id="rw-header"></div>
-    <main class="rw-main" aria-label="My Bookings page content"></main>
+
+    <!-- ======== PAGE WRAPPER ======== -->
+    <main class="rw-main bookings-page">
+      <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+          <h1 class="page-title">My Bookings</h1>
+          <p class="page-subtitle">View and manage my vehicle bookings</p>
+        </div>
+
+        <!-- Bookings List -->
+        <div class="bookings-list" id="bookingsList">
+          <!-- Cards injected by JS -->
+        </div>
+
+        <!-- Empty State (hidden by default) -->
+        <div class="empty-state hidden" id="emptyState">
+          <div class="empty-state__icon">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="8" y="16" width="48" height="36" rx="4" stroke="#CBD5E1" stroke-width="2.5"/>
+              <path d="M8 24h48" stroke="#CBD5E1" stroke-width="2.5"/>
+              <path d="M20 36h24M20 42h16" stroke="#CBD5E1" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3 class="empty-state__title">No bookings yet</h3>
+          <p class="empty-state__text">
+            You haven't made any vehicle bookings. Start exploring our fleet!
+          </p>
+          <a href="../html/home.html" class="btn-primary">Browse Vehicles</a>
+        </div>
+      </div>
+    </main>
+
     <div id="rw-footer"></div>
+    <script src="../js/bookings.js"></script>
   </body>
 </html>
-
