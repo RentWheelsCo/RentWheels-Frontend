@@ -407,6 +407,157 @@
     color: #9ca3af;
     font-size: 0.8rem;
   }
+
+  .vehicle-detail-comment--own .vehicle-detail-comment__bubble {
+    position: relative;
+  }
+
+  .vehicle-detail-comment__bubble-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  .vehicle-detail-comment__bubble-head .vehicle-detail-comment__name {
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .vehicle-detail-comment__menu-wrap {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .vehicle-detail-comment__kebab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    margin: -6px -6px -6px 0;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: #6b7280;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .vehicle-detail-comment__kebab:hover {
+    background: #e5e7eb;
+    color: #111827;
+  }
+
+  .vehicle-detail-comment__kebab-icon {
+    width: 4px;
+    height: 16px;
+  }
+
+  .vehicle-detail-comment__menu {
+    position: absolute;
+    top: calc(100% - 2px);
+    right: 0;
+    min-width: 128px;
+    padding: 6px 0;
+    margin: 0;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.12);
+    z-index: 30;
+  }
+
+  .vehicle-detail-comment__menu[hidden] {
+    display: none !important;
+  }
+
+  .vehicle-detail-comment__menu-item {
+    display: block;
+    width: 100%;
+    padding: 8px 14px;
+    border: none;
+    background: transparent;
+    text-align: left;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+
+  .vehicle-detail-comment__menu-item:hover {
+    background: #f3f4f6;
+  }
+
+  .vehicle-detail-comment__menu-item.action-delete-comment {
+    color: #b91c1c;
+  }
+
+  .vehicle-detail-comment__menu-item.action-delete-comment:hover {
+    background: #fef2f2;
+  }
+
+  .vehicle-detail-comment__edit-wrap {
+    margin-top: 2px;
+  }
+
+  .vehicle-detail-comment__edit-input {
+    width: 100%;
+    min-height: 72px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    resize: vertical;
+    box-sizing: border-box;
+  }
+
+  .vehicle-detail-comment__edit-input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+  }
+
+  .vehicle-detail-comment__edit-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+
+  .vehicle-detail-comment__edit-save,
+  .vehicle-detail-comment__edit-cancel {
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+  }
+
+  .vehicle-detail-comment__edit-save {
+    background: #2563eb;
+    color: #fff;
+  }
+
+  .vehicle-detail-comment__edit-save:hover {
+    background: #1d4ed8;
+  }
+
+  .vehicle-detail-comment__edit-cancel {
+    background: #f3f4f6;
+    color: #374151;
+  }
+
+  .vehicle-detail-comment__edit-cancel:hover {
+    background: #e5e7eb;
+  }
   
   .vehicle-detail-image-modal {
     position: fixed;
