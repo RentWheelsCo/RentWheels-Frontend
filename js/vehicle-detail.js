@@ -151,8 +151,12 @@
     const n = parseInt(String(raw), 10);
     if (!Number.isFinite(n) || n < 1) return 1;
     if (n >= 100) {
-      const bases = [1, 2, 3];
-      return bases[(n - 101) % bases.length];
+      if (n >= 200) {
+        const bikeBases = [4, 5, 6];
+        return bikeBases[(n - 201) % bikeBases.length];
+      }
+      const carBases = [1, 2, 3];
+      return carBases[(n - 101) % carBases.length];
     }
     return DETAILS[n] ? n : 1;
   }
@@ -323,8 +327,29 @@
 
     const back = document.getElementById("detailBack");
     if (back) {
-      back.href =
-        from === "cars" ? "./vehicle.html?view=cars" : "./vehicle.html";
+      const backLabel =
+        from === "cars"
+          ? "Back to all cars"
+          : from === "bikes"
+            ? "Back to all bikes"
+            : "Back to vehicles";
+
+      if (from === "cars") {
+        back.href = "./vehicle.html?view=cars";
+      } else if (from === "bikes") {
+        back.href = "./vehicle.html?view=bikes";
+      } else {
+        back.href = "./vehicle.html";
+      }
+
+      const icon = back.querySelector(".vehicle-detail-back__icon");
+      if (icon) {
+        back.innerHTML = "";
+        back.appendChild(icon);
+        back.append(` ${backLabel}`);
+      } else {
+        back.textContent = backLabel;
+      }
     }
 
     document.title = `${d.title} – RentWheels`;
@@ -443,7 +468,7 @@
     const modal = document.getElementById("bookingModal");
     const modalContent = document.getElementById("bookingModalContent");
 
-    if (bookBtn && modal && modalContent) {
+    if (bookBtn && modal) {
       bookBtn.addEventListener("click", () => {
         const pDate = document.getElementById("pickupDate").value;
         const rDate = document.getElementById("returnDate").value;

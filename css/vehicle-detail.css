@@ -587,6 +587,109 @@
     color: var(--clr-text-light);
     margin-top: 16px;
   }
+
+.booking-modal-overlay[hidden] {
+  display: none !important;
+}
+
+.booking-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2200;
+  background: rgba(15, 23, 42, 0.58);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.booking-modal-content {
+  width: min(680px, 100%);
+  max-height: 90vh;
+  overflow: auto;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.24);
+  padding: 22px;
+}
+
+.booking-modal-title {
+  margin: 0 0 16px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.booking-modal-subtitle {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.booking-modal-summary-card {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.booking-modal-car-img {
+  width: 136px;
+  height: 92px;
+  object-fit: cover;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.booking-modal-car-info p {
+  margin: 4px 0 8px;
+}
+
+.booking-modal-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  color: #64748b;
+}
+
+.booking-modal-price-row,
+.booking-modal-price-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.booking-modal-price-total {
+  font-size: 1.05rem;
+}
+
+.booking-modal-divider {
+  border: 0;
+  border-top: 1px solid #e2e8f0;
+  margin: 10px 0;
+}
+
+.booking-modal-pay-btn {
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  background: var(--clr-primary);
+  color: #ffffff;
+  padding: 12px 14px;
+  font-size: 0.98rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 14px;
+}
+
+.booking-modal-pay-btn:hover {
+  background: #1d4ed8;
+}
   
   /* Modals etc for Admin override */
   .btn-secondary {
