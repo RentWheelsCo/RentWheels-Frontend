@@ -121,15 +121,10 @@ const deleteUserName = document.getElementById("deleteUserName");
 
 const toastEl = document.getElementById("toast");
 
-// function requireAuth() {
-//   if (!localStorage.getItem("authToken")) {
-//     window.location.href = "login.html";
-//   }
-// }
-
 function logout() {
-  localStorage.removeItem("authToken");
-  localStorage.removeItem("authUser");
+  // COOKIE AUTH IMPLEMENTED
+  window.RW_API?.auth?.logout?.().catch(() => {});
+  document.cookie = "authToken=; Max-Age=0; path=/";
   window.location.href = "login.html";
 }
 
@@ -151,7 +146,6 @@ async function loadUsers() {
 
   try {
     const payload = await window.RW_API.request("/auth/admin/users", {
-      auth: true,
       params: { limit: 50 },
     });
 
@@ -483,7 +477,6 @@ editModalSave.addEventListener("click", async () => {
   try {
     const payload = await window.RW_API.request(`/auth/admin/users/${id}`, {
       method: "PATCH",
-      auth: true,
       body: payloadBody,
     });
 
@@ -546,7 +539,6 @@ deleteModalConfirm.addEventListener("click", async () => {
   try {
     await window.RW_API.request(`/auth/admin/users/${id}`, {
       method: "DELETE",
-      auth: true,
     });
     USERS_DATA = USERS_DATA.filter((u) => u.id !== id);
     applySearch(searchInput.value);

@@ -1,5 +1,8 @@
-
-
+function logout() {
+  window.RW_API?.auth?.logout?.().catch(() => {});
+  document.cookie = "authToken=; Max-Age=0; path=/";
+  window.location.href = "login.html";
+}
 
 function bindLogout() {
   const logoutLink = document.getElementById("rw-sidebar-logout");
@@ -13,12 +16,9 @@ function bindLogout() {
 function setProfileName() {
   const el = document.querySelector(".profile-name");
   if (!el) return;
-  try {
-    const user = JSON.parse(localStorage.getItem("authUser") || "null");
-    if (user?.name) el.textContent = user.name;
-  } catch {
-    // ignore
-  }
+  window.RW_API?.auth?.profile?.()
+    .then((p) => { if (p?.data?.name) el.textContent = p.data.name; })
+    .catch(() => {});
 }
 
 function showPageError(message) {
@@ -29,8 +29,8 @@ function showPageError(message) {
     banner.style.cssText =
       "background:#fee2e2;color:#b91c1c;border:1px solid #fca5a5;" +
       "border-radius:8px;padding:10px 14px;margin:0 0 14px 0;font-size:0.9rem;";
-    const container = document.querySelector(".form-column");
-    container.insertBefore(banner, container.firstChild);
+    const container = document.querySelector(".main-content");
+    container.insertBefore(banner, container.firstChild?.nextSibling || container.firstChild);
   }
   banner.textContent = message;
   banner.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -54,50 +54,17 @@ function markInvalid(el, isInvalid) {
   el.style.borderColor = isInvalid ? "#dc2626" : "";
 }
 
-// ── Vehicle Photo Preview (unlimited, with remove button) ──
-let selectedFiles = [];
-
+// €€ Vehicle Photo Preview €€
 function previewVehiclePhoto(event) {
-  const newFiles = Array.from(event.target.files);
-  if (!newFiles.length) return;
-
-  selectedFiles = selectedFiles.concat(newFiles);
-  renderPhotoStrip();
-
-  // Reset input so same file can be re-added if removed
-  event.target.value = "";
-}
-
-function removePhoto(index) {
-  selectedFiles.splice(index, 1);
-  renderPhotoStrip();
-}
-
-function renderPhotoStrip() {
-  const strip = document.getElementById("photoPreviewStrip");
-  strip.innerHTML = "";
-
-  selectedFiles.forEach((file, i) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const wrap = document.createElement("div");
-      wrap.className = "photo-thumb-wrap";
-
-      const img = document.createElement("img");
-      img.src = e.target.result;
-
-      const removeBtn = document.createElement("button");
-      removeBtn.className = "photo-remove-btn";
-      removeBtn.innerHTML = "✕";
-      removeBtn.title = "Remove photo";
-      removeBtn.onclick = () => removePhoto(i);
-
-      wrap.appendChild(img);
-      wrap.appendChild(removeBtn);
-      strip.appendChild(wrap);
-    };
-    reader.readAsDataURL(file);
-  });
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const preview = document.getElementById("vehiclePhotoPreview");
+    preview.src = e.target.result;
+    preview.style.display = "block";
+  };
+  reader.readAsDataURL(file);
 }
 
 async function fetchOptions(type, parentId) {
@@ -123,13 +90,13 @@ function fillSelect(selectEl, options, placeholder) {
 }
 
 async function initVehicleDropdowns() {
-  const typeSelect         = document.getElementById("typeId");
-  const brandSelect        = document.getElementById("brandId");
-  const modelSelect        = document.getElementById("modelId");
-  const categorySelect     = document.getElementById("categoryId");
+  const typeSelect = document.getElementById("typeId");
+  const brandSelect = document.getElementById("brandId");
+  const modelSelect = document.getElementById("modelId");
+  const categorySelect = document.getElementById("categoryId");
   const transmissionSelect = document.getElementById("transmissionId");
-  const fuelTypeSelect     = document.getElementById("fuelTypeId");
-  const locationSelect     = document.getElementById("locationId");
+  const fuelTypeSelect = document.getElementById("fuelTypeId");
+  const locationSelect = document.getElementById("locationId");
 
   const [types, brands, categories, transmissions, fuelTypes, locations] = await Promise.all([
     fetchOptions("VEHICLE_TYPE"),
@@ -140,12 +107,12 @@ async function initVehicleDropdowns() {
     fetchOptions("LOCATION"),
   ]);
 
-  fillSelect(typeSelect,         types,         "Select vehicle type");
-  fillSelect(brandSelect,        brands,        "Select brand");
-  fillSelect(categorySelect,     categories,    "Select category");
+  fillSelect(typeSelect, types, "Select vehicle type");
+  fillSelect(brandSelect, brands, "Select brand");
+  fillSelect(categorySelect, categories, "Select category");
   fillSelect(transmissionSelect, transmissions, "Select transmission");
-  fillSelect(fuelTypeSelect,     fuelTypes,     "Select fuel type");
-  fillSelect(locationSelect,     locations,     "Select location");
+  fillSelect(fuelTypeSelect, fuelTypes, "Select fuel type");
+  fillSelect(locationSelect, locations, "Select location");
 
   modelSelect.disabled = true;
   modelSelect.innerHTML = `<option value="">Select model</option>`;
@@ -172,32 +139,35 @@ async function initVehicleDropdowns() {
   });
 }
 
-// ── Submit ──
+// €€ Submit €€
 async function handleSubmit() {
   clearPageError();
+  // COOKIE AUTH IMPLEMENTED: dashboard is protected by 401 redirect in api.js
 
-  const token = window.RW_API.getToken();
-  if (!token) {
-    window.location.href = "login.html";
-    return;
-  }
-
-  const typeId          = document.getElementById("typeId");
-  const brandId         = document.getElementById("brandId");
-  const modelId         = document.getElementById("modelId");
-  const categoryId      = document.getElementById("categoryId");
-  const transmissionId  = document.getElementById("transmissionId");
-  const fuelTypeId      = document.getElementById("fuelTypeId");
-  const locationId      = document.getElementById("locationId");
-  const year            = document.getElementById("year");
-  const dailyPrice      = document.getElementById("dailyPrice");
+  const typeId = document.getElementById("typeId");
+  const brandId = document.getElementById("brandId");
+  const modelId = document.getElementById("modelId");
+  const categoryId = document.getElementById("categoryId");
+  const transmissionId = document.getElementById("transmissionId");
+  const fuelTypeId = document.getElementById("fuelTypeId");
+  const locationId = document.getElementById("locationId");
+  const year = document.getElementById("year");
+  const dailyPrice = document.getElementById("dailyPrice");
   const seatingCapacity = document.getElementById("seatingCapacity");
-  const description     = document.getElementById("description");
+  const description = document.getElementById("description");
+  const photosInput = document.getElementById("vehiclePhotos");
 
   const requiredFields = [
-    typeId, brandId, modelId, categoryId,
-    transmissionId, fuelTypeId, locationId,
-    year, dailyPrice, seatingCapacity,
+    typeId,
+    brandId,
+    modelId,
+    categoryId,
+    transmissionId,
+    fuelTypeId,
+    locationId,
+    year,
+    dailyPrice,
+    seatingCapacity,
   ];
 
   let hasError = false;
@@ -209,7 +179,7 @@ async function handleSubmit() {
     }
   });
 
-  if (!selectedFiles.length) {
+  if (!photosInput?.files?.length) {
     showPageError("Please upload at least one vehicle photo.");
     return;
   }
@@ -220,19 +190,19 @@ async function handleSubmit() {
   }
 
   const fd = new FormData();
-  fd.append("typeId",          typeId.value);
-  fd.append("brandId",         brandId.value);
-  fd.append("modelId",         modelId.value);
-  fd.append("categoryId",      categoryId.value);
-  fd.append("transmissionId",  transmissionId.value);
-  fd.append("fuelTypeId",      fuelTypeId.value);
-  fd.append("locationId",      locationId.value);
-  fd.append("year",            year.value);
-  fd.append("dailyPrice",      dailyPrice.value);
+  fd.append("typeId", typeId.value);
+  fd.append("brandId", brandId.value);
+  fd.append("modelId", modelId.value);
+  fd.append("categoryId", categoryId.value);
+  fd.append("transmissionId", transmissionId.value);
+  fd.append("fuelTypeId", fuelTypeId.value);
+  fd.append("locationId", locationId.value);
+  fd.append("year", year.value);
+  fd.append("dailyPrice", dailyPrice.value);
   fd.append("seatingCapacity", seatingCapacity.value);
   if (description?.value?.trim()) fd.append("description", description.value.trim());
 
-  selectedFiles.forEach((file) => {
+  Array.from(photosInput.files).forEach((file) => {
     fd.append("vehiclePhotos", file);
   });
 
@@ -240,7 +210,6 @@ async function handleSubmit() {
   try {
     await window.RW_API.request("/vehicles", {
       method: "POST",
-      auth: true,
       body: fd,
     });
 
@@ -254,30 +223,28 @@ async function handleSubmit() {
   }
 }
 
-// ── Modal Controls ──
+// €€ Modal Controls (identical to dashboard) €€
 function openModal() {
   showMainOptions();
-  document.getElementById("editProfileModal").style.display = "flex";
   document.getElementById("editProfileModal").style.display = "flex";
 }
 function closeModal() {
   document.getElementById("editProfileModal").style.display = "none";
-  document.getElementById("editProfileModal").style.display = "none";
 }
 function showMainOptions() {
-  document.getElementById("mainOptions").style.display  = "block";
-  document.getElementById("photoEdit").style.display    = "none";
-  document.getElementById("licenseEdit").style.display  = "none";
+  document.getElementById("mainOptions").style.display = "block";
+  document.getElementById("photoEdit").style.display = "none";
+  document.getElementById("licenseEdit").style.display = "none";
 }
 function showPhotoEdit() {
-  document.getElementById("mainOptions").style.display  = "none";
-  document.getElementById("photoEdit").style.display    = "block";
-  document.getElementById("licenseEdit").style.display  = "none";
+  document.getElementById("mainOptions").style.display = "none";
+  document.getElementById("photoEdit").style.display = "block";
+  document.getElementById("licenseEdit").style.display = "none";
 }
 function showLicenseEdit() {
-  document.getElementById("mainOptions").style.display  = "none";
-  document.getElementById("photoEdit").style.display    = "none";
-  document.getElementById("licenseEdit").style.display  = "block";
+  document.getElementById("mainOptions").style.display = "none";
+  document.getElementById("photoEdit").style.display = "none";
+  document.getElementById("licenseEdit").style.display = "block";
 }
 
 function previewLicense(event) {
@@ -286,10 +253,7 @@ function previewLicense(event) {
   const reader = new FileReader();
   reader.onload = (e) => {
     const preview = document.getElementById("licensePreview");
-  reader.onload = (e) => {
-    const preview = document.getElementById("licensePreview");
     preview.src = e.target.result;
-    preview.style.display = "block";
     preview.style.display = "block";
   };
   reader.readAsDataURL(file);
@@ -297,23 +261,23 @@ function previewLicense(event) {
 
 function saveLicense() {
   const licenseInput = document.getElementById("licenseNumber");
-  const expiryInput  = document.getElementById("expiryDate");
+  const expiryInput = document.getElementById("expiryDate");
   let valid = true;
 
   licenseInput.style.borderColor = "";
-  expiryInput.style.borderColor  = "";
-  licenseInput.style.color       = "";
-  expiryInput.style.color        = "";
+  expiryInput.style.borderColor = "";
+  licenseInput.style.color = "";
+  expiryInput.style.color = "";
 
   if (!licenseInput.value.trim()) {
     licenseInput.style.borderColor = "#dc2626";
-    licenseInput.style.color       = "#dc2626";
-    licenseInput.placeholder       = "License number is required";
+    licenseInput.style.color = "#dc2626";
+    licenseInput.placeholder = "License number is required";
     valid = false;
   }
   if (!expiryInput.value) {
     expiryInput.style.borderColor = "#dc2626";
-    expiryInput.style.color       = "#dc2626";
+    expiryInput.style.color = "#dc2626";
     valid = false;
   }
   if (!valid) return;
@@ -326,10 +290,7 @@ function previewPhoto(event) {
   const reader = new FileReader();
   reader.onload = (e) => {
     const preview = document.getElementById("photoPreview");
-  reader.onload = (e) => {
-    const preview = document.getElementById("photoPreview");
     preview.src = e.target.result;
-    preview.style.display = "block";
     preview.style.display = "block";
   };
   reader.readAsDataURL(file);
@@ -337,32 +298,14 @@ function previewPhoto(event) {
 
 function savePhoto() {
   const preview = document.getElementById("photoPreview");
-  const preview = document.getElementById("photoPreview");
   if (preview.src) {
-    document.querySelector(".avatar img").src = preview.src;
     document.querySelector(".avatar img").src = preview.src;
   }
   closeModal();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  requireAuth();
-  bindLogout();
-  setProfileName();
-
-  initVehicleDropdowns().catch((e) => {
-    console.error("Dropdown init error:", e);
-    showPageError(e?.message || "Failed to load dropdown options.");
-  });
-
-  const modal = document.getElementById("editProfileModal");
-  if (modal) {
-    modal.addEventListener("click", function (e) {
-      if (e.target === this) closeModal();
-    });
-  }
-document.addEventListener("DOMContentLoaded", () => {
-  requireAuth();
+  // COOKIE AUTH IMPLEMENTED: protected by 401 redirect in api.js
   bindLogout();
   setProfileName();
 

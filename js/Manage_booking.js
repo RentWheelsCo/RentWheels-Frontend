@@ -49,7 +49,6 @@ async function loadBookings() {
 
   try {
     const payload = await window.RW_API.request("/bookings/as-owner", {
-      auth: true,
       params: { limit: 50 },
     });
 
@@ -233,7 +232,7 @@ function savePhoto() {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-  requireAuth();
+  // COOKIE AUTH IMPLEMENTED: protected by 401 redirect in api.js
   bindLogout();
   loadBookings();
   initNav();

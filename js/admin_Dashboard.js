@@ -76,15 +76,9 @@ if (false) document.getElementById("vehicle-tbody").innerHTML = vehicles.slice(0
   </tr>
 `).join("");
 
-function requireAuth() {
-  if (!localStorage.getItem("authToken")) {
-    window.location.href = "login.html";
-  }
-}
-
 function logout() {
-  localStorage.removeItem("authToken");
-  localStorage.removeItem("authUser");
+  window.RW_API?.auth?.logout?.().catch(() => {});
+  document.cookie = "authToken=; Max-Age=0; path=/";
   window.location.href = "login.html";
 }
 
@@ -155,9 +149,9 @@ function renderAll() {
 async function loadAdminDashboard() {
   try {
     const [bookingsPayload, vehiclesPayload, usersPayload] = await Promise.all([
-      window.RW_API.request("/admin/bookings", { auth: true, params: { limit: 5 } }),
-      window.RW_API.request("/admin/vehicles", { auth: true, params: { limit: 5 } }),
-      window.RW_API.request("/auth/admin/users", { auth: true, params: { limit: 5 } }),
+      window.RW_API.request("/admin/bookings", { params: { limit: 5 } }),
+      window.RW_API.request("/admin/vehicles", { params: { limit: 5 } }),
+      window.RW_API.request("/auth/admin/users", { params: { limit: 5 } }),
     ]);
 
     const bookingRows = Array.isArray(bookingsPayload?.data?.bookings) ? bookingsPayload.data.bookings : [];
@@ -202,6 +196,6 @@ async function loadAdminDashboard() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  requireAuth();
+  // COOKIE AUTH IMPLEMENTED: protected by 401 redirect in api.js
   loadAdminDashboard();
 });

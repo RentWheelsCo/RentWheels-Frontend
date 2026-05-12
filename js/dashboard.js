@@ -2,8 +2,6 @@ const API_BASE = window.RW_CONFIG?.API_BASE || "http://localhost:5000/api";
 
 const clipboard = `<img src="../assets/clipboard.png" alt="Booking" width="25" height="25">`;
 
-function getToken() { return localStorage.getItem("authToken"); }
-
 function bindLogout() {
   const logoutLink = document.getElementById("rw-sidebar-logout");
   if (!logoutLink) return;
@@ -25,10 +23,9 @@ function formatDate(value) {
 function setProfileName() {
   const el = document.querySelector(".profile-name");
   if (!el) return;
-  try {
-    const user = JSON.parse(localStorage.getItem("authUser") || "null");
-    if (user?.name) el.textContent = user.name;
-  } catch { /* ignore */ }
+  window.RW_API?.auth?.profile?.()
+    .then((p) => { if (p?.data?.name) el.textContent = p.data.name; })
+    .catch(() => {});
 }
 
 function drawDonutChart() {
@@ -91,26 +88,8 @@ function renderDashboard(data) {
 }
 
 async function loadDashboard() {
-  const token = getToken();
-
-  const response = await fetch(`${API_BASE}/user/seller/dashboard`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  const payload = await response.json().catch(() => null);
-
-  if (!response.ok) {
-    if (response.status === 401) {
-      logout();
-      return;
-    }
-    const msg = payload?.message || "Failed to load dashboard data.";
-    throw new Error(msg);
-  }
-
+  // COOKIE AUTH IMPLEMENTED
+  const payload = await window.RW_API.request("/user/seller/dashboard");
   const data    = payload?.data || {};
   const monthly = Array.isArray(data.monthlyRevenue) ? data.monthlyRevenue : [];
   const now     = new Date();
@@ -141,7 +120,6 @@ function initNav() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  requireAuth();
   bindLogout();
   setProfileName();
   initNav();

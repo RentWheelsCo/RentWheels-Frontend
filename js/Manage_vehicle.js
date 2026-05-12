@@ -36,8 +36,8 @@ async function loadVehicles() {
 
   try {
     const [availabilityPayload, myVehiclesPayload] = await Promise.all([
-      window.RW_API.request("/bookings/my-vehicles", { auth: true }),
-      window.RW_API.request("/vehicles/my", { auth: true, params: { limit: 50 } }),
+      window.RW_API.request("/bookings/my-vehicles"),
+      window.RW_API.request("/vehicles/my", { params: { limit: 50 } }),
     ]);
 
     const mine = Array.isArray(myVehiclesPayload?.data?.vehicles) ? myVehiclesPayload.data.vehicles : [];
@@ -126,7 +126,6 @@ async function toggleStatus(id, btn) {
   try {
     await window.RW_API.request(`/vehicles/${id}`, {
       method: "PATCH",
-      auth: true,
       body: JSON.stringify({ availabilityStatus: apiStatus }),
       headers: { "Content-Type": "application/json" },
     });
@@ -182,7 +181,7 @@ async function confirmDelete() {
   const id = pendingDeleteId;
 
   try {
-    await window.RW_API.request(`/vehicles/${id}`, { method: "DELETE", auth: true });
+    await window.RW_API.request(`/vehicles/${id}`, { method: "DELETE" });
     const idx = vehicleData.findIndex(x => x.id === id);
     if (idx !== -1) vehicleData.splice(idx, 1);
     closeDeleteModal();
@@ -271,7 +270,7 @@ function savePhoto() {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-  requireAuth();
+  // COOKIE AUTH IMPLEMENTED: protected by 401 redirect in api.js
   bindLogout();
   loadVehicles();
   initNav();

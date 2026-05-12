@@ -28,15 +28,9 @@ function statusBadgeHTML(status) {
   return `<span class="status-badge status-badge--${status}">${label}</span>`;
 }
 
-function requireAuth() {
-  if (!localStorage.getItem("authToken")) {
-    window.location.href = "login.html";
-  }
-}
-
 function logout() {
-  localStorage.removeItem("authToken");
-  localStorage.removeItem("authUser");
+  window.RW_API?.auth?.logout?.().catch(() => {});
+  document.cookie = "authToken=; Max-Age=0; path=/";
   window.location.href = "login.html";
 }
 
@@ -66,7 +60,7 @@ async function loadBookings() {
   setListMessage("Loading bookings...");
 
   try {
-    const payload = await window.RW_API.request("/bookings/my", { auth: true, params: { limit: 50 } });
+    const payload = await window.RW_API.bookings.getMyBookings({ limit: 50 });
     const rows = Array.isArray(payload?.data?.bookings) ? payload.data.bookings : [];
 
     const vehicleIds = Array.from(
@@ -76,7 +70,7 @@ async function loadBookings() {
     const vehicleById = new Map();
     await Promise.all(vehicleIds.map(async (id) => {
       try {
-        const v = await window.RW_API.request(`/vehicles/${id}`);
+        const v = await window.RW_API.vehicles.getDetail(id);
         vehicleById.set(id, v?.data || null);
       } catch {
         vehicleById.set(id, null);
@@ -92,7 +86,7 @@ async function loadBookings() {
       return {
         id: b.id,
         bookingNumber: `Booking #${b.id}`,
-        status: statusKeyFromApi(b.bookingStatus),
+        status: statusKeyFromApi(b.status),
         vehicle: {
           name: b?.vehicle?.name || details?.name || "Vehicle",
           year: String(details?.year ?? b?.vehicle?.year ?? ""),
@@ -206,7 +200,6 @@ function renderBookings(data) {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  requireAuth();
   loadBookings();
 
   document.getElementById('bookingsList').addEventListener('click', e => {

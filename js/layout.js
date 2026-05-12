@@ -4,12 +4,14 @@ const ASSETS = {
 };
 
 function isAuthed() {
-  return Boolean(localStorage.getItem("authToken"));
+  // COOKIE AUTH IMPLEMENTED: HttpOnly cookie not readable in JS
+  return false;
 }
 
 function logout() {
-  localStorage.removeItem("authToken");
-  localStorage.removeItem("authUser");
+
+  window.RW_API?.auth?.logout?.().catch(() => {});
+  document.cookie = "authToken=; Max-Age=0; path=/";
   window.location.href = "../html/login.html";
 }
 
@@ -159,16 +161,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const logoutBtn = document.getElementById("rw-logout-btn");
   if (logoutBtn) logoutBtn.addEventListener("click", logout);
 
-  // ── Auth guard: My Bookings & Dashboard ──────────────────────
-  // Intercept protected links and redirect to login if not authed
-  document.querySelectorAll("[data-protected='true']").forEach(link => {
-    link.addEventListener("click", (e) => {
-      if (!isAuthed()) {
-        e.preventDefault();
-        window.location.href = "../html/login.html";
-      }
-    });
-  });
 
   // ── Notification panel toggle ────────────────────────────────
   const notifBtn   = document.getElementById("rw-notification-btn");

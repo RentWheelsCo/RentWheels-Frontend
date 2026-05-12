@@ -252,7 +252,8 @@
       return: formatDate(state.returnDate),
     });
 
-    alert(`vehicles.html?${params.toString()}`);
+    // <!-- FULL API INTEGRATION ADDED -->
+    window.location.href = `vehicle.html?${params.toString()}`;
   });
 
 })();

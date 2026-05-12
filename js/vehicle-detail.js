@@ -1,4 +1,6 @@
 (function () {
+  // <!-- FULL API INTEGRATION ADDED -->
+  // NOTE: This file previously used static vehicle data. It's now backend-driven.
   const DETAILS = {
     1: {
       title: "BMW X5",
@@ -149,16 +151,7 @@
 
   function resolveId(raw) {
     const n = parseInt(String(raw), 10);
-    if (!Number.isFinite(n) || n < 1) return 1;
-    if (n >= 100) {
-      if (n >= 200) {
-        const bikeBases = [4, 5, 6];
-        return bikeBases[(n - 201) % bikeBases.length];
-      }
-      const carBases = [1, 2, 3];
-      return carBases[(n - 101) % carBases.length];
-    }
-    return DETAILS[n] ? n : 1;
+    return Number.isFinite(n) && n > 0 ? n : null;
   }
 
   function statIcon(type) {
@@ -360,54 +353,59 @@
     const params = new URLSearchParams(window.location.search);
     const id = resolveId(params.get("id"));
     const from = params.get("from");
-    const d = DETAILS[id];
+    if (!id) {
+      window.location.href = "./vehicle.html";
+      return;
+    }
+    let d = DETAILS[1];
+    let currentVehicle = null;
 
     const back = document.getElementById("detailBack");
     if (back) {
-      const backLabel =
-        from === "cars"
-          ? "Back to all cars"
-          : from === "bikes"
-            ? "Back to all bikes"
-            : "Back to vehicles";
-
-      if (from === "cars") {
-        back.href = "./vehicle.html?view=cars";
-      } else if (from === "bikes") {
-        back.href = "./vehicle.html?view=bikes";
-      } else {
-        back.href = "./vehicle.html";
-      }
-
-      const icon = back.querySelector(".vehicle-detail-back__icon");
-      if (icon) {
-        back.innerHTML = "";
-        back.appendChild(icon);
-        back.append(` ${backLabel}`);
-      } else {
-        back.textContent = backLabel;
-      }
+      back.href =
+        from === "cars" ? "./vehicle.html?view=cars" : "./vehicle.html";
     }
 
-    document.title = `${d.title} – RentWheels`;
+    // Load vehicle detail from backend
+    window.RW_API.vehicles.getDetail(id).then((payload) => {
+      const vehicle = payload?.data || null;
+      if (!vehicle) throw new Error("Vehicle not found");
+      currentVehicle = vehicle;
 
-    setupHeroCarousel(id, d);
-    const meta = document.getElementById("detailMeta");
-    if (meta) meta.textContent = d.meta;
-    const title = document.getElementById("detailTitle");
-    if (title) title.textContent = d.title;
-    const price = document.getElementById("detailPrice");
-    if (price) price.textContent = d.price;
-    const priceNote = document.getElementById("detailPriceNote");
-    if (priceNote) priceNote.textContent = d.priceNote;
-    const desc = document.getElementById("detailDescription");
-    if (desc) desc.textContent = d.description;
+      document.title = `${vehicle.name || "Vehicle"} – RentWheels`;
 
-    const stats = document.getElementById("detailStats");
-    if (stats) stats.innerHTML = renderStats(d);
+      // Hero carousel: reuse existing function, but feed it with vehicle photos
+      const heroImg = document.getElementById("detailHeroImg");
+      if (heroImg) {
+        const photo = Array.isArray(vehicle.photos) && vehicle.photos.length ? vehicle.photos[0] : null;
+        heroImg.src = photo || heroImg.src;
+        heroImg.alt = vehicle.name || "Vehicle";
+      }
 
-    const feats = document.getElementById("detailFeatures");
-    if (feats) feats.innerHTML = renderFeatures(d.features);
+      const meta = document.getElementById("detailMeta");
+      if (meta) meta.textContent = `${vehicle.year || ""} • ${vehicle.category?.value || vehicle.type?.value || ""}`.trim();
+      const title = document.getElementById("detailTitle");
+      if (title) title.textContent = vehicle.name || "Vehicle";
+      const price = document.getElementById("detailPrice");
+      if (price) price.textContent = `Rs${Number(vehicle.dailyPrice || 0)}`;
+      const priceNote = document.getElementById("detailPriceNote");
+      if (priceNote) priceNote.textContent = "per day";
+      const desc = document.getElementById("detailDescription");
+      if (desc) desc.textContent = vehicle.description || "";
+
+      const stats = document.getElementById("detailStats");
+      if (stats) {
+        stats.innerHTML = renderStats({
+          seats: `${vehicle.seatingCapacity || ""} Seats`.trim(),
+          fuel: vehicle.fuelType?.value || "",
+          transmission: vehicle.transmission?.value || "",
+          location: vehicle.location?.value || "",
+        });
+      }
+    }).catch((err) => {
+      console.error("Vehicle detail load error:", err);
+      showToast(err?.message || "Failed to load vehicle details.");
+    });
 
     const list = document.getElementById("detailCommentsList");
     const imageBtn = document.getElementById("commentImageBtn");
@@ -465,81 +463,31 @@
       });
     }
 
-    if (list) {
-      const editState = new WeakMap();
-
-      function closeAllCommentMenus() {
-        list.querySelectorAll(".vehicle-detail-comment__menu").forEach((menu) => {
-          menu.hidden = true;
-          const kebab = menu.previousElementSibling;
-          if (kebab && kebab.classList.contains("vehicle-detail-comment__kebab")) {
-            kebab.setAttribute("aria-expanded", "false");
+    function loadComments() {
+      if (!list) return;
+      list.innerHTML = `<div style="color:#7b8292;font-size:13px;">Loading comments…</div>`;
+      window.RW_API.request(`/comments/vehicle/${id}`, { params: { page: 1, pageSize: 10 } })
+        .then((payload) => {
+          const comments = Array.isArray(payload?.data?.comments) ? payload.data.comments : [];
+          if (!comments.length) {
+            list.innerHTML = `<div style="color:#7b8292;font-size:13px;">No comments yet.</div>`;
+            return;
           }
+          list.innerHTML = comments.map((c) => renderComment({
+            name: c?.user?.name || "User",
+            text: c?.content || "",
+            avatar: c?.user?.profilePhoto || "https://placehold.co/64x64/e5e7eb/9ca3af?text=U",
+            time: new Date(c.createdAt).toLocaleDateString(),
+            image: "",
+          })).join("");
+        })
+        .catch(() => {
+          list.innerHTML = `<div style="color:#b91c1c;font-size:13px;">Failed to load comments.</div>`;
         });
-      }
+    }
 
-      function startEditComment(comment) {
-        if (!comment || comment.classList.contains("is-editing")) return;
-        const textEl = comment.querySelector(".vehicle-detail-comment__text");
-        if (!textEl) return;
-        editState.set(comment, { original: textEl.textContent });
-        textEl.hidden = true;
-        comment.classList.add("is-editing");
-
-        const editWrap = document.createElement("div");
-        editWrap.className = "vehicle-detail-comment__edit-wrap";
-        const ta = document.createElement("textarea");
-        ta.className = "vehicle-detail-comment__edit-input";
-        ta.value = textEl.textContent;
-        const actions = document.createElement("div");
-        actions.className = "vehicle-detail-comment__edit-actions";
-        const saveBtn = document.createElement("button");
-        saveBtn.type = "button";
-        saveBtn.className = "vehicle-detail-comment__edit-save";
-        saveBtn.textContent = "Save";
-        const cancelBtn = document.createElement("button");
-        cancelBtn.type = "button";
-        cancelBtn.className = "vehicle-detail-comment__edit-cancel";
-        cancelBtn.textContent = "Cancel";
-        actions.appendChild(saveBtn);
-        actions.appendChild(cancelBtn);
-        editWrap.appendChild(ta);
-        editWrap.appendChild(actions);
-        textEl.insertAdjacentElement("afterend", editWrap);
-        ta.focus();
-      }
-
-      function cancelEditComment(comment) {
-        const state = editState.get(comment);
-        const textEl = comment.querySelector(".vehicle-detail-comment__text");
-        const editWrap = comment.querySelector(".vehicle-detail-comment__edit-wrap");
-        if (textEl && state) textEl.textContent = state.original;
-        if (textEl) textEl.hidden = false;
-        editWrap?.remove();
-        comment.classList.remove("is-editing");
-        editState.delete(comment);
-      }
-
-      function saveEditComment(comment) {
-        const ta = comment.querySelector(".vehicle-detail-comment__edit-input");
-        const textEl = comment.querySelector(".vehicle-detail-comment__text");
-        const editWrap = comment.querySelector(".vehicle-detail-comment__edit-wrap");
-        const next = (ta?.value ?? "").trim() || " ";
-        if (textEl) textEl.textContent = next;
-        if (textEl) textEl.hidden = false;
-        editWrap?.remove();
-        comment.classList.remove("is-editing");
-        editState.delete(comment);
-        showToast("Comment updated");
-      }
-
-      document.addEventListener("click", (e) => {
-        if (!list.isConnected) return;
-        if (e.target.closest(".vehicle-detail-comment__menu-wrap")) return;
-        closeAllCommentMenus();
-      });
-
-      list.innerHTML = renderComment(d.commentSample);
+    if (list) {
+      loadComments();
 
       list.addEventListener("click", (e) => {
         const saveEdit = e.target.closest(".vehicle-detail-comment__edit-save");
@@ -685,7 +633,7 @@
         const days = Math.ceil(diffSpan / (1000 * 60 * 60 * 24));
         const periodStr = `${start.toLocaleDateString()} - ${end.toLocaleDateString()} (${days} Days)`;
 
-        const basePrice = parseInt(d.price.replace(/[^0-9]/g, ""), 10) || 80;
+        const basePrice = Number(currentVehicle?.dailyPrice || 0);
         const carCost = basePrice * days;
 
         const insSelect = document.getElementById("insuranceType");
@@ -697,15 +645,13 @@
 
         const total = carCost + insuranceCost;
 
-        const typeLabel = d.meta.includes("•")
-          ? d.meta.split("•")[1].trim()
-          : "VEHICLE";
+        const typeLabel = currentVehicle?.category?.value || currentVehicle?.type?.value || "VEHICLE";
 
         const imgEl = document.getElementById("modalCarImg");
-        if (imgEl) imgEl.src = d.image;
+        if (imgEl) imgEl.src = (Array.isArray(currentVehicle?.photos) && currentVehicle.photos.length ? currentVehicle.photos[0] : null) || imgEl.src;
 
         const nameEl = document.getElementById("modalCarName");
-        if (nameEl) nameEl.textContent = `${d.title} (${typeLabel})`;
+        if (nameEl) nameEl.textContent = `${currentVehicle?.name || document.getElementById("detailTitle")?.textContent || "Vehicle"} (${typeLabel})`;
 
         const periodEl = document.getElementById("modalRentalPeriod");
         if (periodEl) periodEl.textContent = periodStr;
@@ -737,8 +683,35 @@
       const payBtnEl = document.getElementById("modalPayBtn");
       if (payBtnEl) {
         payBtnEl.addEventListener("click", () => {
-          modal.setAttribute("hidden", "");
-          showToast("Payment Successful!");
+          const pDate = document.getElementById("pickupDate").value;
+          const rDate = document.getElementById("returnDate").value;
+          const insSelect = document.getElementById("insuranceType");
+          const insType = insSelect ? insSelect.value : "none";
+          const apiInsurance = insType === "full" ? "PREMIUM" : insType === "half" ? "STANDARD" : "BASIC";
+
+          payBtnEl.disabled = true;
+          const original = payBtnEl.textContent;
+          payBtnEl.textContent = "Redirecting to payment…";
+
+          window.RW_API.payments.processPayment({
+            vehicleId: id,
+            pickupDate: pDate,
+            returnDate: rDate,
+            insuranceType: apiInsurance,
+          }).then((payload) => {
+            const stripeUrl = payload?.data?.stripeUrl;
+            if (stripeUrl) {
+              window.location.href = stripeUrl;
+              return;
+            }
+            showToast("Checkout created, but missing Stripe URL.");
+          }).catch((err) => {
+            showToast(err?.message || "Payment failed. Please try again.");
+          }).finally(() => {
+            payBtnEl.disabled = false;
+            payBtnEl.textContent = original;
+            modal.setAttribute("hidden", "");
+          });
         });
       }
     }
@@ -752,18 +725,17 @@
           showToast("Write a comment or attach an image first");
           return;
         }
-        const c = {
-          name: "You",
-          text: text || " ",
-          avatar: "https://randomuser.me/api/portraits/men/99.jpg",
-          time: "now",
-          image: selectedImage || "",
-          commentId: `me-${Date.now()}`,
-        };
-        list.insertAdjacentHTML("afterbegin", renderComment(c));
-        input.value = "";
-        clearImageSelection();
-        showToast("Comment posted");
+        window.RW_API.request("/comments", {
+          method: "POST",
+          body: { vehicleId: id, content: text },
+        }).then(() => {
+          input.value = "";
+          clearImageSelection();
+          loadComments();
+          showToast("Comment posted");
+        }).catch((err) => {
+          showToast(err?.message || "Failed to post comment.");
+        });
       });
     }
   });

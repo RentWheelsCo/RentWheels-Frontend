@@ -17,19 +17,15 @@
     return url.toString();
   }
 
-  function getToken() {
-    return localStorage.getItem("authToken");
+  function getLoginHref() {
+    const p = String(window.location?.pathname || "").replace(/\\/g, "/");
+    return p.includes("/html/") ? "login.html" : "html/login.html";
   }
 
   async function request(path, options) {
     const opt = options || {};
     const method = opt.method || "GET";
     const headers = new Headers(opt.headers || {});
-
-    if (opt.auth) {
-      const token = getToken();
-      if (token) headers.set("Authorization", `Bearer ${token}`);
-    }
 
     let body = opt.body;
     const isBodyObject =
@@ -48,7 +44,8 @@
       method,
       headers,
       body,
-      credentials: opt.credentials || "omit",
+      // COOKIE AUTH IMPLEMENTED
+      credentials: "include",
     });
 
     const text = await res.text();
@@ -59,6 +56,23 @@
       } catch {
         data = text;
       }
+    }
+
+    if (res.status === 401) {
+      const rawPath = String(path || "");
+      const isAuthForm =
+        rawPath.startsWith("/auth/login") ||
+        rawPath.startsWith("/auth/register") ||
+        rawPath.startsWith("/auth/forgot-password") ||
+        rawPath.startsWith("/auth/reset-password");
+
+      if (!isAuthForm) {
+        window.location.href = getLoginHref();
+      }
+      const err = new Error("Unauthorized");
+      err.status = 401;
+      err.data = data;
+      throw err;
     }
 
     if (!res.ok) {
@@ -72,10 +86,99 @@
     return data;
   }
 
+  const auth = Object.freeze({
+    login(payload) {
+      return request("/auth/login", { method: "POST", body: payload });
+    },
+    register(formData) {
+      return request("/auth/register", { method: "POST", body: formData });
+    },
+    logout() {
+      return request("/auth/logout", { method: "POST" });
+    },
+    profile() {
+      return request("/auth/profile");
+    },
+  });
+
+  const vehicles = Object.freeze({
+    getAll(params) {
+      return request("/vehicles", { params });
+    },
+    search(filters) {
+      return request("/vehicles", { params: filters });
+    },
+    getDetail(id) {
+      return request(`/vehicles/${id}`);
+    },
+    addVehicle(formData) {
+      return request("/vehicles", { method: "POST", body: formData });
+    },
+    getMy(params) {
+      return request("/vehicles/my", { params });
+    },
+    getOptions(params) {
+      return request("/vehicles/options", { params });
+    },
+  });
+
+  const bookings = Object.freeze({
+    create(payload) {
+      return request("/bookings/checkout", { method: "POST", body: payload });
+    },
+    getMyBookings(params) {
+      return request("/bookings/my", { params });
+    },
+    getDetail(id) {
+      return request(`/bookings/${id}`);
+    },
+    cancel(id) {
+      return request(`/bookings/${id}/cancel`, { method: "POST" });
+    },
+    return(id) {
+      return request(`/bookings/${id}/return`, { method: "POST" });
+    },
+    getAsOwner(params) {
+      return request("/bookings/as-owner", { params });
+    },
+    getMyVehiclesAvailability(params) {
+      return request("/bookings/my-vehicles", { params });
+    },
+  });
+
+  const payments = Object.freeze({
+    processPayment(payload) {
+      return request("/bookings/checkout", { method: "POST", body: payload });
+    },
+  });
+
+  const admin = Object.freeze({
+    getDashboardStats() {
+      return Promise.all([
+        request("/admin/bookings", { params: { limit: 5 } }),
+        request("/admin/vehicles", { params: { limit: 5 } }),
+        request("/auth/admin/users", { params: { limit: 5 } }),
+      ]).then(([bookingsPayload, vehiclesPayload, usersPayload]) => ({
+        success: true,
+        data: { bookingsPayload, vehiclesPayload, usersPayload },
+      }));
+    },
+    getAllBookings(params) {
+      return request("/admin/bookings", { params });
+    },
+    getAllUsers(params) {
+      return request("/auth/admin/users", { params });
+    },
+  });
+
   window.RW_API = Object.freeze({
     base,
     buildUrl,
     request,
-    getToken,
+    auth,
+    vehicles,
+    bookings,
+    payments,
+    admin,
   });
 })();
