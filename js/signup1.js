@@ -105,14 +105,8 @@ async function submitSignup() {
   if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting…'; }
 
   try {
-    const data = await window.RW_API.request('/auth/register', {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (data?.data?.token) {
-      localStorage.setItem('authToken', data.data.token);
-    }
+    // COOKIE AUTH IMPLEMENTED
+    await window.RW_API.auth.register(formData);
     sessionStorage.removeItem('signupData');
     sessionStorage.removeItem('signupError');
 

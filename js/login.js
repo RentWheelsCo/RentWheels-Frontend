@@ -101,24 +101,19 @@ form.addEventListener('submit', async (e) => {
   setLoading(true);
 
   try {
-    const data = await window.RW_API.request('/auth/login', {
-      method: 'POST',
-      body: {
-        email: emailIn.value.trim(),
-        password: pwIn.value,
-      },
+    // COOKIE AUTH IMPLEMENTED
+    await window.RW_API.auth.login({
+      email: emailIn.value.trim(),
+      password: pwIn.value,
     });
 
-    const { token, id, name, email, isVerified } = data?.data || {};
-    if (!token) {
-      showLoginError("Login succeeded but token is missing. Please try again.");
-      return;
-    }
-
-    localStorage.setItem("authToken", token);
-    localStorage.setItem("authUser", JSON.stringify({ id, name, email, isVerified }));
-
-    window.location.href = 'dashboard.html';
+    // <!-- FULL API INTEGRATION ADDED -->
+    // Use assign() to avoid being blocked by history state edge cases.
+    window.location.assign('dashboard.html');
+    // Fallback: if navigation is blocked for any reason, retry once.
+    setTimeout(() => {
+      try { window.location.assign('dashboard.html'); } catch { /* ignore */ }
+    }, 300);
 
   } catch (err) {
     const raw = (err?.data && typeof err.data === 'object' ? err.data.message : '') || '';
@@ -141,7 +136,7 @@ form.addEventListener('submit', async (e) => {
       return;
     }
     console.error('Login error:', err);
-    showLoginError('Network error. Please check your connection and try again.');
+    showLoginError(err?.message || 'Network error. Please check your connection and try again.');
   } finally {
     setLoading(false);
   }

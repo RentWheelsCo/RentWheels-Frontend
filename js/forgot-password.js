@@ -3,7 +3,7 @@ var currentStep  = 1;
 var userEmail    = '';
 var otpInterval  = null;
 var redirInterval = null;
-var MOCK_OTP     = '123456';
+var serverOtpVerified = false;
 function isEmail(v) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
 }
@@ -49,13 +49,23 @@ document.getElementById('emailForm').addEventListener('submit', function(e) {
   fpEmailEl.classList.add('valid');
   document.getElementById('fpEmail-err').classList.remove('show');
   setLoading('sendOtpBtn', 'sendSpinner', 'sendBtnText', true, 'Send OTP');
-  pause(1400).then(function() {
+
+  // <!-- FULL API INTEGRATION ADDED -->
+  window.RW_API.request('/auth/forgot-password', {
+    method: 'POST',
+    body: { email: val },
+  }).then(function() {
     userEmail = val;
+    serverOtpVerified = false;
     document.getElementById('sentToEmail').textContent = val;
     setLoading('sendOtpBtn', 'sendSpinner', 'sendBtnText', false, 'Send OTP');
     goTo(2);
     startOtpTimer();
     document.querySelector('.otp-box').focus();
+  }).catch(function(err) {
+    var msg = (err && err.data && typeof err.data === 'object' ? err.data.message : null) || 'Failed to send OTP. Please try again.';
+    showAlert('emailAlert', msg, 'error');
+    setLoading('sendOtpBtn', 'sendSpinner', 'sendBtnText', false, 'Send OTP');
   });
 });
 fpEmailEl.addEventListener('input', function() {
@@ -117,8 +127,19 @@ document.getElementById('resendBtn').addEventListener('click', function() {
   document.getElementById('resendBtn').style.display = 'none';
   otpBoxes.forEach(function(b) { b.value = ''; b.classList.remove('filled', 'otp-valid', 'otp-invalid'); });
   otpBoxes[0].focus();
-  showAlert('otpAlert', 'A new code has been sent to ' + userEmail, 'success');
-  startOtpTimer();
+  // <!-- FULL API INTEGRATION ADDED -->
+  window.RW_API.request('/auth/forgot-password', {
+    method: 'POST',
+    body: { email: userEmail },
+  }).then(function() {
+    showAlert('otpAlert', 'A new code has been sent to ' + userEmail, 'success');
+    serverOtpVerified = false;
+    startOtpTimer();
+  }).catch(function(err) {
+    var msg = (err && err.data && typeof err.data === 'object' ? err.data.message : null) || 'Failed to resend OTP.';
+    showAlert('otpAlert', msg, 'error');
+    startOtpTimer();
+  });
 });
 document.getElementById('otpForm').addEventListener('submit', function(e) {
   e.preventDefault();
@@ -129,23 +150,19 @@ document.getElementById('otpForm').addEventListener('submit', function(e) {
     return;
   }
   setLoading('verifyOtpBtn', 'verifySpinner', 'verifyBtnText', true, 'Verify OTP');
-  pause(1400).then(function() {
-    if (entered === MOCK_OTP) {
-      otpBoxes.forEach(function(b) {
-        b.classList.remove('otp-invalid', 'filled');
-        b.classList.add('otp-valid');
-      });
-      setLoading('verifyOtpBtn', 'verifySpinner', 'verifyBtnText', false, 'Verify OTP');
-      clearInterval(otpInterval);
-      setTimeout(function() { goTo(3); }, 300);
-    } else {
-      otpBoxes.forEach(function(b) {
-        b.classList.add('otp-invalid');
-        b.classList.remove('filled', 'otp-valid');
-      });
-      showAlert('otpAlert', 'Incorrect or expired OTP. Please try again.');
-      setLoading('verifyOtpBtn', 'verifySpinner', 'verifyBtnText', false, 'Verify OTP');
-    }
+
+  // <!-- FULL API INTEGRATION ADDED -->
+  // Backend verifies OTP during reset; here we do a lightweight "pre-check" by trying a dry-run reset with a dummy password is not safe.
+  // So we mark OTP as verified locally and proceed; the real verification happens in Reset Password API call.
+  pause(400).then(function() {
+    serverOtpVerified = true;
+    otpBoxes.forEach(function(b) {
+      b.classList.remove('otp-invalid', 'filled');
+      b.classList.add('otp-valid');
+    });
+    setLoading('verifyOtpBtn', 'verifySpinner', 'verifyBtnText', false, 'Verify OTP');
+    clearInterval(otpInterval);
+    setTimeout(function() { goTo(3); }, 300);
   });
 });
 document.getElementById('changeEmailBtn').addEventListener('click', function() {
@@ -225,9 +242,29 @@ document.getElementById('resetForm').addEventListener('submit', function(e) {
   }
   if (!ok) return;
   setLoading('resetBtn', 'resetSpinner', 'resetBtnText', true, 'Reset Password');
-  pause(1600).then(function() {
+  if (!userEmail) {
+    showAlert('resetAlert', 'Missing email. Please restart the flow.', 'error');
+    setLoading('resetBtn', 'resetSpinner', 'resetBtnText', false, 'Reset Password');
+    return;
+  }
+  var otp = getOtp();
+  if (!serverOtpVerified || otp.length !== 6) {
+    showAlert('resetAlert', 'Please verify your OTP first.', 'error');
+    setLoading('resetBtn', 'resetSpinner', 'resetBtnText', false, 'Reset Password');
+    return;
+  }
+
+  // <!-- FULL API INTEGRATION ADDED -->
+  window.RW_API.request('/auth/reset-password', {
+    method: 'POST',
+    body: { email: userEmail, otp: otp, password: pw },
+  }).then(function() {
     setLoading('resetBtn', 'resetSpinner', 'resetBtnText', false, 'Reset Password');
     showSuccess();
+  }).catch(function(err) {
+    var msg = (err && err.data && typeof err.data === 'object' ? err.data.message : null) || 'Failed to reset password.';
+    showAlert('resetAlert', msg, 'error');
+    setLoading('resetBtn', 'resetSpinner', 'resetBtnText', false, 'Reset Password');
   });
 });
 function showSuccess() {
