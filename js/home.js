@@ -4,14 +4,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const bikesOnlyView = params.get('view') === 'bikes';
   const isVehiclePage = document.body?.dataset?.page === 'vehicle';
 
-  document.querySelectorAll('.vehicle-card').forEach(card => {
-    card.addEventListener('click', () => {
+  const featuredSection = document.getElementById('featured');
+  if (featuredSection) {
+    featuredSection.addEventListener('click', (e) => {
+      if (e.target.closest('a')) return;
+      const card = e.target.closest('.vehicle-card');
+      if (!card || !featuredSection.contains(card)) return;
       const vehicleId = card.dataset.id;
+      if (!vehicleId) return;
       const fromCars = document.body.classList.contains('cars-only-view');
-      const fromParam = fromCars ? '&from=cars' : '';
+      const fromBikes = document.body.classList.contains('bikes-only-view');
+      const fromParam = fromCars ? '&from=cars' : fromBikes ? '&from=bikes' : '';
       window.location.href = `./vehicle-detail.html?id=${encodeURIComponent(vehicleId)}${fromParam}`;
     });
-  });
+  }
 /* ── Hero search widget (hs-* IDs) ─────────────────────── */
 const hsState = {
   insurance: "",

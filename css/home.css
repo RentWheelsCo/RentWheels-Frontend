@@ -517,11 +517,24 @@ button {
   display: none !important;
 }
 
+.bikes-only-view #carsGrid,
+.bikes-only-view #exploreCars {
+  display: none !important;
+}
+
 .cars-only-view #carsGrid {
   margin-bottom: 8px;
 }
 
+.bikes-only-view #bikesGrid {
+  margin-bottom: 8px;
+}
+
 .cars-only-view .explore-cta {
+  display: none;
+}
+
+.bikes-only-view .explore-cta {
   display: none;
 }
 

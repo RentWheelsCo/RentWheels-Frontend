@@ -151,8 +151,12 @@
     const n = parseInt(String(raw), 10);
     if (!Number.isFinite(n) || n < 1) return 1;
     if (n >= 100) {
-      const bases = [1, 2, 3];
-      return bases[(n - 101) % bases.length];
+      if (n >= 200) {
+        const bikeBases = [4, 5, 6];
+        return bikeBases[(n - 201) % bikeBases.length];
+      }
+      const carBases = [1, 2, 3];
+      return carBases[(n - 101) % carBases.length];
     }
     return DETAILS[n] ? n : 1;
   }
@@ -199,25 +203,62 @@
       .join("");
   }
 
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
   function renderComment(c) {
+    const isOwn = c.name === "You";
+    const commentId = isOwn ? c.commentId || `me-${Date.now()}` : "";
+    const idAttr = commentId ? ` data-comment-id="${escapeHtml(commentId)}"` : "";
+    const ownClass = isOwn ? " vehicle-detail-comment--own" : "";
+
     const imageMarkup = c.image
       ? `<button type="button" class="vehicle-detail-comment__photo-btn" aria-label="Expand image">
             <img class="vehicle-detail-comment__photo-thumb" src="${c.image}" alt="Comment image" />
          </button>`
       : "";
+
+    const kebabBlock = isOwn
+      ? `<div class="vehicle-detail-comment__menu-wrap">
+          <button type="button" class="vehicle-detail-comment__kebab" aria-label="Comment options" aria-expanded="false" aria-haspopup="true" title="More">
+            <svg class="vehicle-detail-comment__kebab-icon" viewBox="0 0 4 16" fill="none" aria-hidden="true">
+              <circle cx="2" cy="2.5" r="1.25" fill="currentColor"/>
+              <circle cx="2" cy="8" r="1.25" fill="currentColor"/>
+              <circle cx="2" cy="13.5" r="1.25" fill="currentColor"/>
+            </svg>
+          </button>
+          <div class="vehicle-detail-comment__menu" role="menu" hidden>
+            <button type="button" role="menuitem" class="vehicle-detail-comment__menu-item action-edit-comment">Edit</button>
+            <button type="button" role="menuitem" class="vehicle-detail-comment__menu-item action-delete-comment">Delete</button>
+          </div>
+        </div>`
+      : "";
+
+    const nameBlock = isOwn
+      ? `<div class="vehicle-detail-comment__bubble-head">
+          <p class="vehicle-detail-comment__name">${escapeHtml(c.name)}</p>
+          ${kebabBlock}
+        </div>`
+      : `<p class="vehicle-detail-comment__name">${escapeHtml(c.name)}</p>`;
+
     return `
-      <div class="vehicle-detail-comment">
+      <div class="vehicle-detail-comment${ownClass}"${idAttr}>
         <img class="vehicle-detail-comment__avatar" src="${c.avatar}" alt="" width="53" height="55" />
         <div class="vehicle-detail-comment__body">
           <div class="vehicle-detail-comment__bubble">
-            <p class="vehicle-detail-comment__name">${c.name}</p>
-            <p class="vehicle-detail-comment__text">${c.text}</p>
+            ${nameBlock}
+            <p class="vehicle-detail-comment__text">${escapeHtml(c.text)}</p>
             ${imageMarkup}
           </div>
           <div class="vehicle-detail-comment__actions">
             <button type="button" class="vehicle-detail-comment__action action-like">Like</button>
             <button type="button" class="vehicle-detail-comment__action action-reply">Reply</button>
-            <span class="vehicle-detail-comment__time">${c.time}</span>
+            <span class="vehicle-detail-comment__time">${escapeHtml(c.time)}</span>
           </div>
         </div>
       </div>`;
@@ -323,8 +364,29 @@
 
     const back = document.getElementById("detailBack");
     if (back) {
-      back.href =
-        from === "cars" ? "./vehicle.html?view=cars" : "./vehicle.html";
+      const backLabel =
+        from === "cars"
+          ? "Back to all cars"
+          : from === "bikes"
+            ? "Back to all bikes"
+            : "Back to vehicles";
+
+      if (from === "cars") {
+        back.href = "./vehicle.html?view=cars";
+      } else if (from === "bikes") {
+        back.href = "./vehicle.html?view=bikes";
+      } else {
+        back.href = "./vehicle.html";
+      }
+
+      const icon = back.querySelector(".vehicle-detail-back__icon");
+      if (icon) {
+        back.innerHTML = "";
+        back.appendChild(icon);
+        back.append(` ${backLabel}`);
+      } else {
+        back.textContent = backLabel;
+      }
     }
 
     document.title = `${d.title} – RentWheels`;
@@ -404,36 +466,162 @@
     }
 
     if (list) {
+      const editState = new WeakMap();
+
+      function closeAllCommentMenus() {
+        list.querySelectorAll(".vehicle-detail-comment__menu").forEach((menu) => {
+          menu.hidden = true;
+          const kebab = menu.previousElementSibling;
+          if (kebab && kebab.classList.contains("vehicle-detail-comment__kebab")) {
+            kebab.setAttribute("aria-expanded", "false");
+          }
+        });
+      }
+
+      function startEditComment(comment) {
+        if (!comment || comment.classList.contains("is-editing")) return;
+        const textEl = comment.querySelector(".vehicle-detail-comment__text");
+        if (!textEl) return;
+        editState.set(comment, { original: textEl.textContent });
+        textEl.hidden = true;
+        comment.classList.add("is-editing");
+
+        const editWrap = document.createElement("div");
+        editWrap.className = "vehicle-detail-comment__edit-wrap";
+        const ta = document.createElement("textarea");
+        ta.className = "vehicle-detail-comment__edit-input";
+        ta.value = textEl.textContent;
+        const actions = document.createElement("div");
+        actions.className = "vehicle-detail-comment__edit-actions";
+        const saveBtn = document.createElement("button");
+        saveBtn.type = "button";
+        saveBtn.className = "vehicle-detail-comment__edit-save";
+        saveBtn.textContent = "Save";
+        const cancelBtn = document.createElement("button");
+        cancelBtn.type = "button";
+        cancelBtn.className = "vehicle-detail-comment__edit-cancel";
+        cancelBtn.textContent = "Cancel";
+        actions.appendChild(saveBtn);
+        actions.appendChild(cancelBtn);
+        editWrap.appendChild(ta);
+        editWrap.appendChild(actions);
+        textEl.insertAdjacentElement("afterend", editWrap);
+        ta.focus();
+      }
+
+      function cancelEditComment(comment) {
+        const state = editState.get(comment);
+        const textEl = comment.querySelector(".vehicle-detail-comment__text");
+        const editWrap = comment.querySelector(".vehicle-detail-comment__edit-wrap");
+        if (textEl && state) textEl.textContent = state.original;
+        if (textEl) textEl.hidden = false;
+        editWrap?.remove();
+        comment.classList.remove("is-editing");
+        editState.delete(comment);
+      }
+
+      function saveEditComment(comment) {
+        const ta = comment.querySelector(".vehicle-detail-comment__edit-input");
+        const textEl = comment.querySelector(".vehicle-detail-comment__text");
+        const editWrap = comment.querySelector(".vehicle-detail-comment__edit-wrap");
+        const next = (ta?.value ?? "").trim() || " ";
+        if (textEl) textEl.textContent = next;
+        if (textEl) textEl.hidden = false;
+        editWrap?.remove();
+        comment.classList.remove("is-editing");
+        editState.delete(comment);
+        showToast("Comment updated");
+      }
+
+      document.addEventListener("click", (e) => {
+        if (!list.isConnected) return;
+        if (e.target.closest(".vehicle-detail-comment__menu-wrap")) return;
+        closeAllCommentMenus();
+      });
+
       list.innerHTML = renderComment(d.commentSample);
 
       list.addEventListener("click", (e) => {
-        if (e.target.classList.contains("action-like")) {
-          if (e.target.textContent === "Like") {
-            e.target.textContent = "Liked";
-            e.target.style.color = "#2563eb";
+        const saveEdit = e.target.closest(".vehicle-detail-comment__edit-save");
+        if (saveEdit) {
+          const comment = saveEdit.closest(".vehicle-detail-comment");
+          if (comment) saveEditComment(comment);
+          return;
+        }
+
+        const cancelEdit = e.target.closest(".vehicle-detail-comment__edit-cancel");
+        if (cancelEdit) {
+          const comment = cancelEdit.closest(".vehicle-detail-comment");
+          if (comment) cancelEditComment(comment);
+          return;
+        }
+
+        const kebab = e.target.closest(".vehicle-detail-comment__kebab");
+        if (kebab) {
+          e.preventDefault();
+          const commentRow = kebab.closest(".vehicle-detail-comment");
+          if (commentRow?.classList.contains("is-editing")) return;
+          const menu = kebab.nextElementSibling;
+          if (!menu || !menu.classList.contains("vehicle-detail-comment__menu")) return;
+          const willOpen = menu.hidden;
+          closeAllCommentMenus();
+          if (willOpen) {
+            menu.hidden = false;
+            kebab.setAttribute("aria-expanded", "true");
+          }
+          return;
+        }
+
+        const deleteBtn = e.target.closest(".action-delete-comment");
+        if (deleteBtn) {
+          const comment = deleteBtn.closest(".vehicle-detail-comment");
+          closeAllCommentMenus();
+          comment?.remove();
+          showToast("Comment deleted");
+          return;
+        }
+
+        const editBtn = e.target.closest(".action-edit-comment");
+        if (editBtn) {
+          const comment = editBtn.closest(".vehicle-detail-comment");
+          closeAllCommentMenus();
+          if (comment) startEditComment(comment);
+          return;
+        }
+
+        const likeBtn = e.target.closest(".action-like");
+        if (likeBtn) {
+          if (likeBtn.textContent === "Like") {
+            likeBtn.textContent = "Liked";
+            likeBtn.style.color = "#2563eb";
             showToast("Comment liked");
           } else {
-            e.target.textContent = "Like";
-            e.target.style.color = "";
+            likeBtn.textContent = "Like";
+            likeBtn.style.color = "";
             showToast("Like removed");
           }
-        } else if (e.target.classList.contains("action-reply")) {
-          const comment = e.target.closest(".vehicle-detail-comment");
-          const nameEl = comment.querySelector(".vehicle-detail-comment__name");
-          const name = nameEl ? nameEl.textContent : "User";
+          return;
+        }
+
+        const replyBtn = e.target.closest(".action-reply");
+        if (replyBtn) {
+          const comment = replyBtn.closest(".vehicle-detail-comment");
+          const nameEl = comment?.querySelector(".vehicle-detail-comment__name");
+          const name = nameEl ? nameEl.textContent.trim() : "User";
           const input = document.getElementById("commentInput");
           if (input) {
             input.value = `@${name} ` + input.value;
             input.focus();
           }
-        } else {
-          const imageThumb = e.target.closest(".vehicle-detail-comment__photo-btn");
-          if (imageThumb && imageModal && imageModalImg) {
-            const img = imageThumb.querySelector(".vehicle-detail-comment__photo-thumb");
-            if (img && img.src) {
-              imageModalImg.src = img.src;
-              imageModal.removeAttribute("hidden");
-            }
+          return;
+        }
+
+        const imageThumb = e.target.closest(".vehicle-detail-comment__photo-btn");
+        if (imageThumb && imageModal && imageModalImg) {
+          const img = imageThumb.querySelector(".vehicle-detail-comment__photo-thumb");
+          if (img && img.src) {
+            imageModalImg.src = img.src;
+            imageModal.removeAttribute("hidden");
           }
         }
       });
@@ -442,30 +630,60 @@
     const bookBtn = document.getElementById("bookNowBtn");
     const modal = document.getElementById("bookingModal");
     const modalContent = document.getElementById("bookingModalContent");
+    const pickupInput = document.getElementById("pickupDate");
+    const returnInput = document.getElementById("returnDate");
+    const pickupError = document.getElementById("pickupDateError");
+    const returnError = document.getElementById("returnDateError");
+
+    function setDateError(inputEl, errorEl, message) {
+      if (!inputEl || !errorEl) return;
+      errorEl.textContent = message;
+      inputEl.classList.toggle("vehicle-detail-field__control--error", !!message);
+    }
+
+    function clearDateErrors() {
+      setDateError(pickupInput, pickupError, "");
+      setDateError(returnInput, returnError, "");
+    }
 
     if (bookBtn && modal && modalContent) {
+      if (pickupInput && pickupError) {
+        pickupInput.addEventListener("input", () =>
+          setDateError(pickupInput, pickupError, ""),
+        );
+      }
+      if (returnInput && returnError) {
+        returnInput.addEventListener("input", () =>
+          setDateError(returnInput, returnError, ""),
+        );
+      }
       bookBtn.addEventListener("click", () => {
-        const pDate = document.getElementById("pickupDate").value;
-        const rDate = document.getElementById("returnDate").value;
+        const pDate = pickupInput ? pickupInput.value : "";
+        const rDate = returnInput ? returnInput.value : "";
+        clearDateErrors();
 
-        let days = 5;
-        let periodStr = "4/10/2025 - 4/15/2025 (5 Days)";
-
-        if (pDate && rDate) {
-          const start = new Date(pDate);
-          const end = new Date(rDate);
-          const diffSpan = end - start;
-          if (diffSpan > 0) {
-            days = Math.ceil(diffSpan / (1000 * 60 * 60 * 24));
-            periodStr = `${start.toLocaleDateString()} - ${end.toLocaleDateString()} (${days} Days)`;
-          } else {
-            showToast("Return date must be after pickup date.");
-            return;
-          }
-        } else if (pDate || rDate) {
-          showToast("Please select both Pickup and Return dates.");
+        if (!pDate) {
+          setDateError(pickupInput, pickupError, "**Pickup date is required.");
+        }
+        if (!rDate) {
+          setDateError(returnInput, returnError, "**Return date is required.");
+        }
+        if (!pDate || !rDate) {
           return;
         }
+        const start = new Date(pDate);
+        const end = new Date(rDate);
+        const diffSpan = end - start;
+        if (diffSpan <= 0) {
+          setDateError(
+            returnInput,
+            returnError,
+            "Return date must be after pickup date.",
+          );
+          return;
+        }
+        const days = Math.ceil(diffSpan / (1000 * 60 * 60 * 24));
+        const periodStr = `${start.toLocaleDateString()} - ${end.toLocaleDateString()} (${days} Days)`;
 
         const basePrice = parseInt(d.price.replace(/[^0-9]/g, ""), 10) || 80;
         const carCost = basePrice * days;
@@ -540,6 +758,7 @@
           avatar: "https://randomuser.me/api/portraits/men/99.jpg",
           time: "now",
           image: selectedImage || "",
+          commentId: `me-${Date.now()}`,
         };
         list.insertAdjacentHTML("afterbegin", renderComment(c));
         input.value = "";
