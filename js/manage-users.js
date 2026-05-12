@@ -10,6 +10,12 @@ let USERS_DATA = [
     joined: "1/15/2024",
     status: "active",
     avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+    licenseImage: "https://placehold.co/420x240/e8f0fe/2563eb?text=Driver+License+•+Emma+Rodriguez",
+    bookings: { total: 14, active: 2, completed: 11, cancelled: 1 },
+    vehicles: [
+      { name: "Toyota Camry 2022", plate: "ABC-1234", type: "Sedan", status: "active" },
+      { name: "Honda CR-V 2021",   plate: "XYZ-5678", type: "SUV",   status: "active" },
+    ],
   },
   {
     id: 2,
@@ -19,6 +25,11 @@ let USERS_DATA = [
     joined: "3/02/2024",
     status: "active",
     avatar: "https://randomuser.me/api/portraits/men/32.jpg",
+    licenseImage: "https://placehold.co/420x240/e8f0fe/2563eb?text=Driver+License+•+James+Carter",
+    bookings: { total: 8, active: 1, completed: 7, cancelled: 0 },
+    vehicles: [
+      { name: "Ford Mustang 2020", plate: "MUS-4321", type: "Sports", status: "active" },
+    ],
   },
   {
     id: 3,
@@ -28,6 +39,9 @@ let USERS_DATA = [
     joined: "4/20/2024",
     status: "inactive",
     avatar: "",
+    licenseImage: "https://placehold.co/420x240/f3f4f6/6b7280?text=Driver+License+•+Sita+Rana",
+    bookings: { total: 3, active: 0, completed: 2, cancelled: 1 },
+    vehicles: [],
   },
   {
     id: 4,
@@ -37,6 +51,13 @@ let USERS_DATA = [
     joined: "6/11/2024",
     status: "active",
     avatar: "https://randomuser.me/api/portraits/men/65.jpg",
+    licenseImage: "https://placehold.co/420x240/e8f0fe/2563eb?text=Driver+License+•+Arjun+Thapa",
+    bookings: { total: 21, active: 3, completed: 17, cancelled: 1 },
+    vehicles: [
+      { name: "Suzuki Swift 2023",  plate: "SWF-0011", type: "Hatchback", status: "active" },
+      { name: "Hyundai Tucson 2022",plate: "TUC-9900", type: "SUV",       status: "active" },
+      { name: "Kia Seltos 2021",    plate: "SEL-7723", type: "SUV",       status: "inactive" },
+    ],
   },
   {
     id: 5,
@@ -46,6 +67,11 @@ let USERS_DATA = [
     joined: "8/30/2024",
     status: "suspended",
     avatar: "https://randomuser.me/api/portraits/women/68.jpg",
+    licenseImage: "https://placehold.co/420x240/fee2e2/991b1b?text=Driver+License+•+Priya+Shrestha",
+    bookings: { total: 5, active: 0, completed: 3, cancelled: 2 },
+    vehicles: [
+      { name: "Honda City 2020", plate: "CTY-3345", type: "Sedan", status: "inactive" },
+    ],
   },
   {
     id: 6,
@@ -55,6 +81,9 @@ let USERS_DATA = [
     joined: "11/05/2024",
     status: "active",
     avatar: "",
+    licenseImage: "https://placehold.co/420x240/e8f0fe/2563eb?text=Driver+License+•+Liam+Nguyen",
+    bookings: { total: 2, active: 1, completed: 1, cancelled: 0 },
+    vehicles: [],
   },
 ];
 
@@ -134,7 +163,10 @@ async function loadUsers() {
       phone: u.phone || "",
       joined: formatJoined(u.createdAt),
       status: u.isVerified ? "active" : "inactive",
-      avatar: "",
+      avatar: u.avatar || "",
+      licenseImage: u.licenseImage || u.license_image || "",
+      bookings: u.bookings || u.bookingSummary || { total: 0, active: 0, completed: 0, cancelled: 0 },
+      vehicles: Array.isArray(u.vehicles) ? u.vehicles : [],
     }));
 
     filteredUsers = [...USERS_DATA];
@@ -310,26 +342,97 @@ tbody.addEventListener("click", (e) => {
 });
 
 function openViewModal(user) {
+  const bk = user.bookings || { total: 0, active: 0, completed: 0, cancelled: 0 };
+  const vehicles = user.vehicles || [];
+
+  const vehiclesHTML = vehicles.length
+    ? vehicles.map(v => `
+        <div class="profile-vehicle-row">
+          <div class="profile-vehicle-info">
+            <span class="profile-vehicle-name">${v.name}</span>
+            <span class="profile-vehicle-plate">${v.plate} &bull; ${v.type}</span>
+          </div>
+          <span class="status-badge status-badge--${v.status === 'active' ? 'active' : 'inactive'}">
+            ${v.status.charAt(0).toUpperCase() + v.status.slice(1)}
+          </span>
+        </div>`).join("")
+    : `<p class="profile-no-vehicles">No vehicles registered.</p>`;
+
   viewModalBody.innerHTML = `
-    <div class="view-row">
-      <span class="view-row__label">Full Name</span>
-      <span class="view-row__value">${user.name}</span>
+    <!-- Basic Info -->
+    <div class="profile-section">
+      <h3 class="profile-section__title">Basic Information</h3>
+      <div class="profile-basic-grid">
+        <div class="view-row">
+          <span class="view-row__label">Full Name</span>
+          <span class="view-row__value">${user.name}</span>
+        </div>
+        <div class="view-row">
+          <span class="view-row__label">Email</span>
+          <span class="view-row__value">${user.email}</span>
+        </div>
+        <div class="view-row">
+          <span class="view-row__label">Phone</span>
+          <span class="view-row__value">${user.phone || "—"}</span>
+        </div>
+        <div class="view-row">
+          <span class="view-row__label">Joined</span>
+          <span class="view-row__value">${user.joined}</span>
+        </div>
+        <div class="view-row" style="border-bottom:none;padding-bottom:0">
+          <span class="view-row__label">Status</span>
+          <span class="view-row__value">${statusBadge(user.status)}</span>
+        </div>
+      </div>
     </div>
-    <div class="view-row">
-      <span class="view-row__label">Email</span>
-      <span class="view-row__value">${user.email}</span>
+
+    <div class="profile-divider"></div>
+
+    <!-- License Image -->
+    <div class="profile-section">
+      <h3 class="profile-section__title">Driver's License</h3>
+      ${user.licenseImage
+        ? `<div class="profile-license-wrap">
+             <img class="profile-license-img" src="${user.licenseImage}"
+               alt="Driver's License"
+               onerror="this.parentElement.innerHTML='<p class=\\'profile-no-vehicles\\'>License image unavailable.</p>'" />
+           </div>`
+        : `<p class="profile-no-vehicles">No license image uploaded.</p>`}
     </div>
-    <div class="view-row">
-      <span class="view-row__label">Phone</span>
-      <span class="view-row__value">${user.phone}</span>
+
+    <div class="profile-divider"></div>
+
+    <!-- Booking Summary -->
+    <div class="profile-section">
+      <h3 class="profile-section__title">Booking Summary</h3>
+      <div class="profile-booking-grid">
+        <div class="profile-booking-stat profile-booking-stat--total">
+          <span class="profile-booking-stat__num">${bk.total}</span>
+          <span class="profile-booking-stat__lbl">Total</span>
+        </div>
+        <div class="profile-booking-stat profile-booking-stat--active">
+          <span class="profile-booking-stat__num">${bk.active}</span>
+          <span class="profile-booking-stat__lbl">Active</span>
+        </div>
+        <div class="profile-booking-stat profile-booking-stat--completed">
+          <span class="profile-booking-stat__num">${bk.completed}</span>
+          <span class="profile-booking-stat__lbl">Completed</span>
+        </div>
+        <div class="profile-booking-stat profile-booking-stat--cancelled">
+          <span class="profile-booking-stat__num">${bk.cancelled}</span>
+          <span class="profile-booking-stat__lbl">Cancelled</span>
+        </div>
+      </div>
     </div>
-    <div class="view-row">
-      <span class="view-row__label">Joined</span>
-      <span class="view-row__value">${user.joined}</span>
-    </div>
-    <div class="view-row">
-      <span class="view-row__label">Status</span>
-      <span class="view-row__value">${user.status.charAt(0).toUpperCase() + user.status.slice(1)}</span>
+
+    <div class="profile-divider"></div>
+
+    <!-- Registered Vehicles -->
+    <div class="profile-section">
+      <h3 class="profile-section__title">Registered Vehicles
+        <span class="profile-section__count">${vehicles.length}</span>
+      </h3>
+      <div class="profile-vehicles-list">${vehiclesHTML}</div>
     </div>
   `;
   viewModal.classList.remove("hidden");
