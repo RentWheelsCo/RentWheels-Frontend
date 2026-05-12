@@ -711,6 +711,17 @@
     border-color: var(--clr-primary);
   }
   
+  .vehicle-detail-field__control--error {
+    border-color: #dc2626 !important;
+  }
+  
+  .vehicle-detail-field__error {
+    color: #dc2626;
+    font-size: 0.85rem;
+    margin-top: 4px;
+    min-height: 1.2em;
+  }
+  
   .vehicle-detail-book-now {
     width: 263px;
     height: 42px;
