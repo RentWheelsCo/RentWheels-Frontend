@@ -1,75 +1,4 @@
-/**
- * RentWheels – bookings.js
- * Renders and manages the My Bookings page.
- *
- * DATA INTEGRATION NOTE:
- * Replace BOOKINGS_DATA with a real API call:
- *   const res  = await fetch('/api/bookings');
- *   const data = await res.json();
- *   renderBookings(data);
- */
-
 'use strict';
-
-/* =============================================
-   PLACEHOLDER DATA  – replace with API fetch
-   ============================================= */
-const BOOKINGS_DATA = [
-  {
-    id            : 1,
-    bookingNumber : 'Booking #1',
-    status        : 'confirmed',
-    vehicle: {
-      name     : 'BMW M4 COMPETITION',
-      year     : '2022',
-      type     : 'SUV',
-      location : 'Kathmandu',
-      image    : 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&q=80',
-    },
-    rentalPeriod  : { from: '4/10/2025', to: '4/15/2025' },
-    pickupLocation: null,
-    returnLocation: null,
-    insuranceType : 'No insurance',
-    totalPrice    : 475,
-    bookedOn      : '4/1/2025',
-  },
-  {
-    id            : 2,
-    bookingNumber : 'Booking #2',
-    status        : 'confirmed',
-    vehicle: {
-        name     : 'BMW M4 COMPETITION',
-        year     : '2022',
-        type     : 'SUV',
-        location : null,
-        image    : 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&q=80',
-    },
-    rentalPeriod  : { from: '4/10/2025', to: '4/15/2025' },
-    pickupLocation: null,
-    returnLocation: null,
-    insuranceType : 'No insurance',
-    totalPrice    : 475,
-    bookedOn      : '4/1/2026',
-  },
-  {
-    id            : 3,
-    bookingNumber : 'Booking #3',
-    status        : 'confirmed',
-    vehicle: {
-      name     : 'BMW M4 COMPETITION',
-      year     : '2022',
-      type     : 'SUV',
-      location : null,
-      image    : 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=600&q=80',
-    },
-    rentalPeriod  : { from: '4/10/2025', to: '4/15/2025' },
-    pickupLocation: null,
-    returnLocation: null,
-    insuranceType : 'No insurance',
-    totalPrice    : 475,
-    bookedOn      : '4/1/2026',
-  },
-];
 
 /* =============================================
    SVG ICON HELPERS
@@ -186,13 +115,73 @@ function renderBookings(data) {
   emptyState.classList.add('hidden');
 }
 
+function normalizeStatus(raw) {
+  const s = String(raw || '').toUpperCase();
+  if (s === 'CONFIRMED') return 'confirmed';
+  if (s === 'PENDING') return 'pending';
+  if (s === 'CANCELLED') return 'cancelled';
+  if (s === 'COMPLETED') return 'confirmed';
+  return 'pending';
+}
+
+function formatDateShort(value) {
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleDateString();
+}
+
+async function loadMyBookings() {
+  const list = document.getElementById('bookingsList');
+  if (list) {
+    list.classList.remove('hidden');
+    list.innerHTML = `<div style="color:#7b8292;font-size:13px;">Loading bookings…</div>`;
+  }
+
+  try {
+    const payload = await window.RW_API.bookings.getMyBookings({ limit: 50 });
+    const rows = Array.isArray(payload?.data?.bookings) ? payload.data.bookings : [];
+    const mapped = rows.map((b) => {
+      const v = b.vehicle || {};
+      const photo =
+        Array.isArray(v.photos) && v.photos.length
+          ? v.photos[0]
+          : 'https://placehold.co/600x420/e5e7eb/9ca3af?text=No+Image';
+      const year = v.year ? String(v.year) : '';
+      const type = v.category?.value || v.type?.value || '';
+      const location = v.location?.value || '';
+      return {
+        id: b.id,
+        bookingNumber: `Booking #${b.id}`,
+        status: normalizeStatus(b.status),
+        vehicle: {
+          name: v.name || 'Vehicle',
+          year,
+          type,
+          location,
+          image: photo,
+        },
+        rentalPeriod: { from: formatDateShort(b.pickupDate), to: formatDateShort(b.returnDate) },
+        pickupLocation: null,
+        returnLocation: null,
+        insuranceType: b.insuranceType || '',
+        totalPrice: Number(b.totalAmount || 0),
+        bookedOn: formatDateShort(b.createdAt),
+      };
+    });
+
+    renderBookings(mapped);
+  } catch (err) {
+    console.error('My bookings load error:', err);
+    renderBookings([]);
+  }
+}
+
 /* =============================================
    INIT
    ============================================= */
 document.addEventListener('DOMContentLoaded', () => {
-  // TODO: swap with real API fetch
-  // fetch('/api/bookings').then(r => r.json()).then(renderBookings).catch(() => renderBookings([]));
-  renderBookings(BOOKINGS_DATA);
+  // COOKIE AUTH IMPLEMENTED: protected by 401 redirect in api.js
+  loadMyBookings();
 
   document.getElementById('bookingsList').addEventListener('click', e => {
     const card = e.target.closest('.booking-card');

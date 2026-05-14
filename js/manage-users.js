@@ -1,91 +1,6 @@
 "use strict";
 
-// let USERS_DATA = [];
-let USERS_DATA = [
-  {
-    id: 1,
-    name: "Emma Rodriguez",
-    email: "emma.rodriguez@email.com",
-    phone: "+1 (555) 012-3456",
-    joined: "1/15/2024",
-    status: "active",
-    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
-    licenseImage: "https://placehold.co/420x240/e8f0fe/2563eb?text=Driver+License+•+Emma+Rodriguez",
-    bookings: { total: 14, active: 2, completed: 11, cancelled: 1 },
-    vehicles: [
-      { name: "Toyota Camry 2022", plate: "ABC-1234", type: "Sedan", status: "active" },
-      { name: "Honda CR-V 2021",   plate: "XYZ-5678", type: "SUV",   status: "active" },
-    ],
-  },
-  {
-    id: 2,
-    name: "James Carter",
-    email: "james.carter@email.com",
-    phone: "+1 (555) 234-5678",
-    joined: "3/02/2024",
-    status: "active",
-    avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-    licenseImage: "https://placehold.co/420x240/e8f0fe/2563eb?text=Driver+License+•+James+Carter",
-    bookings: { total: 8, active: 1, completed: 7, cancelled: 0 },
-    vehicles: [
-      { name: "Ford Mustang 2020", plate: "MUS-4321", type: "Sports", status: "active" },
-    ],
-  },
-  {
-    id: 3,
-    name: "Sita Rana",
-    email: "sita.rana@email.com",
-    phone: "+977 98-1234-5678",
-    joined: "4/20/2024",
-    status: "inactive",
-    avatar: "",
-    licenseImage: "https://placehold.co/420x240/f3f4f6/6b7280?text=Driver+License+•+Sita+Rana",
-    bookings: { total: 3, active: 0, completed: 2, cancelled: 1 },
-    vehicles: [],
-  },
-  {
-    id: 4,
-    name: "Arjun Thapa",
-    email: "arjun.thapa@email.com",
-    phone: "+977 98-9876-5432",
-    joined: "6/11/2024",
-    status: "active",
-    avatar: "https://randomuser.me/api/portraits/men/65.jpg",
-    licenseImage: "https://placehold.co/420x240/e8f0fe/2563eb?text=Driver+License+•+Arjun+Thapa",
-    bookings: { total: 21, active: 3, completed: 17, cancelled: 1 },
-    vehicles: [
-      { name: "Suzuki Swift 2023",  plate: "SWF-0011", type: "Hatchback", status: "active" },
-      { name: "Hyundai Tucson 2022",plate: "TUC-9900", type: "SUV",       status: "active" },
-      { name: "Kia Seltos 2021",    plate: "SEL-7723", type: "SUV",       status: "inactive" },
-    ],
-  },
-  {
-    id: 5,
-    name: "Priya Shrestha",
-    email: "priya.shrestha@email.com",
-    phone: "+977 98-5555-1234",
-    joined: "8/30/2024",
-    status: "suspended",
-    avatar: "https://randomuser.me/api/portraits/women/68.jpg",
-    licenseImage: "https://placehold.co/420x240/fee2e2/991b1b?text=Driver+License+•+Priya+Shrestha",
-    bookings: { total: 5, active: 0, completed: 3, cancelled: 2 },
-    vehicles: [
-      { name: "Honda City 2020", plate: "CTY-3345", type: "Sedan", status: "inactive" },
-    ],
-  },
-  {
-    id: 6,
-    name: "Liam Nguyen",
-    email: "liam.nguyen@email.com",
-    phone: "+1 (555) 876-5432",
-    joined: "11/05/2024",
-    status: "active",
-    avatar: "",
-    licenseImage: "https://placehold.co/420x240/e8f0fe/2563eb?text=Driver+License+•+Liam+Nguyen",
-    bookings: { total: 2, active: 1, completed: 1, cancelled: 0 },
-    vehicles: [],
-  },
-];
+let USERS_DATA = [];
 
 let filteredUsers = [...USERS_DATA];
 let pendingDeleteId = null;
@@ -577,8 +492,7 @@ function showToast(message, type = "success") {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-
-  filteredUsers = [...USERS_DATA];
-  renderTable(filteredUsers);   // ← render static data immediately
-  loadUsers();                  // ← then fetch & refresh from server
+  filteredUsers = [];
+  showLoadingState("Loading users", "Fetching latest users from the server...");
+  loadUsers();
 });

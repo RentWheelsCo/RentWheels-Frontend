@@ -18,6 +18,152 @@ document.addEventListener('DOMContentLoaded', () => {
       window.location.href = `./vehicle-detail.html?id=${encodeURIComponent(vehicleId)}${fromParam}`;
     });
   }
+
+  function setSpecText(specEl, text) {
+    if (!specEl) return;
+    const svg = specEl.querySelector("svg");
+    specEl.innerHTML = "";
+    if (svg) specEl.appendChild(svg);
+    specEl.append(` ${text}`);
+  }
+
+  function isBike(vehicle) {
+    const t = String(vehicle?.type?.value || "").toLowerCase();
+    const c = String(vehicle?.category?.value || "").toLowerCase();
+    const name = String(vehicle?.name || "").toLowerCase();
+    return (
+      t.includes("bike") ||
+      t.includes("motor") ||
+      c.includes("bike") ||
+      c.includes("motor") ||
+      name.includes("bike")
+    );
+  }
+
+  function fillVehicleCard(card, vehicle) {
+    card.dataset.id = String(vehicle.id);
+
+    const availableBadge = card.querySelector(".badge--available");
+    const priceBadge = card.querySelector(".badge--price");
+    const img = card.querySelector(".vehicle-card__img");
+    const nameEl = card.querySelector(".vehicle-card__name");
+    const typeEl = card.querySelector(".vehicle-card__type");
+    const specs = card.querySelectorAll(".vehicle-card__specs .spec");
+
+    const availability = String(vehicle.availabilityStatus || "").toUpperCase();
+    const isAvailable = availability === "AVAILABLE" || vehicle.isAvailable === true;
+    if (availableBadge) availableBadge.textContent = isAvailable ? "Available Now" : "Not Available";
+    if (priceBadge) priceBadge.textContent = `Rs${Number(vehicle.dailyPrice || 0)}/day`;
+
+    const photo = Array.isArray(vehicle.photos) && vehicle.photos.length ? vehicle.photos[0] : null;
+    if (img) img.src = photo || "https://placehold.co/640x420/e5e7eb/9ca3af?text=No+Image";
+    if (img) img.alt = vehicle.name || "Vehicle";
+
+    if (nameEl) nameEl.textContent = vehicle.name || "Vehicle";
+    if (typeEl) typeEl.textContent = vehicle.type?.value || vehicle.category?.value || "";
+
+    if (specs[0]) setSpecText(specs[0], `${vehicle.seatingCapacity || ""} Seats`.trim());
+    if (specs[1]) setSpecText(specs[1], vehicle.fuelType?.value || "");
+    if (specs[2]) setSpecText(specs[2], vehicle.transmission?.value || "");
+    if (specs[3]) setSpecText(specs[3], vehicle.location?.value || "");
+  }
+
+  async function loadHomeVehicles() {
+    const carsGrid = document.getElementById("carsGrid");
+    const bikesGrid = document.getElementById("bikesGrid");
+    if (!carsGrid || !bikesGrid) return;
+
+    const carTemplate = carsGrid.querySelector(".vehicle-card");
+    const bikeTemplate = bikesGrid.querySelector(".vehicle-card");
+    if (!carTemplate || !bikeTemplate) return;
+
+    carsGrid.innerHTML = `<div style="color:#7b8292;font-size:13px;">Loading vehicles…</div>`;
+    bikesGrid.innerHTML = `<div style="color:#7b8292;font-size:13px;">Loading vehicles…</div>`;
+
+    try {
+      const payload = await window.RW_API.vehicles.getAll({ limit: 60 });
+      const vehicles = Array.isArray(payload?.data?.vehicles) ? payload.data.vehicles : [];
+
+      const bikes = vehicles.filter(isBike).slice(0, 3);
+      const cars = vehicles.filter((v) => !isBike(v)).slice(0, 3);
+
+      carsGrid.innerHTML = "";
+      cars.forEach((v) => {
+        const card = carTemplate.cloneNode(true);
+        fillVehicleCard(card, v);
+        carsGrid.appendChild(card);
+      });
+      bikesGrid.innerHTML = "";
+      bikes.forEach((v) => {
+        const card = bikeTemplate.cloneNode(true);
+        fillVehicleCard(card, v);
+        bikesGrid.appendChild(card);
+      });
+    } catch (err) {
+      console.error("Home vehicles load error:", err);
+      carsGrid.innerHTML = `<div style="color:#b91c1c;font-size:13px;">Failed to load vehicles.</div>`;
+      bikesGrid.innerHTML = `<div style="color:#b91c1c;font-size:13px;">Failed to load vehicles.</div>`;
+    }
+  }
+
+  function fillRecCard(card, vehicle) {
+    card.dataset.id = String(vehicle.id);
+    const price = card.querySelector(".rec-price");
+    const img = card.querySelector(".rec-card__img");
+    const nameEl = card.querySelector(".rec-card__name");
+    const typeEl = card.querySelector(".rec-card__type");
+    const pills = card.querySelectorAll(".rec-spec-pill");
+    const link = card.querySelector("a.rec-btn");
+
+    if (price) price.textContent = `Rs${Number(vehicle.dailyPrice || 0)}/day`;
+    const photo = Array.isArray(vehicle.photos) && vehicle.photos.length ? vehicle.photos[0] : null;
+    if (img) img.src = photo || "https://placehold.co/640x420/e5e7eb/9ca3af?text=No+Image";
+    if (img) img.alt = vehicle.name || "Vehicle";
+    if (nameEl) nameEl.textContent = vehicle.name || "Vehicle";
+    if (typeEl) {
+      const t = vehicle.type?.value || vehicle.category?.value || "";
+      const loc = vehicle.location?.value || "";
+      typeEl.textContent = [t, loc].filter(Boolean).join(" · ");
+    }
+    if (pills[0]) pills[0].textContent = `${vehicle.seatingCapacity || ""} Seats`.trim();
+    if (pills[1]) pills[1].textContent = vehicle.fuelType?.value || "";
+    if (pills[2]) pills[2].textContent = vehicle.transmission?.value || "";
+    if (link) link.href = `../html/vehicle-detail.html?id=${encodeURIComponent(vehicle.id)}`;
+  }
+
+  async function loadRecommendations() {
+    const recCarousel = document.getElementById("recCarousel");
+    if (!recCarousel) return;
+    const template = recCarousel.querySelector(".rec-card");
+    if (!template) return;
+
+    recCarousel.innerHTML = `<div style="color:#7b8292;font-size:13px;padding:10px 2px;">Loading recommendations…</div>`;
+    try {
+      const payload = await window.RW_API.request("/recommendations", { params: { limit: 8 } });
+      const recs = Array.isArray(payload?.data?.vehicles) ? payload.data.vehicles : [];
+      if (!recs.length) {
+        const fallback = await window.RW_API.vehicles.getAll({ limit: 8 });
+        const vehicles = Array.isArray(fallback?.data?.vehicles) ? fallback.data.vehicles : [];
+        recCarousel.innerHTML = "";
+        vehicles.slice(0, 6).forEach((v) => {
+          const card = template.cloneNode(true);
+          fillRecCard(card, v);
+          recCarousel.appendChild(card);
+        });
+        return;
+      }
+
+      recCarousel.innerHTML = "";
+      recs.slice(0, 6).forEach((v) => {
+        const card = template.cloneNode(true);
+        fillRecCard(card, v);
+        recCarousel.appendChild(card);
+      });
+    } catch (err) {
+      console.error("Recommendations load error:", err);
+      recCarousel.innerHTML = `<div style="color:#b91c1c;font-size:13px;padding:10px 2px;">Failed to load recommendations.</div>`;
+    }
+  }
 /* ── Hero search widget (hs-* IDs) ─────────────────────── */
 const hsState = {
   insurance: "",
@@ -351,35 +497,15 @@ document.getElementById("hs-searchBtn")
   const exploreBikes = document.getElementById('exploreBikes');
 
   if (exploreCars) {
-    exploreCars.addEventListener('click', () => {
-      console.log('[RentWheels] Navigate → all cars');
-    });
+    exploreCars.addEventListener('click', () => {});
   }
 
   if (exploreBikes) {
-    exploreBikes.addEventListener('click', e => {
-      // Allow default navigation
-      console.log('[RentWheels] Navigate → all bikes');
-    });
+    exploreBikes.addEventListener('click', () => {});
   }
 
   if (carsOnlyView && isVehiclePage && document.getElementById('carsGrid')) {
     document.body.classList.add('cars-only-view');
-    const carsOnlyToolbar = document.getElementById('carsOnlyToolbar');
-    if (carsOnlyToolbar) carsOnlyToolbar.hidden = false;
-
-    const carsGrid = document.getElementById('carsGrid');
-    if (carsGrid) {
-      const baseCards = Array.from(carsGrid.children);
-      let index = 0;
-      while (carsGrid.children.length < 9 && baseCards.length > 0) {
-        const clone = baseCards[index % baseCards.length].cloneNode(true);
-        const idValue = 100 + carsGrid.children.length + 1;
-        clone.dataset.id = String(idValue);
-        carsGrid.appendChild(clone);
-        index += 1;
-      }
-    }
   }
   /* ── Recommendations carousel ────────────────────────────── */
 
@@ -444,27 +570,6 @@ if (recCarousel && recPrev && recNext) {
 
   if (bikesOnlyView && isVehiclePage && document.getElementById('bikesGrid')) {
     document.body.classList.add('bikes-only-view');
-    
-    // We can reuse carsOnlyToolbar but modify its text
-    const toolbar = document.getElementById('carsOnlyToolbar');
-    if (toolbar) {
-      toolbar.hidden = false;
-      const title = toolbar.querySelector('.cars-only-title');
-      if (title) title.textContent = 'Bikes Ready For Rent';
-    }
-
-    const bikesGrid = document.getElementById('bikesGrid');
-    if (bikesGrid) {
-      const baseCards = Array.from(bikesGrid.children);
-      let index = 0;
-      while (bikesGrid.children.length < 9 && baseCards.length > 0) {
-        const clone = baseCards[index % baseCards.length].cloneNode(true);
-        const idValue = 200 + bikesGrid.children.length + 1;
-        clone.dataset.id = String(idValue);
-        bikesGrid.appendChild(clone);
-        index += 1;
-      }
-    }
   }
 
  const vehiclesSearch = document.getElementById('vehiclesSearch');
@@ -588,5 +693,8 @@ if (recCarousel && recPrev && recNext) {
   }
 
   window.RentWheels = { showToast };
+
+  loadHomeVehicles();
+  loadRecommendations();
 
 });

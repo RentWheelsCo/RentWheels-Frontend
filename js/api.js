@@ -1,6 +1,6 @@
 (function () {
   const configuredBase = String(window.RW_CONFIG?.API_BASE || "").trim();
-  const base = (configuredBase || "http://localhost:5000/api").replace(/\/+$/, "");
+  const base = (configuredBase || "http://localhost:5000/api/").replace(/\/+$/, "");
 
   function buildUrl(path, params) {
     const raw = String(path || "");
@@ -44,7 +44,6 @@
       method,
       headers,
       body,
-      // COOKIE AUTH IMPLEMENTED
       credentials: "include",
     });
 
@@ -98,6 +97,9 @@
     },
     profile() {
       return request("/auth/profile");
+    },
+    uploadDocuments(formData) {
+      return request("/auth/documents", { method: "PATCH", body: formData });
     },
   });
 
@@ -166,8 +168,65 @@
     getAllBookings(params) {
       return request("/admin/bookings", { params });
     },
+    getBookingDetail(id) {
+      return request(`/admin/bookings/${id}`);
+    },
+    getAllVehicles(params) {
+      return request("/admin/vehicles", { params });
+    },
+    getVehicleDetail(id) {
+      return request(`/admin/vehicles/${id}`);
+    },
     getAllUsers(params) {
       return request("/auth/admin/users", { params });
+    },
+    getUserDetail(id) {
+      return request(`/auth/admin/users/${id}`);
+    },
+  });
+
+  const comments = Object.freeze({
+    getVehicleComments(vehicleId, params) {
+      return request(`/comments/vehicle/${vehicleId}`, { params });
+    },
+    create(payload) {
+      return request("/comments", { method: "POST", body: payload });
+    },
+    reply(commentId, payload) {
+      return request(`/comments/${commentId}/reply`, { method: "POST", body: payload });
+    },
+    like(commentId) {
+      return request(`/comments/${commentId}/like`, { method: "POST" });
+    },
+    unlike(commentId) {
+      return request(`/comments/${commentId}/like`, { method: "DELETE" });
+    },
+    update(commentId, payload) {
+      return request(`/comments/${commentId}`, { method: "PATCH", body: payload });
+    },
+    delete(commentId) {
+      return request(`/comments/${commentId}`, { method: "DELETE" });
+    },
+  });
+
+  const notifications = Object.freeze({
+    getMy(params) {
+      return request("/notifications", { params });
+    },
+    markRead(id) {
+      return request(`/notifications/${id}/read`, { method: "PATCH" });
+    },
+    markAllRead() {
+      return request("/notifications/read-all", { method: "PATCH" });
+    },
+  });
+
+  const user = Object.freeze({
+    buyerDashboard() {
+      return request("/user/buyer/dashboard");
+    },
+    sellerDashboard() {
+      return request("/user/seller/dashboard");
     },
   });
 
@@ -180,5 +239,8 @@
     bookings,
     payments,
     admin,
+    comments,
+    notifications,
+    user,
   });
 })();

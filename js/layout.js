@@ -3,9 +3,25 @@ const ASSETS = {
   searchIcon: "../assets/search_icon.png",
 };
 
+function readCachedProfile() {
+  try {
+    return JSON.parse(sessionStorage.getItem("rw_profile") || "null");
+  } catch {
+    return null;
+  }
+}
+
+function writeCachedProfile(profile) {
+  try {
+    sessionStorage.setItem("rw_profile", JSON.stringify(profile || null));
+  } catch {
+    // ignore storage errors
+  }
+}
+
 function isAuthed() {
   // COOKIE AUTH IMPLEMENTED: HttpOnly cookie not readable in JS
-  return false;
+  return Boolean(readCachedProfile()?.id);
 }
 
 function logout() {
@@ -160,6 +176,25 @@ document.addEventListener("DOMContentLoaded", () => {
   // ── Logout ────────────────────────────────────────────────────
   const logoutBtn = document.getElementById("rw-logout-btn");
   if (logoutBtn) logoutBtn.addEventListener("click", logout);
+
+  // COOKIE AUTH IMPLEMENTED: hydrate session auth + notifications
+  window.RW_API?.auth?.profile?.()
+    .then((p) => {
+      if (p?.data?.id) writeCachedProfile(p.data);
+      if (headerTarget) headerTarget.innerHTML = renderHeader(pageKey);
+
+      return window.RW_API?.notifications?.getMy?.({ page: 1, pageSize: 20, unreadOnly: true });
+    })
+    .then((n) => {
+      const rows = Array.isArray(n?.data?.notifications) ? n.data.notifications : [];
+      const mapped = rows.map((r) => ({ message: r.title || r.message || "Notification" }));
+      localStorage.setItem("rw_notifications", JSON.stringify(mapped));
+
+      if (headerTarget) headerTarget.innerHTML = renderHeader(pageKey);
+    })
+    .catch(() => {
+      // keep existing header as-is
+    });
 
 
   // ── Notification panel toggle ────────────────────────────────

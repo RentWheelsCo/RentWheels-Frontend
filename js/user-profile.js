@@ -13,81 +13,6 @@
 'use strict';
 
 /* =============================================
-   PLACEHOLDER DATA – replace with API fetch
-   ============================================= */
-const USER_DATA = {
-  id      : 1,
-  name    : 'Emma Rodriguez',
-  email   : 'emma.rodriguez@email.com',
-  phone   : '+1 (555) 012-3456',
-  address : '42 Sunset Blvd, Los Angeles, CA 90001',
-  dob     : 'March 15, 1992',
-  joined  : 'January 15, 2024',
-  status  : 'active',
-  avatar  : 'https://randomuser.me/api/portraits/women/44.jpg',
-  license : {
-    number  : 'DL-2024-LA-98732',
-    expiry  : 'December 31, 2027',
-    state   : 'California',
-    verified: true,
-    image   : 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&q=80',
-  },
-  bookings: [
-    {
-      id    : 101,
-      vehicle: 'BMW M4 Competition',
-      image : 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=200&q=70',
-      from  : '4/10/2025',
-      to    : '4/15/2025',
-      status: 'confirmed',
-      price : 475,
-    },
-    {
-      id    : 102,
-      vehicle: 'Tesla Model X',
-      image : 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=200&q=70',
-      from  : '3/01/2025',
-      to    : '3/05/2025',
-      status: 'confirmed',
-      price : 520,
-    },
-    {
-      id    : 103,
-      vehicle: 'Royal Enfield 350',
-      image : '../assets/RoyalEnfield350.png',
-      from  : '2/14/2025',
-      to    : '2/16/2025',
-      status: 'cancelled',
-      price : 90,
-    },
-  ],
-  vehicles: [
-    {
-      id    : 201,
-      name  : 'BMW M4 Competition',
-      meta  : '2022 · Sedan · Gasoline',
-      status: 'available',
-      image : 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=200&q=70',
-    },
-    {
-      id    : 202,
-      name  : 'BMW S1000RR',
-      meta  : '2021 · Sports · Petrol',
-      status: 'rented',
-      image : '../assets/bmws1krr.png',
-    },
-  ],
-  activity: [
-    { text: 'Booking #101 confirmed for BMW M4 Competition', time: '2h ago',   dot: 'green'  },
-    { text: 'Profile information updated',                    time: '1d ago',   dot: 'blue'   },
-    { text: 'Booking #103 was cancelled',                     time: '3d ago',   dot: 'red'    },
-    { text: 'New vehicle BMW M4 registered',                  time: '5d ago',   dot: 'blue'   },
-    { text: 'Driver license verified successfully',           time: '2w ago',   dot: 'green'  },
-    { text: 'Account created',                                time: 'Jan 2024', dot: 'gray'   },
-  ],
-};
-
-/* =============================================
    HELPERS
    ============================================= */
 function getInitials(name) {
@@ -281,14 +206,70 @@ function renderActivity(activity) {
    INIT
    ============================================= */
 document.addEventListener('DOMContentLoaded', () => {
-  // TODO: replace with real API fetch using URL param
-  // const id  = new URLSearchParams(location.search).get('id');
-  // fetch(`/api/admin/users/${id}`)
-  //   .then(r => r.json())
-  //   .then(user => renderAll(user))
-  //   .catch(() => showToast('Failed to load user profile', 'error'));
+  const id = new URLSearchParams(location.search).get('id');
+  const parsedId = parseInt(String(id || ''), 10);
+  if (!Number.isFinite(parsedId) || parsedId <= 0) {
+    showToast('Missing user id', 'error');
+    return;
+  }
 
-  renderAll(USER_DATA);
+  window.RW_API.admin
+    .getUserDetail(parsedId)
+    .then((payload) => {
+      const u = payload?.data || {};
+      const joined = u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '—';
+
+      const licensePhoto = Array.isArray(u.licensePhoto) ? u.licensePhoto[0] : u.licensePhoto;
+      const mapped = {
+        id: u.id,
+        name: u.name || '—',
+        email: u.email || '—',
+        phone: u.phone || '—',
+        address: '—',
+        dob: '—',
+        joined,
+        status: u.isVerified ? 'active' : 'inactive',
+        avatar: u.profilePhoto || '',
+        license: licensePhoto
+          ? {
+              number: '—',
+              expiry: '—',
+              state: '—',
+              verified: Boolean(u.isVerified),
+              image: licensePhoto,
+            }
+          : null,
+        bookings: Array.isArray(u.bookings)
+          ? u.bookings.slice(0, 6).map((b) => ({
+              id: b.id,
+              vehicle: `Vehicle #${b.vehicleId}`,
+              image: '',
+              from: b.pickupDate ? new Date(b.pickupDate).toLocaleDateString() : '',
+              to: b.returnDate ? new Date(b.returnDate).toLocaleDateString() : '',
+              status: String(b.status || '').toLowerCase(),
+              price: 0,
+            }))
+          : [],
+        vehicles: Array.isArray(u.vehicles)
+          ? u.vehicles.slice(0, 6).map((v) => ({
+              id: v.id,
+              name: `Vehicle #${v.id}`,
+              meta: `${v.year || ''}`.trim(),
+              status: 'available',
+              image: Array.isArray(v.photos) && v.photos.length ? v.photos[0] : '',
+            }))
+          : [],
+        activity: [
+          { text: 'User loaded from server', time: 'now', dot: 'blue' },
+        ],
+      };
+
+      renderAll(mapped);
+    })
+    .catch((err) => {
+      console.error('User profile load error:', err);
+      showToast(err?.message || 'Failed to load user profile', 'error');
+    });
 });
 
 function renderAll(user) {

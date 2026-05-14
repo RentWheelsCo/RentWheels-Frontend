@@ -1,153 +1,14 @@
 (function () {
   // <!-- FULL API INTEGRATION ADDED -->
   // NOTE: This file previously used static vehicle data. It's now backend-driven.
-  const DETAILS = {
-    1: {
-      title: "BMW X5",
-      meta: "2022 • SUV",
-      price: "Rs1000",
-      priceNote: "per day",
-      image: "../assets/bmwx5.png",
-      seats: "4 Seats",
-      fuel: "Gasoline",
-      transmission: "Automatic",
-      location: "Kathmandu",
-      description:
-        "The BMW X5 is a mid-size luxury SUV produced by BMW. The X5 made its debut in 1999 as the first SUV ever produced by BMW, blending refined driving dynamics with everyday practicality.",
-      features: [
-        "Leather Seats",
-        "Panoramic Sunroof",
-        "Wireless Charging",
-        "360 Camera",
-      ],
-      commentSample: {
-        name: "Mike Johnson",
-        text: "Great choice! The BMW X5 is awesome. Enjoyed the drive!",
-        avatar: "https://randomuser.me/api/portraits/men/45.jpg",
-        time: "5m",
-      },
-    },
-    2: {
-      title: "BMW M3",
-      meta: "2022 • Sedan",
-      price: "Rs2990",
-      priceNote: "per day",
-      image: "../assets/bmwm3.png",
-      seats: "5 Seats",
-      fuel: "Gasoline",
-      transmission: "Automatic",
-      location: "Los Angeles",
-      description:
-        "The BMW M3 is a high-performance legend—track-bred power with everyday usability. Sharp handling, bold design, and a cockpit built for drivers who want more from every mile.",
-      features: [
-        "Leather Seats",
-        "Panoramic Sunroof",
-        "Wireless Charging",
-        "360 Camera",
-      ],
-      commentSample: {
-        name: "Mike Johnson",
-        text: "Great choice! The BMW M3 Competition is awesome. Enjoyed the drive!",
-        avatar: "https://randomuser.me/api/portraits/men/45.jpg",
-        time: "5m",
-      },
-    },
-    3: {
-      title: "Tesla Model X",
-      meta: "2023 • SUV",
-      price: "Rs1200",
-      priceNote: "per day",
-      image: "../assets/TeslaModelX.png",
-      seats: "4 Seats",
-      fuel: "Electric",
-      transmission: "Automatic",
-      location: "Kathmandu",
-      description:
-        "The Tesla Model X combines electric range with distinctive falcon-wing doors and a minimalist interior. Ideal for families who want zero-emission travel without sacrificing space.",
-      features: [
-        "Autopilot",
-        "Panoramic Glass Roof",
-        "Wireless Charging",
-        "Premium Audio",
-      ],
-      commentSample: {
-        name: "Sarah Chen",
-        text: "So smooth and quiet. Charging was easy around the city.",
-        avatar: "https://randomuser.me/api/portraits/women/65.jpg",
-        time: "12m",
-      },
-    },
-    4: {
-      title: "BMW s1000rr",
-      meta: "2021 • Sports",
-      price: "Rs2000",
-      priceNote: "per day",
-      image: "../assets/bmws1krr.png",
-      seats: "1 Seat",
-      fuel: "Petrol",
-      transmission: "Manual",
-      location: "Kathmandu",
-      description:
-        "A superbike built for the track and the road—lightweight frame, aggressive ergonomics, and exhilarating acceleration for experienced riders.",
-      features: ["ABS", "Riding Modes", "LED Lighting", "Quick Shifter"],
-      commentSample: {
-        name: "Alex Rivera",
-        text: "Insane bike. Respect the power and wear proper gear.",
-        avatar: "https://randomuser.me/api/portraits/men/22.jpg",
-        time: "1h",
-      },
-    },
-    5: {
-      title: "Ducati streetfighter V4S",
-      meta: "2022 • Sports",
-      price: "Rs220",
-      priceNote: "per day",
-      image: "../assets/streetfighterV4S.png",
-      seats: "1 Seat",
-      fuel: "Petrol",
-      transmission: "Manual",
-      location: "Kathmandu",
-      description:
-        "Italian V4 performance in a naked streetfighter package—raw sound, precise handling, and unmistakable Ducati character.",
-      features: [
-        "Cornering ABS",
-        "TFT Display",
-        "Öhlins Suspension",
-        "Quick Shift",
-      ],
-      commentSample: {
-        name: "Jordan Lee",
-        text: "Sounds incredible. Staff made pickup quick and easy.",
-        avatar: "https://randomuser.me/api/portraits/women/28.jpg",
-        time: "2d",
-      },
-    },
-    6: {
-      title: "Royal Enfield Classic 350",
-      meta: "2023 • Cruiser",
-      price: "Rs800",
-      priceNote: "per day",
-      image: "../assets/RoyalEnfield350.png",
-      seats: "2 Seats",
-      fuel: "Petrol",
-      transmission: "Manual",
-      location: "Kathmandu",
-      description:
-        "Timeless cruiser styling with a torque-friendly single-cylinder engine—perfect for relaxed rides through city streets and hills.",
-      features: [
-        "Tripper Navigation",
-        "LED Headlamp",
-        "Dual Channel ABS",
-        "USB Charging",
-      ],
-      commentSample: {
-        name: "Priya Sharma",
-        text: "Classic look, easy to ride. Great for weekend trips.",
-        avatar: "https://randomuser.me/api/portraits/women/44.jpg",
-        time: "3d",
-      },
-    },
-  };
+  const FALLBACK_IMAGES = [
+    "../assets/bmwx5.png",
+    "../assets/bmwm3.png",
+    "../assets/TeslaModelX.png",
+    "../assets/bmws1krr.png",
+    "../assets/streetfighterV4S.png",
+    "../assets/RoyalEnfield350.png",
+  ];
 
   function resolveId(raw) {
     const n = parseInt(String(raw), 10);
@@ -298,11 +159,10 @@
   }
 
   function createHeroSlides(id, d) {
-    const allVehicleImages = Object.keys(DETAILS).map((key) => DETAILS[key].image);
-    const uniqueImages = [...new Set([d.image, ...allVehicleImages])];
-    const fallbackSlides = [d.image, d.image, d.image, d.image, d.image];
-    const slides = uniqueImages.slice(0, 5);
-    return slides.length >= 2 ? slides : fallbackSlides;
+    const fromApi = Array.isArray(d?.photos) ? d.photos.filter(Boolean) : [];
+    const merged = [...new Set([...fromApi, ...FALLBACK_IMAGES])].filter(Boolean);
+    const slides = merged.slice(0, 5);
+    return slides.length ? slides : FALLBACK_IMAGES.slice(0, 5);
   }
 
   function setupHeroCarousel(id, d) {
@@ -357,7 +217,6 @@
       window.location.href = "./vehicle.html";
       return;
     }
-    let d = DETAILS[1];
     let currentVehicle = null;
 
     const back = document.getElementById("detailBack");
@@ -402,6 +261,7 @@
           location: vehicle.location?.value || "",
         });
       }
+      setupHeroCarousel(id, vehicle);
     }).catch((err) => {
       console.error("Vehicle detail load error:", err);
       showToast(err?.message || "Failed to load vehicle details.");
@@ -466,7 +326,7 @@
     function loadComments() {
       if (!list) return;
       list.innerHTML = `<div style="color:#7b8292;font-size:13px;">Loading comments…</div>`;
-      window.RW_API.request(`/comments/vehicle/${id}`, { params: { page: 1, pageSize: 10 } })
+      window.RW_API.comments.getVehicleComments(id, { page: 1, pageSize: 10 })
         .then((payload) => {
           const comments = Array.isArray(payload?.data?.comments) ? payload.data.comments : [];
           if (!comments.length) {
@@ -479,6 +339,7 @@
             avatar: c?.user?.profilePhoto || "https://placehold.co/64x64/e5e7eb/9ca3af?text=U",
             time: new Date(c.createdAt).toLocaleDateString(),
             image: "",
+            commentId: c.id,
           })).join("");
         })
         .catch(() => {
@@ -524,8 +385,14 @@
         if (deleteBtn) {
           const comment = deleteBtn.closest(".vehicle-detail-comment");
           closeAllCommentMenus();
-          comment?.remove();
-          showToast("Comment deleted");
+          const cid = Number(comment?.dataset?.commentId || 0);
+          if (!cid) return;
+          window.RW_API.comments.delete(cid)
+            .then(() => {
+              showToast("Comment deleted");
+              loadComments();
+            })
+            .catch((err) => showToast(err?.message || "Failed to delete comment."));
           return;
         }
 
@@ -539,15 +406,19 @@
 
         const likeBtn = e.target.closest(".action-like");
         if (likeBtn) {
-          if (likeBtn.textContent === "Like") {
-            likeBtn.textContent = "Liked";
-            likeBtn.style.color = "#2563eb";
-            showToast("Comment liked");
-          } else {
-            likeBtn.textContent = "Like";
-            likeBtn.style.color = "";
-            showToast("Like removed");
-          }
+          const row = likeBtn.closest(".vehicle-detail-comment");
+          const cid = Number(row?.dataset?.commentId || 0);
+          if (!cid) return;
+          const willLike = likeBtn.textContent === "Like";
+          likeBtn.disabled = true;
+          (willLike ? window.RW_API.comments.like(cid) : window.RW_API.comments.unlike(cid))
+            .then(() => {
+              likeBtn.textContent = willLike ? "Liked" : "Like";
+              likeBtn.style.color = willLike ? "#2563eb" : "";
+              showToast(willLike ? "Comment liked" : "Like removed");
+            })
+            .catch((err) => showToast(err?.message || "Failed to update like."))
+            .finally(() => { likeBtn.disabled = false; });
           return;
         }
 
@@ -725,10 +596,7 @@
           showToast("Write a comment or attach an image first");
           return;
         }
-        window.RW_API.request("/comments", {
-          method: "POST",
-          body: { vehicleId: id, content: text },
-        }).then(() => {
+        window.RW_API.comments.create({ vehicleId: id, content: text }).then(() => {
           input.value = "";
           clearImageSelection();
           loadComments();

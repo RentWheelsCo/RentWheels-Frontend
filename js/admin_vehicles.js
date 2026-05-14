@@ -1,49 +1,4 @@
-const adminVehicleData = [
-  {
-    id: 1,
-    name: "Toyota Corolla",
-    image: "../assets/bmwm3.png",
-    renterName: "John Doe",
-    renterPhone: "+1 234-567-8901",
-    renteeName: "Alice Smith",
-    renteePhone: "+1 987-654-3210",
-    dailyPrice: 45,
-    status: "Rented"
-  },
-  {
-    id: 2,
-    name: "Honda Civic",
-    image: "../assets/TeslaModelX.png",
-    renterName: "Jane Roe",
-    renterPhone: "+1 333-444-5555",
-    renteeName: "Bob Johnson",
-    renteePhone: "+1 222-333-4444",
-    dailyPrice: 50,
-    status: "Rented"
-  },
-  {
-    id: 3,
-    name: "BMW 3 Series",
-    image: "../assets/bmwm3.png",
-    renterName: "-",
-    renterPhone: "-",
-    renteeName: "-",
-    renteePhone: "-",
-    dailyPrice: 120,
-    status: "Available"
-  },
-  {
-    id: 4,
-    name: "Tesla Model 3",
-    image: "../assets/TeslaModelX.png",
-    renterName: "Sarah Connor",
-    renterPhone: "+1 555-555-5555",
-    renteeName: "James Cameron",
-    renteePhone: "+1 444-444-4444",
-    dailyPrice: 150,
-    status: "Available"
-  }
-];
+const adminVehicleData = [];
 
 let pendingDeleteId = null;
 let editingId = null;
@@ -101,6 +56,38 @@ function renderVehicles(searchTerm = "") {
       </td>
     </tr>
   `).join("");
+}
+
+function mapStatusFromApi(activeBookingsCount) {
+  return Number(activeBookingsCount || 0) > 0 ? "Rented" : "Available";
+}
+
+function safeName(v) {
+  return v?.name || "Vehicle";
+}
+
+async function loadVehicles() {
+  try {
+    const payload = await window.RW_API.admin.getAllVehicles({ limit: 100 });
+    const rows = Array.isArray(payload?.data?.vehicles) ? payload.data.vehicles : [];
+
+    adminVehicleData.splice(0, adminVehicleData.length, ...rows.map((v) => {
+      const photo = Array.isArray(v?.photos) && v.photos.length ? v.photos[0] : "../assets/bmwm3.png";
+      return {
+        id: v.id,
+        name: safeName(v),
+        image: photo,
+        renterName: "-",
+        renterPhone: "-",
+        renteeName: "-",
+        renteePhone: "-",
+        dailyPrice: Number(v.dailyPrice || 0),
+        status: mapStatusFromApi(v.activeBookingsCount),
+      };
+    }));
+  } catch (err) {
+    console.error("Admin vehicles load error:", err);
+  }
 }
 
 function toggleDropdown(event, id) {
@@ -206,5 +193,5 @@ document.addEventListener("DOMContentLoaded", () => {
       renderVehicles(e.target.value);
     });
   }
-  renderVehicles();
+  loadVehicles().finally(() => renderVehicles());
 });

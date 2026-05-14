@@ -5,90 +5,122 @@
 
 'use strict';
 
-// Shared mock data just to demonstrate functionality
-let MOCK_DATA = {
-  id: 1,
-  name: 'BMW X5',
-  year: '2022',
-  type: 'SUV',
-  image: '../assets/bmwx5.png',
-  seats: '5 Seats',
-  transmission: 'Auto',
-  fuel: 'Petrol',
-  description: 'The BMW X5 is a mid-size luxury SUV that offers a compelling blend of performance, comfort, and advanced technology. The cabin is impeccably built with premium materials.',
-  features: ['Bluetooth', 'Cruise Control', 'Navigation', 'Heated Seats', 'Backup Camera'],
-  
-  // Admin Info
-  renteeName: 'Alice Smith',
-  renteePhone: '+1 987-654-3210',
-  dailyPrice: 120,
-  status: 'Rented',
-
-  // Comments
-  comments: [
-    {
-      id: 101,
-      author: 'Jane Roe',
-      date: 'April 2, 2025',
-      text: 'Great car, had a wonderful trip!',
-      avatar: 'https://randomuser.me/api/portraits/women/44.jpg'
-    },
-    {
-      id: 102,
-      author: 'Peter Parker',
-      date: 'March 25, 2025',
-      text: 'A bit pricey but the interior comfort makes up for it.',
-      avatar: 'https://randomuser.me/api/portraits/men/15.jpg'
-    }
-  ]
-};
+let VEHICLE_ID = null;
+let serverState = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-  // In a real app, parse URL: const params = new URLSearchParams(window.location.search); var id = params.get('id');
+  const params = new URLSearchParams(window.location.search);
+  const id = parseInt(String(params.get('id') || ''), 10);
+  VEHICLE_ID = Number.isFinite(id) && id > 0 ? id : null;
+  if (!VEHICLE_ID) {
+    document.getElementById('detailTitle').textContent = 'Vehicle not found';
+    return;
+  }
 
-  renderPage();
+  loadPage();
   setupEventListeners();
 });
 
-function renderPage() {
-  // Primary Info
-  document.getElementById('detailTitle').textContent = MOCK_DATA.name;
-  document.getElementById('detailMeta').textContent = `${MOCK_DATA.year} • ${MOCK_DATA.type}`;
-  document.getElementById('detailHeroImg').src = MOCK_DATA.image;
-  
-  document.getElementById('detailStats').innerHTML = `
-    <div class="vehicle-detail-stat">${MOCK_DATA.seats}</div>
-    <div class="vehicle-detail-stat">${MOCK_DATA.transmission}</div>
-    <div class="vehicle-detail-stat">${MOCK_DATA.fuel}</div>
-  `;
-
-  document.getElementById('detailDescription').textContent = MOCK_DATA.description;
-  
-  document.getElementById('detailFeatures').innerHTML = MOCK_DATA.features
-    .map(f => `<li><span style="color:var(--clr-primary)">✔</span> ${f}</li>`)
-    .join('');
-
-  // Admin Info
-  document.getElementById('viewRenteeName').textContent = MOCK_DATA.renteeName || '-';
-  document.getElementById('viewRenteePhone').textContent = MOCK_DATA.renteePhone || '-';
-  document.getElementById('viewDailyPrice').textContent = `Rs ${MOCK_DATA.dailyPrice}`;
-  
-  let statusColor = MOCK_DATA.status === 'Available' ? '#065f46' : MOCK_DATA.status === 'Rented' ? '#92400e' : '#991b1b';
-  document.getElementById('viewStatus').innerHTML = `
-    <span style="font-weight:600; color:${statusColor}">${MOCK_DATA.status}</span>
-  `;
-
-  renderComments();
+function safeText(v, fallback = '-') {
+  const s = String(v ?? '').trim();
+  return s ? s : fallback;
 }
 
-function renderComments() {
+function formatDate(v) {
+  const d = new Date(v);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleDateString();
+}
+
+function mapForUI(payload) {
+  const vehicle = payload?.data?.vehicle || null;
+  const booking = payload?.data?.activeBooking || null;
+  const comments = Array.isArray(payload?.data?.comments) ? payload.data.comments : [];
+  if (!vehicle) return null;
+
+  const img = Array.isArray(vehicle.photos) && vehicle.photos.length ? vehicle.photos[0] : '../assets/bmwx5.png';
+  const typeLabel = vehicle.category?.value || vehicle.type?.value || '';
+  const transLabel = vehicle.transmission?.value || '';
+  const fuelLabel = vehicle.fuelType?.value || '';
+
+  return {
+    id: vehicle.id,
+    name: safeText(vehicle.name, 'Vehicle'),
+    year: safeText(vehicle.year, ''),
+    type: safeText(typeLabel, ''),
+    image: img,
+    seats: `${vehicle.seatingCapacity || ''} Seats`.trim(),
+    transmission: transLabel,
+    fuel: fuelLabel,
+    description: vehicle.description || '',
+    features: [],
+    renteeName: booking?.renter?.name || '-',
+    renteePhone: booking?.renter?.phone || '-',
+    dailyPrice: Number(vehicle.dailyPrice || 0),
+    status: booking ? 'Rented' : 'Available',
+    comments: comments.map((c) => ({
+      id: c.id,
+      author: c?.user?.name || 'User',
+      date: formatDate(c.createdAt),
+      text: c.content || '',
+      avatar: c?.user?.profilePhoto || 'https://placehold.co/64x64/e5e7eb/9ca3af?text=U',
+    })),
+  };
+}
+
+async function loadPage() {
+  document.getElementById('detailTitle').textContent = 'Loading...';
+  try {
+    const payload = await window.RW_API.admin.getVehicleDetail(VEHICLE_ID);
+    serverState = payload;
+    const ui = mapForUI(payload);
+    if (!ui) throw new Error('Vehicle not found');
+    renderPage(ui);
+  } catch (err) {
+    console.error('Admin vehicle detail load error:', err);
+    document.getElementById('detailTitle').textContent = 'Failed to load vehicle';
+  }
+}
+
+function renderPage(ui) {
+  // Primary Info
+  document.getElementById('detailTitle').textContent = ui.name;
+  document.getElementById('detailMeta').textContent = `${ui.year} • ${ui.type}`.trim();
+  document.getElementById('detailHeroImg').src = ui.image;
+  
+  document.getElementById('detailStats').innerHTML = `
+    <div class="vehicle-detail-stat">${safeText(ui.seats, '')}</div>
+    <div class="vehicle-detail-stat">${safeText(ui.transmission, '')}</div>
+    <div class="vehicle-detail-stat">${safeText(ui.fuel, '')}</div>
+  `;
+
+  document.getElementById('detailDescription').textContent = ui.description;
+  
+  document.getElementById('detailFeatures').innerHTML = Array.isArray(ui.features) && ui.features.length
+    ? ui.features.map(f => `<li><span style="color:var(--clr-primary)">✔</span> ${f}</li>`).join('')
+    : '';
+
+  // Admin Info
+  document.getElementById('viewRenteeName').textContent = ui.renteeName || '-';
+  document.getElementById('viewRenteePhone').textContent = ui.renteePhone || '-';
+  document.getElementById('viewDailyPrice').textContent = `Rs ${ui.dailyPrice}`;
+  
+  let statusColor = ui.status === 'Available' ? '#065f46' : ui.status === 'Rented' ? '#92400e' : '#991b1b';
+  document.getElementById('viewStatus').innerHTML = `
+    <span style="font-weight:600; color:${statusColor}">${ui.status}</span>
+  `;
+
+  renderComments(ui);
+}
+
+function renderComments(ui) {
   const container = document.getElementById('detailCommentsList');
-  if (!MOCK_DATA.comments || MOCK_DATA.comments.length === 0) {
+  if (!ui.comments || ui.comments.length === 0) {
     container.innerHTML = '<p style="color:var(--clr-text-muted)">No comments yet.</p>';
     return;
   }
 
-  container.innerHTML = MOCK_DATA.comments.map(c => `
+  container.innerHTML = ui.comments.map(c => `
     <div class="vehicle-comment">
       <img src="${c.avatar}" alt="" style="width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;">
       <div style="flex:1;">
@@ -115,8 +147,12 @@ function renderComments() {
 
 function deleteComment(id) {
   if (confirm('Are you sure you want to delete this comment?')) {
-    MOCK_DATA.comments = MOCK_DATA.comments.filter(c => c.id !== id);
-    renderComments();
+    window.RW_API.comments.delete(id)
+      .then(() => loadPage())
+      .catch((err) => {
+        console.error('Delete comment error:', err);
+        alert(err?.message || 'Failed to delete comment');
+      });
   }
 }
 
@@ -131,19 +167,20 @@ function setupEventListeners() {
     document.getElementById('editMainContent').style.display = 'block';
 
     // Populate inputs
-    document.getElementById('editRenteeName').value = MOCK_DATA.renteeName;
-    document.getElementById('editRenteePhone').value = MOCK_DATA.renteePhone;
-    document.getElementById('editDailyPrice').value = MOCK_DATA.dailyPrice;
-    document.getElementById('editStatus').value = MOCK_DATA.status;
+    const ui = mapForUI(serverState) || {};
+    document.getElementById('editRenteeName').value = ui.renteeName || '';
+    document.getElementById('editRenteePhone').value = ui.renteePhone || '';
+    document.getElementById('editDailyPrice').value = ui.dailyPrice || '';
+    document.getElementById('editStatus').value = ui.status || 'Available';
     
-    document.getElementById('editDetailTitle').value = MOCK_DATA.name;
-    document.getElementById('editDetailYear').value = MOCK_DATA.year;
-    document.getElementById('editDetailType').value = MOCK_DATA.type;
-    document.getElementById('editDetailSeats').value = MOCK_DATA.seats;
-    document.getElementById('editDetailTrans').value = MOCK_DATA.transmission;
-    document.getElementById('editDetailFuel').value = MOCK_DATA.fuel;
-    document.getElementById('editDetailDescription').value = MOCK_DATA.description;
-    document.getElementById('editDetailFeatures').value = MOCK_DATA.features.join(', ');
+    document.getElementById('editDetailTitle').value = ui.name || '';
+    document.getElementById('editDetailYear').value = ui.year || '';
+    document.getElementById('editDetailType').value = ui.type || '';
+    document.getElementById('editDetailSeats').value = ui.seats || '';
+    document.getElementById('editDetailTrans').value = ui.transmission || '';
+    document.getElementById('editDetailFuel').value = ui.fuel || '';
+    document.getElementById('editDetailDescription').value = ui.description || '';
+    document.getElementById('editDetailFeatures').value = '';
   });
 
   document.getElementById('cancelEditBtn').addEventListener('click', () => {
@@ -153,28 +190,62 @@ function setupEventListeners() {
     document.getElementById('editMainContent').style.display = 'none';
   });
 
-  document.getElementById('saveEditBtn').addEventListener('click', () => {
-    MOCK_DATA.renteeName = document.getElementById('editRenteeName').value;
-    MOCK_DATA.renteePhone = document.getElementById('editRenteePhone').value;
-    MOCK_DATA.dailyPrice = document.getElementById('editDailyPrice').value;
-    MOCK_DATA.status = document.getElementById('editStatus').value;
+  document.getElementById('saveEditBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('saveEditBtn');
+    const original = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
 
-    MOCK_DATA.name = document.getElementById('editDetailTitle').value;
-    MOCK_DATA.year = document.getElementById('editDetailYear').value;
-    MOCK_DATA.type = document.getElementById('editDetailType').value;
-    MOCK_DATA.seats = document.getElementById('editDetailSeats').value;
-    MOCK_DATA.transmission = document.getElementById('editDetailTrans').value;
-    MOCK_DATA.fuel = document.getElementById('editDetailFuel').value;
-    MOCK_DATA.description = document.getElementById('editDetailDescription').value;
-    
-    const rawFeatures = document.getElementById('editDetailFeatures').value;
-    MOCK_DATA.features = rawFeatures.split(',').map(f => f.trim()).filter(Boolean);
+    try {
+      const year = parseInt(String(document.getElementById('editDetailYear').value || ''), 10);
+      const seatingRaw = String(document.getElementById('editDetailSeats').value || '').replace(/[^\d]/g, '');
+      const seatingCapacity = seatingRaw ? parseInt(seatingRaw, 10) : undefined;
+      const dailyPrice = parseFloat(String(document.getElementById('editDailyPrice').value || ''));
+      const description = document.getElementById('editDetailDescription').value || undefined;
 
-    adminViewMode.style.display = 'block';
-    adminEditMode.style.display = 'none';
-    document.getElementById('viewMainContent').style.display = 'block';
-    document.getElementById('editMainContent').style.display = 'none';
-    renderPage();
+      const patch = {
+        ...(Number.isFinite(year) ? { year } : {}),
+        ...(Number.isFinite(seatingCapacity) ? { seatingCapacity } : {}),
+        ...(Number.isFinite(dailyPrice) ? { dailyPrice } : {}),
+        ...(description ? { description } : {}),
+      };
+
+      const typeText = String(document.getElementById('editDetailType').value || '').trim();
+      const transText = String(document.getElementById('editDetailTrans').value || '').trim();
+      const fuelText = String(document.getElementById('editDetailFuel').value || '').trim();
+
+      async function optionIdByValue(type, value) {
+        if (!value) return null;
+        const payload = await window.RW_API.vehicles.getOptions({ type, limit: 50 });
+        const options = Array.isArray(payload?.data?.options) ? payload.data.options : [];
+        const hit = options.find((o) => String(o.value || '').toLowerCase() === value.toLowerCase());
+        return hit ? hit.id : null;
+      }
+
+      const categoryId = await optionIdByValue('CATEGORY', typeText);
+      const typeId = categoryId ? null : await optionIdByValue('VEHICLE_TYPE', typeText);
+      const transmissionId = await optionIdByValue('TRANSMISSION', transText);
+      const fuelTypeId = await optionIdByValue('FUEL_TYPE', fuelText);
+
+      if (categoryId) patch.categoryId = categoryId;
+      if (typeId) patch.typeId = typeId;
+      if (transmissionId) patch.transmissionId = transmissionId;
+      if (fuelTypeId) patch.fuelTypeId = fuelTypeId;
+
+      await window.RW_API.request(`/vehicles/${VEHICLE_ID}`, { method: 'PATCH', body: patch });
+
+      adminViewMode.style.display = 'block';
+      adminEditMode.style.display = 'none';
+      document.getElementById('viewMainContent').style.display = 'block';
+      document.getElementById('editMainContent').style.display = 'none';
+      await loadPage();
+    } catch (err) {
+      console.error('Vehicle update error:', err);
+      alert(err?.message || 'Failed to save changes');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = original;
+    }
   });
 
   document.getElementById('deleteVehicleBtn').addEventListener('click', () => {
@@ -182,7 +253,11 @@ function setupEventListeners() {
   });
   
   document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
-    // Navigate back to admin_vehicles.html
-    window.location.href = 'admin_vehicles.html';
+    window.RW_API.request(`/vehicles/${VEHICLE_ID}`, { method: 'DELETE' })
+      .then(() => { window.location.href = 'admin_vehicles.html'; })
+      .catch((err) => {
+        console.error('Delete vehicle error:', err);
+        alert(err?.message || 'Failed to delete vehicle');
+      });
   });
 }

@@ -1,5 +1,3 @@
-const API_BASE = window.RW_CONFIG?.API_BASE || "http://localhost:5000/api";
-
 const clipboard = `<img src="../assets/clipboard.png" alt="Booking" width="25" height="25">`;
 
 function bindLogout() {
@@ -89,7 +87,7 @@ function renderDashboard(data) {
 
 async function loadDashboard() {
   // COOKIE AUTH IMPLEMENTED
-  const payload = await window.RW_API.request("/user/seller/dashboard");
+  const payload = await window.RW_API.user.sellerDashboard();
   const data    = payload?.data || {};
   const monthly = Array.isArray(data.monthlyRevenue) ? data.monthlyRevenue : [];
   const now     = new Date();
@@ -188,7 +186,26 @@ function saveLicense() {
     valid = false;
   }
   if (!valid) return;
-  closeModal();
+
+  const fileInput = document.getElementById("licenseUpload");
+  const file = fileInput?.files?.[0] || null;
+  if (!file) {
+    closeModal();
+    return;
+  }
+
+  const fd = new FormData();
+  fd.append("licensePhoto", file);
+
+  window.RW_API.auth.uploadDocuments(fd)
+    .then(() => {
+      closeModal();
+      window.RentWheels?.showToast?.("License uploaded", "success");
+    })
+    .catch((err) => {
+      console.error("License upload error:", err);
+      window.RentWheels?.showToast?.(err?.message || "Failed to upload license", "error");
+    });
 }
 function previewPhoto(event) {
   const file = event.target.files[0]; if (!file) return;
@@ -198,8 +215,33 @@ function previewPhoto(event) {
 }
 function savePhoto() {
   const preview = document.getElementById("photoPreview");
-  if (preview.src) document.querySelector(".avatar img").src = preview.src;
-  closeModal();
+  const fileInput = document.getElementById("photoUpload");
+  const file = fileInput?.files?.[0] || null;
+  if (!file) {
+    closeModal();
+    return;
+  }
+
+  const fd = new FormData();
+  fd.append("profilePhoto", file);
+
+  window.RW_API.auth.uploadDocuments(fd)
+    .then((payload) => {
+      const url = payload?.data?.profilePhoto;
+      if (url) {
+        const img = document.querySelector(".avatar img");
+        if (img) img.src = url;
+      } else if (preview?.src) {
+        const img = document.querySelector(".avatar img");
+        if (img) img.src = preview.src;
+      }
+      closeModal();
+      window.RentWheels?.showToast?.("Photo updated", "success");
+    })
+    .catch((err) => {
+      console.error("Photo upload error:", err);
+      window.RentWheels?.showToast?.(err?.message || "Failed to update photo", "error");
+    });
 }
 
 document.getElementById("editProfileModal").addEventListener("click", function (e) {
