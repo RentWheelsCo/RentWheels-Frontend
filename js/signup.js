@@ -185,4 +185,44 @@ document.addEventListener('DOMContentLoaded', () => {
     if (emailEl) showError(emailEl, signupError);
     sessionStorage.removeItem('signupError');
   }
+
+  // Eye toggle for new password
+  const toggleNewPw = document.getElementById('toggle-npassword');
+  const newPwInput = document.getElementById('npassword');
+  if (toggleNewPw && newPwInput) {
+    newPwInput.addEventListener('input', () => {
+      toggleNewPw.classList.toggle('visible', newPwInput.value.length > 0);
+    });
+
+    toggleNewPw.addEventListener('click', (e) => {
+      e.preventDefault();
+      const isPassword = newPwInput.type === 'password';
+      newPwInput.type = isPassword ? 'text' : 'password';
+      const img = toggleNewPw.querySelector('img');
+      if (img) {
+        img.src = isPassword ? '../assets/eyeClose.png' : '../assets/eye.png';
+        img.alt = isPassword ? 'hide password' : 'show password';
+      }
+    });
+  }
+
+  // Eye toggle for confirm password
+  const toggleConfirmPw = document.getElementById('toggle-cpassword');
+  const confirmPwInput = document.getElementById('cpassword');
+  if (toggleConfirmPw && confirmPwInput) {
+    confirmPwInput.addEventListener('input', () => {
+      toggleConfirmPw.classList.toggle('visible', confirmPwInput.value.length > 0);
+    });
+
+    toggleConfirmPw.addEventListener('click', (e) => {
+      e.preventDefault();
+      const isPassword = confirmPwInput.type === 'password';
+      confirmPwInput.type = isPassword ? 'text' : 'password';
+      const img = toggleConfirmPw.querySelector('img');
+      if (img) {
+        img.src = isPassword ? '../assets/eyeClose.png' : '../assets/eye.png';
+        img.alt = isPassword ? 'hide password' : 'show password';
+      }
+    });
+  }
 });

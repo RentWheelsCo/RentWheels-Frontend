@@ -141,6 +141,8 @@ h2 span { color: var(--blue); }
 .password-wrapper {
   position: relative;
   width: 100%;
+  display: flex;
+  align-items: center;
 }
 .password-wrapper input {
   width: 100%;
@@ -162,16 +164,17 @@ h2 span { color: var(--blue); }
 .eye-btn {
   position: absolute;
   top: 50%;
-  right: 10px;
+  right: 12px;
   transform: translateY(-50%);
   border: none;
   background: transparent;
   cursor: pointer;
-  padding: 2px;
+  padding: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--gray-400);
+  height: 24px;
+  width: 24px;
   line-height: 0;
   opacity: 0;
   visibility: hidden;
