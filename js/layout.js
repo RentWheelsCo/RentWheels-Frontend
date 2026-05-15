@@ -19,6 +19,14 @@ function writeCachedProfile(profile) {
   }
 }
 
+function applyProfileToPage(profile) {
+  const p = profile || readCachedProfile() || null;
+  if (!p) return;
+  document.querySelectorAll(".profile-name").forEach((el) => {
+    if (p.name) el.textContent = p.name;
+  });
+}
+
 function isAuthed() {
   // COOKIE AUTH IMPLEMENTED: HttpOnly cookie not readable in JS
   return Boolean(readCachedProfile()?.id);
@@ -180,7 +188,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // COOKIE AUTH IMPLEMENTED: hydrate session auth + notifications
   window.RW_API?.auth?.profile?.()
     .then((p) => {
-      if (p?.data?.id) writeCachedProfile(p.data);
+      if (p?.data?.id) {
+        writeCachedProfile(p.data);
+        applyProfileToPage(p.data);
+      }
       if (headerTarget) headerTarget.innerHTML = renderHeader(pageKey);
 
       return window.RW_API?.notifications?.getMy?.({ page: 1, pageSize: 20, unreadOnly: true });

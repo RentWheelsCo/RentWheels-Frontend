@@ -1,84 +1,100 @@
-const ASSETS = {
-  brandLogo: "../assets/rentwheels.png",
-  searchIcon: "../assets/search_icon.png",
-};
-
-function renderHeader(activeKey) {
-  const navItems = [
-    { key: "home", label: "Home", href: "../html/home.html" },
-    { key: "vehicle", label: "Vehicle", href: "../html/vehicle.html" },
-    {
-      key: "my-bookings",
-      label: "My Bookings",
-      href: "../html/bookings.html",
-    },
-    { key: "dashboard", label: "Dashboard", href: "../html/dashboard.html" },
-  ];
-
-  const navHtml = navItems
-    .map((item) => {
-      const isActive = item.key === activeKey;
-      const activeClass = isActive ? "active" : "";
-      const aria = isActive ? ' aria-current="page"' : "";
-      return `<a href="${item.href}" class="${activeClass}" data-nav="${item.key}"${aria}>${item.label}</a>`;
-    })
-    .join("");
-
-  return `
-    <header class="rw-header">
-      <a class="rw-brand" href="../html/home.html" aria-label="RentWheels">
-        <img src="${ASSETS.brandLogo}" alt="RentWheels logo" />
-      </a>
-
-      <nav class="rw-nav" aria-label="Primary navigation">
-        ${navHtml}
-      </nav>
-
-      <div class="rw-actions">
-        <div class="rw-search" role="search">
-          <img src="${ASSETS.searchIcon}" alt="" />
-          <input type="text" placeholder="Search vehicles" aria-label="Search vehicles" />
-        </div>
-        <a class="rw-login" href="../html/login.html" role="button" aria-label="Log out">Log out</a>
-      </div>
-    </header>
-  `;
+function formatDateISO(value) {
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "-";
+  return d.toISOString().split("T")[0];
 }
 
-function renderFooter() {
-  return `
-    <footer class="rw-footer">
-      <div class="rw-footer-inner">
-        <a class="rw-brand" href="../html/home.html" aria-label="RentWheels Home">
-          <img src="${ASSETS.brandLogo}" alt="RentWheels logo" />
-        </a>
-        <div class="rw-footer-col">
-          <div class="rw-footer-title">Quick Links</div>
-          <a class="rw-footer-item" href="../html/home.html">Home</a>
-          <a class="rw-footer-item" href="../html/vehicle.html">Browse Vehicle</a>
-          <a class="rw-footer-item" href="../html/bookings.html">Bookings</a>
-        </div>
+function formatNpr(value) {
+  const amount = Number(value || 0);
+  return `NPR ${amount.toLocaleString()}`;
+}
 
-        <div class="rw-footer-col">
-          <div class="rw-footer-title">Contact</div>
-          <div class="rw-footer-text">CodeCruiser</div>
-          <div class="rw-footer-text">Naxal, Kathmandu</div>
-          <div class="rw-footer-text">+01-4964333</div>
-          <div class="rw-footer-text">rentwheels@gmail.com</div>
-        </div>
-      </div>
+function statusClass(status) {
+  const s = String(status || "").toUpperCase();
+  if (s === "CONFIRMED") return "status-confirmed";
+  if (s === "COMPLETED") return "status-completed";
+  if (s === "CANCELLED") return "status-cancelled";
+  return "status-pending";
+}
 
-      <div class="rw-footer-bottom">© 2026 RentWheels. All rights reserved.</div>
-    </footer>
-  `;
+function renderBookings(rows) {
+  const list = document.getElementById("bookingsList");
+  const empty = document.getElementById("emptyState");
+
+  if (!list) return;
+
+  if (!rows.length) {
+    list.innerHTML = "";
+    if (empty) empty.classList.remove("hidden");
+    return;
+  }
+
+  if (empty) empty.classList.add("hidden");
+
+  list.innerHTML = rows
+    .map((b) => {
+      const vehicleName = b?.vehicle?.name || "Vehicle";
+      const ownerName = b?.vehicle?.owner?.name || "-";
+      const renterName = b?.renter?.name || "-";
+      const pickup = formatDateISO(b.pickupDate);
+      const ret = formatDateISO(b.returnDate);
+      const ins = b.insuranceType || "-";
+      const total = formatNpr(b.totalAmount);
+
+      return `
+        <article class="booking-card">
+          <div class="booking-card__top">
+            <div class="booking-card__title">
+              <h3>${vehicleName}</h3>
+              <div class="booking-card__meta">#${b.id} • ${pickup} → ${ret}</div>
+            </div>
+            <span class="booking-status ${statusClass(b.status)}">${b.status || "PENDING"}</span>
+          </div>
+
+          <div class="booking-card__grid">
+            <div class="booking-field">
+              <div class="booking-field__label">Owner</div>
+              <div class="booking-field__value">${ownerName}</div>
+            </div>
+            <div class="booking-field">
+              <div class="booking-field__label">Renter</div>
+              <div class="booking-field__value">${renterName}</div>
+            </div>
+            <div class="booking-field">
+              <div class="booking-field__label">Insurance</div>
+              <div class="booking-field__value">${ins}</div>
+            </div>
+            <div class="booking-field">
+              <div class="booking-field__label">Total</div>
+              <div class="booking-field__value">${total}</div>
+            </div>
+          </div>
+        </article>
+      `;
+    })
+    .join("");
+}
+
+async function loadBookings() {
+  const list = document.getElementById("bookingsList");
+  const empty = document.getElementById("emptyState");
+  if (!list) return;
+
+  list.innerHTML = `<div style="color:#7b8292;font-size:13px;">Loading bookings…</div>`;
+  if (empty) empty.classList.add("hidden");
+
+  const payload = await window.RW_API.request("/admin/bookings", { params: { page: 1, limit: 50 } });
+  const rows = Array.isArray(payload?.data?.bookings) ? payload.data.bookings : [];
+  renderBookings(rows);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const pageKey = document.body?.dataset?.page || "home";
-
-  const headerTarget = document.getElementById("rw-header");
-  const footerTarget = document.getElementById("rw-footer");
-
-  if (headerTarget) headerTarget.innerHTML = renderHeader(pageKey);
-  if (footerTarget) footerTarget.innerHTML = renderFooter();
+  loadBookings().catch((err) => {
+    console.error("Admin bookings load error:", err);
+    const list = document.getElementById("bookingsList");
+    const empty = document.getElementById("emptyState");
+    if (list) list.innerHTML = `<div style="color:#b91c1c;font-size:13px;">${err?.message || "Failed to load bookings."}</div>`;
+    if (empty) empty.classList.add("hidden");
+  });
 });
+

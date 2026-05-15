@@ -60,15 +60,35 @@ function renderAdminHeader(activeKey) {
 }
 
 function logout() {
-  localStorage.removeItem("authToken");
-  localStorage.removeItem("authUser");
+  // COOKIE AUTH IMPLEMENTED
+  window.RW_API?.auth?.logout?.().catch(() => {});
+  document.cookie = "authToken=; Max-Age=0; path=/";
   window.location.href = "../html/login.html";
+}
+
+async function requireAdminOrRedirect() {
+  try {
+    const payload = await window.RW_API?.auth?.profile?.();
+    const role = payload?.data?.role || null;
+    if (String(role || "").toLowerCase() !== "admin") {
+      window.location.replace("../html/home.html");
+    }
+  } catch (err) {
+    if (err?.status === 401) {
+      window.location.replace("../html/login.html");
+      return;
+    }
+    // If profile fails for any other reason, keep the user on page but log it.
+    console.error("Admin auth check failed:", err);
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   const pageKey = document.body?.dataset?.page || "dashboard";
   const headerTarget = document.getElementById("admin-header");
   if (headerTarget) headerTarget.innerHTML = renderAdminHeader(pageKey);
+
+  requireAdminOrRedirect();
 
   // Desktop logout
   const logoutBtn = document.getElementById("rw-admin-logout");

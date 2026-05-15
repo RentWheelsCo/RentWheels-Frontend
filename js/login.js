@@ -102,17 +102,19 @@ form.addEventListener('submit', async (e) => {
 
   try {
     // COOKIE AUTH IMPLEMENTED
-    await window.RW_API.auth.login({
+    const payload = await window.RW_API.auth.login({
       email: emailIn.value.trim(),
       password: pwIn.value,
     });
 
-    // <!-- FULL API INTEGRATION ADDED -->
+    const role = payload?.user?.role || payload?.data?.user?.role || null;
+    const nextHref = String(role || "").toLowerCase() === "admin" ? "admin_Dashboard.html" : "dashboard.html";
+
     // Use assign() to avoid being blocked by history state edge cases.
-    window.location.assign('dashboard.html');
+    window.location.assign(nextHref);
     // Fallback: if navigation is blocked for any reason, retry once.
     setTimeout(() => {
-      try { window.location.assign('dashboard.html'); } catch { /* ignore */ }
+      try { window.location.assign(nextHref); } catch { /* ignore */ }
     }, 300);
 
   } catch (err) {
