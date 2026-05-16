@@ -1,4 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const currentUserId = Number(
+    (function () {
+      try {
+        return JSON.parse(sessionStorage.getItem("rw_profile") || "null")?.id;
+      } catch {
+        return null;
+      }
+    })()
+  );
   const params = new URLSearchParams(window.location.search);
   const carsOnlyView = params.get('view') === 'cars';
   const bikesOnlyView = params.get('view') === 'bikes';
@@ -50,9 +59,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const typeEl = card.querySelector(".vehicle-card__type");
     const specs = card.querySelectorAll(".vehicle-card__specs .spec");
 
+    const isMine = Number(vehicle?.ownerId) === currentUserId || Number(vehicle?.owner?.id) === currentUserId;
     const availability = String(vehicle.availabilityStatus || "").toUpperCase();
     const isAvailable = availability === "AVAILABLE" || vehicle.isAvailable === true;
-    if (availableBadge) availableBadge.textContent = isAvailable ? "Available Now" : "Not Available";
+    if (availableBadge) availableBadge.textContent = isMine ? "My Vehicle" : (isAvailable ? "Available Now" : "Not Available");
     if (priceBadge) priceBadge.textContent = `Rs${Number(vehicle.dailyPrice || 0)}/day`;
 
     const photo = Array.isArray(vehicle.photos) && vehicle.photos.length ? vehicle.photos[0] : null;
@@ -139,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     recCarousel.innerHTML = `<div style="color:#7b8292;font-size:13px;padding:10px 2px;">Loading recommendations…</div>`;
     try {
-      const payload = await window.RW_API.request("/recommendations", { params: { limit: 8 } });
+      const payload = await window.RW_API.request("/recommendations/vehicles", { params: { limit: 8 } });
       const recs = Array.isArray(payload?.data?.vehicles) ? payload.data.vehicles : [];
       if (!recs.length) {
         const fallback = await window.RW_API.vehicles.getAll({ limit: 8 });
@@ -693,6 +703,57 @@ if (recCarousel && recPrev && recNext) {
   }
 
   window.RentWheels = { showToast };
+
+  const loginModal = document.getElementById("loginModal");
+  const loginModalClose = document.getElementById("loginModalClose");
+  const switchToSignup = document.getElementById("switchToSignup");
+  const signupModal = document.getElementById("signupModal");
+  const signupModalClose = document.getElementById("signupModalClose");
+  const switchToLogin = document.getElementById("switchToLogin");
+
+  function openModal(el) {
+    if (!el) return;
+    el.style.display = "flex";
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeModal(el) {
+    if (!el) return;
+    el.style.display = "none";
+    if (!loginModal || loginModal.style.display === "none") {
+      if (!signupModal || signupModal.style.display === "none") {
+        document.body.style.overflow = "";
+      }
+    }
+  }
+
+  if (loginModalClose) loginModalClose.addEventListener("click", () => closeModal(loginModal));
+  if (signupModalClose) signupModalClose.addEventListener("click", () => closeModal(signupModal));
+  if (switchToSignup) {
+    switchToSignup.addEventListener("click", (e) => {
+      e.preventDefault();
+      closeModal(loginModal);
+      openModal(signupModal);
+    });
+  }
+  if (switchToLogin) {
+    switchToLogin.addEventListener("click", (e) => {
+      e.preventDefault();
+      closeModal(signupModal);
+      openModal(loginModal);
+    });
+  }
+  [loginModal, signupModal].forEach((m) => {
+    if (!m) return;
+    m.addEventListener("click", (e) => {
+      if (e.target === m) closeModal(m);
+    });
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    closeModal(loginModal);
+    closeModal(signupModal);
+  });
 
   loadHomeVehicles();
   loadRecommendations();
