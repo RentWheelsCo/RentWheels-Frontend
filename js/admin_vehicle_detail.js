@@ -202,11 +202,14 @@ function setupEventListeners() {
       const seatingCapacity = seatingRaw ? parseInt(seatingRaw, 10) : undefined;
       const dailyPrice = parseFloat(String(document.getElementById('editDailyPrice').value || ''));
       const description = document.getElementById('editDetailDescription').value || undefined;
+      const statusRaw = String(document.getElementById('editStatus').value || 'Available');
+      const availabilityStatus = statusRaw === 'Rented' ? 'NOT_AVAILABLE' : 'AVAILABLE';
 
       const patch = {
         ...(Number.isFinite(year) ? { year } : {}),
         ...(Number.isFinite(seatingCapacity) ? { seatingCapacity } : {}),
         ...(Number.isFinite(dailyPrice) ? { dailyPrice } : {}),
+        availabilityStatus,
         ...(description ? { description } : {}),
       };
 

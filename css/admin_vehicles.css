@@ -356,7 +356,26 @@ body {
   font-family: var(--font);
 }
 
+.modal-form input[type="number"],
+.modal-form select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  outline: none;
+  color: var(--text-primary);
+  transition: border-color 0.15s;
+  font-family: var(--font);
+  background: #fff;
+}
+
 .modal-form input:focus {
+  border-color: var(--accent);
+}
+
+.modal-form select:focus,
+.modal-form input[type="number"]:focus {
   border-color: var(--accent);
 }
 

@@ -1,4 +1,5 @@
 const adminVehicleData = [];
+let optionRows = [];
 
 let pendingDeleteId = null;
 let editingId = null;
@@ -140,17 +141,42 @@ function openEditModal(id) {
 function saveEdit() {
   const v = adminVehicleData.find(x => x.id === editingId);
   if (!v) return;
-  v.name = document.getElementById("editVehicleName").value;
-  v.renterName = document.getElementById("editRenterName").value;
-  v.renterPhone = document.getElementById("editRenterPhone").value;
-  v.renteeName = document.getElementById("editRenteeName").value;
-  v.renteePhone = document.getElementById("editRenteePhone").value;
-  v.dailyPrice = document.getElementById("editDailyPrice").value;
-  v.status = document.getElementById("editStatus").value;
-  
-  closeModal('editVehicleModal');
-  const searchInput = document.getElementById("searchInput");
-  renderVehicles(searchInput.value);
+
+  const name = document.getElementById("editVehicleName").value;
+  const dailyPrice = Number(document.getElementById("editDailyPrice").value);
+  const uiStatus = document.getElementById("editStatus").value;
+  const availabilityStatus = uiStatus === "Rented" ? "NOT_AVAILABLE" : "AVAILABLE";
+
+  const btn = document.getElementById("saveEditBtn");
+  const original = btn ? btn.textContent : "";
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "Saving...";
+  }
+
+  const patch = {
+    ...(name ? { name } : {}),
+    ...(Number.isFinite(dailyPrice) && dailyPrice > 0 ? { dailyPrice } : {}),
+    availabilityStatus,
+  };
+
+  window.RW_API.request(`/vehicles/${editingId}`, { method: "PATCH", body: patch })
+    .then(() => loadVehicles())
+    .then(() => {
+      closeModal('editVehicleModal');
+      const searchInput = document.getElementById("searchInput");
+      renderVehicles(searchInput ? searchInput.value : "");
+    })
+    .catch((err) => {
+      console.error("Admin vehicle update error:", err);
+      alert(err?.message || "Failed to update vehicle.");
+    })
+    .finally(() => {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = original;
+      }
+    });
 }
 
 function openDeleteModal(id) {
@@ -163,11 +189,32 @@ function openDeleteModal(id) {
 
 function confirmDelete() {
   if (pendingDeleteId === null) return;
-  const idx = adminVehicleData.findIndex(x => x.id === pendingDeleteId);
-  if (idx !== -1) adminVehicleData.splice(idx, 1);
-  closeModal('deleteModal');
-  const searchInput = document.getElementById("searchInput");
-  renderVehicles(searchInput.value);
+  const id = pendingDeleteId;
+  const btn = document.getElementById("confirmDeleteBtn");
+  const original = btn ? btn.textContent : "";
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "Deleting...";
+  }
+
+  window.RW_API.request(`/vehicles/${id}`, { method: "DELETE" })
+    .then(() => {
+      const idx = adminVehicleData.findIndex(x => x.id === id);
+      if (idx !== -1) adminVehicleData.splice(idx, 1);
+      closeModal('deleteModal');
+      const searchInput = document.getElementById("searchInput");
+      renderVehicles(searchInput ? searchInput.value : "");
+    })
+    .catch((err) => {
+      console.error("Admin vehicle delete error:", err);
+      alert(err?.message || "Failed to delete vehicle.");
+    })
+    .finally(() => {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = original;
+      }
+    });
 }
 
 function closeModal(modalId) {
@@ -194,4 +241,132 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
   loadVehicles().finally(() => renderVehicles());
+  setupOptionAdmin();
 });
+
+async function fetchAllOptions() {
+  const types = ["VEHICLE_TYPE", "BRAND", "MODEL", "CATEGORY", "TRANSMISSION", "FUEL_TYPE", "LOCATION"];
+  const payloads = await Promise.all(types.map((type) => window.RW_API.vehicles.getOptions({ type, limit: 200 })));
+  const all = [];
+  payloads.forEach((p) => {
+    const rows = Array.isArray(p?.data?.options) ? p.data.options : [];
+    all.push(...rows);
+  });
+  return all.sort((a, b) => a.id - b.id);
+}
+
+function renderOptionsTable() {
+  const tbody = document.getElementById("optionsTableBody");
+  if (!tbody) return;
+  if (!optionRows.length) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#7b8292;padding:16px;">No options found.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = optionRows.map((o) => `
+    <tr>
+      <td>${o.id}</td>
+      <td>${o.type}</td>
+      <td>${o.value}</td>
+      <td>${o.isActive ? "Yes" : "No"}</td>
+      <td>
+        <button class="${o.isActive ? "btn-danger" : "btn-primary"}" style="padding:6px 10px;font-size:12px;"
+          onclick="toggleOptionActive(${o.id}, ${o.isActive ? "false" : "true"})">
+          ${o.isActive ? "Deactivate" : "Activate"}
+        </button>
+      </td>
+    </tr>
+  `).join("");
+}
+
+function setOptionMsg(text, isError = false) {
+  const el = document.getElementById("optionStatusMsg");
+  if (!el) return;
+  el.textContent = text || "";
+  el.style.color = isError ? "#dc2626" : "#6b7280";
+}
+
+async function loadOptionAdminData() {
+  try {
+    optionRows = await fetchAllOptions();
+    renderOptionsTable();
+
+    const parentSel = document.getElementById("optParent");
+    if (parentSel) {
+      const brands = optionRows.filter((o) => o.type === "BRAND" && o.isActive);
+      parentSel.innerHTML = `<option value="">None</option>` + brands.map((b) => `<option value="${b.id}">${b.value}</option>`).join("");
+    }
+  } catch (err) {
+    console.error("Load options error:", err);
+    setOptionMsg(err?.message || "Failed to load options.", true);
+  }
+}
+
+async function createOption() {
+  const typeEl = document.getElementById("optType");
+  const valueEl = document.getElementById("optValue");
+  const parentEl = document.getElementById("optParent");
+  const btn = document.getElementById("createOptionBtn");
+  if (!typeEl || !valueEl || !parentEl || !btn) return;
+
+  const type = String(typeEl.value || "").trim();
+  const value = String(valueEl.value || "").trim();
+  const parentIdRaw = String(parentEl.value || "").trim();
+  if (!type || !value) {
+    setOptionMsg("Type and value are required.", true);
+    return;
+  }
+
+  const body = { type, value };
+  if (type === "MODEL" && parentIdRaw) body.parentId = Number(parentIdRaw);
+
+  const original = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Adding...";
+  setOptionMsg("");
+  try {
+    await window.RW_API.request("/vehicles/options", { method: "POST", body });
+    valueEl.value = "";
+    setOptionMsg("Option added successfully.");
+    await loadOptionAdminData();
+  } catch (err) {
+    console.error("Create option error:", err);
+    setOptionMsg(err?.message || "Failed to add option.", true);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = original;
+  }
+}
+
+async function toggleOptionActive(id, nextActive) {
+  try {
+    await window.RW_API.request(`/vehicles/options/${id}`, {
+      method: "PATCH",
+      body: { isActive: Boolean(nextActive) },
+    });
+    setOptionMsg(`Option #${id} updated.`);
+    await loadOptionAdminData();
+  } catch (err) {
+    console.error("Toggle option status error:", err);
+    setOptionMsg(err?.message || "Failed to update option.", true);
+  }
+}
+
+function setupOptionAdmin() {
+  const typeEl = document.getElementById("optType");
+  const btn = document.getElementById("createOptionBtn");
+  if (btn) btn.addEventListener("click", createOption);
+  if (typeEl) {
+    typeEl.addEventListener("change", () => {
+      const parentEl = document.getElementById("optParent");
+      if (!parentEl) return;
+      parentEl.disabled = typeEl.value !== "MODEL";
+      if (parentEl.disabled) parentEl.value = "";
+    });
+  }
+  loadOptionAdminData().then(() => {
+    const parentEl = document.getElementById("optParent");
+    if (parentEl && typeEl) parentEl.disabled = typeEl.value !== "MODEL";
+  });
+}
+
+window.toggleOptionActive = toggleOptionActive;

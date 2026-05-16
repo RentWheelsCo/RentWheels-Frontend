@@ -103,6 +103,8 @@ function renderVehicles() {
   `).join("");
 }
 
+// ── View Modal ──
+
 async function toggleStatus(id, btn) {
   const v = vehicleData.find(x => x.id === id);
   if (!v) return;
@@ -110,13 +112,11 @@ async function toggleStatus(id, btn) {
   const newStatus = v.status === "Available" ? "Not Available" : "Available";
   const apiStatus = newStatus === "Available" ? "AVAILABLE" : "NOT_AVAILABLE";
 
-  // Optimistic update
   v.status = newStatus;
   const img = btn.querySelector("img");
   if (img) img.src = newStatus === "Available" ? "../assets/eye.png" : "../assets/eyeClose.png";
   btn.title = newStatus === "Available" ? "Mark as Unavailable" : "Mark as Available";
 
-  // Update badge in the same row
   const row = btn.closest("tr");
   if (row) {
     const badgeCell = row.cells[3];
@@ -126,12 +126,10 @@ async function toggleStatus(id, btn) {
   try {
     await window.RW_API.request(`/vehicles/${id}`, {
       method: "PATCH",
-      body: JSON.stringify({ availabilityStatus: apiStatus }),
-      headers: { "Content-Type": "application/json" },
+      body: { availabilityStatus: apiStatus },
     });
   } catch (err) {
     if (err?.status === 401) { logout(); return; }
-    // Revert on failure
     v.status = newStatus === "Available" ? "Not Available" : "Available";
     if (img) img.src = v.status === "Available" ? "../assets/eye.png" : "../assets/eyeClose.png";
     btn.title = v.status === "Available" ? "Mark as Unavailable" : "Mark as Available";
@@ -139,15 +137,9 @@ async function toggleStatus(id, btn) {
       const badgeCell = row.cells[3];
       if (badgeCell) badgeCell.innerHTML = getStatusBadge(v.status);
     }
-    const message =
-      (err?.data && typeof err.data === "object" ? err.data.message : null) ||
-      err?.message || "Failed to update availability.";
-    alert(message);
+    alert(err?.message || "Failed to update availability.");
   }
-}
-
-// ── View Modal ──
-function openViewModal(id) {
+}function openViewModal(id) {
   const v = vehicleData.find(x => x.id === id);
   if (!v) return;
   document.getElementById("viewVehicleContent").innerHTML = `
@@ -275,4 +267,8 @@ document.addEventListener("DOMContentLoaded", () => {
   loadVehicles();
   initNav();
 });
+
+
+
+
 

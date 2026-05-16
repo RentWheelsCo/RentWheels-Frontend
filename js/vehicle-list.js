@@ -1,4 +1,14 @@
 (function () {
+  const currentUserId = Number(
+    (function () {
+      try {
+        return JSON.parse(sessionStorage.getItem("rw_profile") || "null")?.id;
+      } catch {
+        return null;
+      }
+    })()
+  );
+
   function parseSearchParams() {
     const params = new URLSearchParams(window.location.search);
     const pickup = params.get("pickup");
@@ -28,9 +38,10 @@
     const typeEl = card.querySelector(".vehicle-card__type");
     const specs = card.querySelectorAll(".vehicle-card__specs .spec");
 
+    const isMine = Number(vehicle?.ownerId) === currentUserId || Number(vehicle?.owner?.id) === currentUserId;
     const availability = String(vehicle.availabilityStatus || "").toUpperCase();
     const isAvailable = availability === "AVAILABLE" || vehicle.isAvailable === true;
-    if (availableBadge) availableBadge.textContent = isAvailable ? "Available Now" : "Not Available";
+    if (availableBadge) availableBadge.textContent = isMine ? "My Vehicle" : (isAvailable ? "Available Now" : "Not Available");
     if (priceBadge) priceBadge.textContent = `$${Number(vehicle.dailyPrice || 0)}/day`;
 
     const photo = Array.isArray(vehicle.photos) && vehicle.photos.length ? vehicle.photos[0] : null;
@@ -79,4 +90,3 @@
 
   document.addEventListener("DOMContentLoaded", loadVehicles);
 })();
-

@@ -510,8 +510,8 @@
         const insSelect = document.getElementById("insuranceType");
         const insType = insSelect ? insSelect.value : "none";
         let insCostPerDay = 0;
-        if (insType === "half") insCostPerDay = 15;
-        if (insType === "full") insCostPerDay = 30;
+        if (insType === "half") insCostPerDay = basePrice * 0.025;
+        if (insType === "full") insCostPerDay = basePrice * 0.05;
         const insuranceCost = insCostPerDay * days;
 
         const total = carCost + insuranceCost;
@@ -558,7 +558,7 @@
           const rDate = document.getElementById("returnDate").value;
           const insSelect = document.getElementById("insuranceType");
           const insType = insSelect ? insSelect.value : "none";
-          const apiInsurance = insType === "full" ? "PREMIUM" : insType === "half" ? "STANDARD" : "BASIC";
+          const apiInsurance = insType === "full" ? "FULL_INSURANCE" : insType === "half" ? "HALF_INSURANCE" : "NO_INSURANCE";
 
           payBtnEl.disabled = true;
           const original = payBtnEl.textContent;

@@ -45,6 +45,52 @@
         </tbody>
       </table>
     </div>
+
+    <section class="table-card" style="margin-top:18px;">
+      <div class="modal-header" style="margin-bottom:0;border-bottom:1px solid var(--border);padding:14px 16px;">
+        <span style="font-size:16px;">Vehicle Options</span>
+      </div>
+      <div class="modal-form" style="padding:14px 16px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end;">
+          <div>
+            <label>Option Type</label>
+            <select id="optType">
+              <option value="VEHICLE_TYPE">Vehicle Type</option>
+              <option value="BRAND">Brand</option>
+              <option value="MODEL">Model</option>
+              <option value="CATEGORY">Category</option>
+              <option value="TRANSMISSION">Transmission</option>
+              <option value="FUEL_TYPE">Fuel Type</option>
+              <option value="LOCATION">Location</option>
+            </select>
+          </div>
+          <div>
+            <label>Value</label>
+            <input type="text" id="optValue" placeholder="e.g. SUV, Toyota" />
+          </div>
+          <div>
+            <label>Parent Brand (for MODEL)</label>
+            <select id="optParent"></select>
+          </div>
+          <button class="btn-primary" id="createOptionBtn" type="button">Add Option</button>
+        </div>
+        <div id="optionStatusMsg" style="margin-top:10px;color:var(--text-muted);font-size:12px;"></div>
+      </div>
+      <div style="padding:0 16px 16px;">
+        <table class="vehicle-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Type</th>
+              <th>Value</th>
+              <th>Active</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="optionsTableBody"></tbody>
+        </table>
+      </div>
+    </section>
   </main>
 
   <!-- View Modal -->
@@ -100,7 +146,7 @@
         </div>
         <div class="modal-row">
           <button class="btn-secondary" onclick="closeModal('editVehicleModal')">Cancel</button>
-          <button class="btn-primary" onclick="saveEdit()">Save Changes</button>
+          <button class="btn-primary" id="saveEditBtn" onclick="saveEdit()">Save Changes</button>
         </div>
       </div>
     </div>
@@ -117,7 +163,7 @@
       <p class="delete-subtitle">This will permanently remove <strong id="deleteVehicleName"></strong> from the platform.</p>
       <div class="modal-row" style="margin-top:20px;">
         <button class="btn-secondary" onclick="closeModal('deleteModal')">Cancel</button>
-        <button class="btn-danger" onclick="confirmDelete()">Remove</button>
+        <button class="btn-danger" id="confirmDeleteBtn" onclick="confirmDelete()">Remove</button>
       </div>
     </div>
   </div>
