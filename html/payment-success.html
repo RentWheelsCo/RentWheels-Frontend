@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment Successful - RentWheels</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/payment-status.css" />
+</head>
+<body>
+  <main class="payment-shell">
+    <section class="payment-card">
+      <div class="payment-icon payment-icon--success" aria-hidden="true">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+          <path d="M20 7L10 17l-5-5" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h1 class="payment-title">Payment Successful</h1>
+      <p class="payment-text" id="paymentText">Finalizing your booking...</p>
+      <div class="payment-actions">
+        <a class="btn btn-primary" href="../html/my-bookings.html">Go to My Bookings</a>
+        <a class="btn btn-ghost" href="../html/home.html">Back to Home</a>
+      </div>
+    </section>
+  </main>
+  <script src="../js/config.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/payment-success.js"></script>
+</body>
+</html>
