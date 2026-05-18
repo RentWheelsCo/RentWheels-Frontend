@@ -10,7 +10,9 @@
     hostname === "[::1]" ||
     hostname.endsWith(".local");
 
-  const base = (configuredBase || (isLocalHost ? DEFAULT_LOCAL_API : DEFAULT_REMOTE_API)).replace(/\/+$/, "");
+  const base = (
+    configuredBase || (isLocalHost ? DEFAULT_LOCAL_API : DEFAULT_REMOTE_API)
+  ).replace(/\/+$/, "");
 
   function buildUrl(path, params) {
     const raw = String(path || "");
@@ -47,11 +49,13 @@
       !(body instanceof ArrayBuffer) &&
       !(body instanceof URLSearchParams);
     if (isBodyObject) {
-      if (!headers.has("Content-Type")) headers.set("Content-Type", "application/json");
+      if (!headers.has("Content-Type"))
+        headers.set("Content-Type", "application/json");
       body = JSON.stringify(body);
     }
 
-    const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+    const controller =
+      typeof AbortController !== "undefined" ? new AbortController() : null;
     const timeoutId =
       controller && timeoutMs > 0
         ? setTimeout(() => {
@@ -71,7 +75,11 @@
         signal: controller ? controller.signal : undefined,
       });
     } catch (err) {
-      if (err && (err.name === "AbortError" || String(err.message || "").includes("aborted"))) {
+      if (
+        err &&
+        (err.name === "AbortError" ||
+          String(err.message || "").includes("aborted"))
+      ) {
         const e = new Error(`Request timed out after ${timeoutMs}ms`);
         e.status = 408;
         e.cause = err;
@@ -141,6 +149,9 @@
     },
     uploadDocuments(formData) {
       return request("/auth/documents", { method: "PATCH", body: formData });
+    },
+    checkEmailExists(email) {
+      return request("/auth/check-email", { method: "POST", body: { email } });
     },
   });
 
@@ -234,7 +245,10 @@
       return request("/comments", { method: "POST", body: payload });
     },
     reply(commentId, payload) {
-      return request(`/comments/${commentId}/reply`, { method: "POST", body: payload });
+      return request(`/comments/${commentId}/reply`, {
+        method: "POST",
+        body: payload,
+      });
     },
     like(commentId) {
       return request(`/comments/${commentId}/like`, { method: "POST" });
@@ -243,7 +257,10 @@
       return request(`/comments/${commentId}/like`, { method: "DELETE" });
     },
     update(commentId, payload) {
-      return request(`/comments/${commentId}`, { method: "PATCH", body: payload });
+      return request(`/comments/${commentId}`, {
+        method: "PATCH",
+        body: payload,
+      });
     },
     delete(commentId) {
       return request(`/comments/${commentId}`, { method: "DELETE" });

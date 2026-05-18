@@ -206,15 +206,18 @@ function nextPage() {
   if (!phone) {
     showError(phoneEl, "Phone number is required.");
     hasError = true;
-  } else if (phone.length < 7) {
-    showError(phoneEl, "Phone number must be at least 7 digits.");
-    hasError = true;
-  } else if (phone.length > 20) {
-    showError(phoneEl, "Phone number must be 20 digits or fewer.");
-    hasError = true;
   } else if (!/^[0-9+\-\s()]+$/.test(phone)) {
     showError(phoneEl, "Phone number contains invalid characters.");
     hasError = true;
+  } else {
+    const digits = phone.replace(/\D/g, "");
+    if (digits.length !== 10) {
+      showError(phoneEl, "Phone number must be 10 digits.");
+      hasError = true;
+    } else if (!digits.startsWith("98") && !digits.startsWith("97")) {
+      showError(phoneEl, "Phone number must start with 98 or 97.");
+      hasError = true;
+    }
   }
 
   if (!password) {
@@ -238,12 +241,41 @@ function nextPage() {
 
   if (hasError) return;
 
-  sessionStorage.setItem(
-    "signupData",
-    JSON.stringify({ name: username, email, phone, password }),
-  );
-  setPage(1);
-  window.location.href = "signup1.html";
+  // Check if email already exists
+  checkEmailAndProceed(email, username, phone, password);
+}
+
+async function checkEmailAndProceed(email, username, phone, password) {
+  const emailEl = document.getElementById("email");
+  const nextBtn = document.querySelector(".btn-next");
+
+  if (nextBtn) {
+    nextBtn.disabled = true;
+    nextBtn.textContent = "Checking...";
+  }
+
+  try {
+    await window.RW_API.auth.checkEmailExists(email);
+    // If no error, email doesn't exist, proceed
+    sessionStorage.setItem(
+      "signupData",
+      JSON.stringify({ name: username, email, phone, password }),
+    );
+    setPage(1);
+    window.location.href = "signup1.html";
+  } catch (err) {
+    // Email already exists or other error
+    const message =
+      (err?.data && typeof err.data === "object" ? err.data.message : null) ||
+      "Email already registered. Please use a different email.";
+
+    showError(emailEl, message);
+
+    if (nextBtn) {
+      nextBtn.disabled = false;
+      nextBtn.textContent = "Next";
+    }
+  }
 }
 
 function goToLogin() {
@@ -258,13 +290,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("npassword")?.value || "",
     document.getElementById("cpassword")?.value || "",
   );
-
-  const signupError = sessionStorage.getItem("signupError");
-  if (signupError) {
-    const emailEl = document.getElementById("email");
-    if (emailEl) showError(emailEl, signupError);
-    sessionStorage.removeItem("signupError");
-  }
 
   const toggleNewPw = document.getElementById("toggle-npassword");
   const newPwInput = document.getElementById("npassword");
