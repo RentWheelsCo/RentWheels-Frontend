@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Manage Bookings</title>
   <link rel="stylesheet" href="../css/Manage_booking.css" />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/skeletons.css">
 </head>
+
 <body data-page="dashboard">
 
   <!-- Top navigation rendered by layout.js -->
@@ -21,11 +24,12 @@
           <div class="avatar">
             <img src="../assets/Person-Icon.png" width="40" height="40">
           </div>
-          <div class="avatar-edit" onclick="openModal()" style="position:absolute; top:-4px; right:-4px; width:18px; height:18px; background:#ffffff; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; border:2px solid #fff;">
+          <div class="avatar-edit" onclick="openModal()"
+            style="position:absolute; top:-4px; right:-4px; width:18px; height:18px; background:#ffffff; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; border:2px solid #fff;">
             <img src="../assets/edit.png" width="15" height="15">
           </div>
         </div>
-        <span class="profile-name">Lasta Maharjan</span>
+        <span class="profile-name"></span>
       </div>
 
       <nav class="sidebar-nav">
@@ -65,7 +69,8 @@
     <main class="main-content">
       <header class="page-header">
         <h1 class="page-title">Manage Bookings</h1>
-        <p class="page-subtitle">Track all customer bookings, approve or cancel requests, and manage booking statuses</p>
+        <p class="page-subtitle">Track all customer bookings, approve or cancel requests, and manage booking statuses
+        </p>
       </header>
 
       <div class="table-card">
@@ -140,9 +145,11 @@
             <div class="upload-area-sm" onclick="document.getElementById('licenseInput').click()">
               <img src="../assets/upload.png" width="30" height="30">
               Click to upload
-              <input type="file" id="licenseInput" accept="image/*" style="display:none;" onchange="previewLicense(event)">
+              <input type="file" id="licenseInput" accept="image/*" style="display:none;"
+                onchange="previewLicense(event)">
             </div>
-            <img id="licensePreview" style="display:none; width:100%; margin-top:10px; border-radius:8px; border:1px solid #e8eaef; object-fit:cover;">
+            <img id="licensePreview"
+              style="display:none; width:100%; margin-top:10px; border-radius:8px; border:1px solid #e8eaef; object-fit:cover;">
           </div>
           <div class="modal-row">
             <button class="btn-back" onclick="showMainOptions()">Back</button>
@@ -171,4 +178,5 @@
   <script src="../js/layout.js"></script>
   <script src="../js/Manage_booking.js"></script>
 </body>
+
 </html>

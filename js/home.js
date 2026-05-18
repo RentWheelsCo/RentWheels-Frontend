@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // Local fallback asset to keep UI consistent if vehicle photo is missing.
+  const VEHICLE_PLACEHOLDER = "../assets/carGrey.png";
+
   const currentUserId = Number(
     (function () {
       try {
@@ -26,6 +29,104 @@ document.addEventListener('DOMContentLoaded', () => {
       const fromParam = fromCars ? '&from=cars' : fromBikes ? '&from=bikes' : '';
       window.location.href = `./vehicle-detail.html?id=${encodeURIComponent(vehicleId)}${fromParam}`;
     });
+  }
+
+  function renderVehicleSkeletons(container, count = 3) {
+    if (!container) return;
+    container.innerHTML = '';
+
+    // If the page already has real cards, clone layout; otherwise build a minimal skeleton.
+    const template = container.querySelector('.vehicle-card');
+    if (template) {
+      const tempClone = template.cloneNode(true);
+      // remove template content and replace with skeleton blocks
+      const imgWrap = tempClone.querySelector('.vehicle-card__img-wrap');
+      const img = tempClone.querySelector('.vehicle-card__img');
+      const body = tempClone.querySelector('.vehicle-card__body');
+
+      if (imgWrap) {
+        imgWrap.innerHTML = '';
+        imgWrap.style.background = '#f3f4f6';
+      }
+      if (img) img.style.display = 'none';
+
+      const badgeAvail = tempClone.querySelector('.badge--available');
+      const badgePrice = tempClone.querySelector('.badge--price');
+      if (badgeAvail) badgeAvail.textContent = '';
+      if (badgePrice) badgePrice.textContent = '';
+
+      if (body) {
+        body.innerHTML = `
+          <div class="rw-skeleton rw-skeleton--block" style="height:14px; width:70%; margin: 8px 0 10px; border-radius:10px"></div>
+          <div class="rw-skeleton rw-skeleton--block" style="height:10px; width:45%; margin: 0 0 14px; border-radius:999px"></div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap: 8px 0;">
+            <div class="rw-skeleton rw-skeleton--block" style="height:10px; width:85%; border-radius:999px"></div>
+            <div class="rw-skeleton rw-skeleton--block" style="height:10px; width:85%; border-radius:999px"></div>
+            <div class="rw-skeleton rw-skeleton--block" style="height:10px; width:85%; border-radius:999px"></div>
+            <div class="rw-skeleton rw-skeleton--block" style="height:10px; width:85%; border-radius:999px"></div>
+          </div>
+        `;
+      }
+
+      container.innerHTML = '';
+      for (let i = 0; i < count; i++) {
+        const c = tempClone.cloneNode(true);
+        c.removeAttribute('data-id');
+        c.style.cursor = 'default';
+        c.setAttribute('aria-hidden', 'true');
+        container.appendChild(c);
+      }
+      return;
+    }
+
+    // Fallback: simple grey rectangles
+    for (let i = 0; i < count; i++) {
+      const sk = document.createElement('div');
+      sk.className = 'rw-skeleton';
+      sk.style.height = '220px';
+      sk.style.borderRadius = '14px';
+      container.appendChild(sk);
+    }
+  }
+
+  function renderRecSkeletons(container, count = 6) {
+    if (!container) return;
+    container.innerHTML = '';
+    const template = container.querySelector('.rec-card');
+    if (!template) {
+      const wrap = document.createElement('div');
+      wrap.textContent = 'Loading recommendations…';
+      container.appendChild(wrap);
+      return;
+    }
+
+    const tempClone = template.cloneNode(true);
+    tempClone.querySelector('.rec-card__img-wrap')?.setAttribute('style', 'background:#f3f4f6;');
+    tempClone.querySelectorAll('img, .rec-price, .rec-card__title-row, .rec-card__type, .rec-spec-pill, .rec-btn').forEach(el => {
+      if (el) el.style.display = 'none';
+    });
+
+    const body = tempClone.querySelector('.rec-card__body');
+    if (body) {
+      body.innerHTML = `
+        <div class="rw-skeleton rw-skeleton--block" style="height:14px; width:65%; margin: 8px 0 10px; border-radius:10px"></div>
+        <div class="rw-skeleton rw-skeleton--block" style="height:10px; width:85%; margin: 0 0 14px; border-radius:999px"></div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px;">
+          <div class="rw-skeleton rw-skeleton--block" style="height:24px; width:70px; border-radius:999px"></div>
+          <div class="rw-skeleton rw-skeleton--block" style="height:24px; width:70px; border-radius:999px"></div>
+          <div class="rw-skeleton rw-skeleton--block" style="height:24px; width:70px; border-radius:999px"></div>
+        </div>
+        <div class="rw-skeleton rw-skeleton--block" style="height:38px; width:100%; margin-top:16px; border-radius:12px"></div>
+      `;
+    }
+
+    for (let i = 0; i < count; i++) {
+      const c = tempClone.cloneNode(true);
+      c.removeAttribute('data-id');
+      c.setAttribute('aria-hidden', 'true');
+      c.style.cursor = 'default';
+      container.appendChild(c);
+    }
   }
 
   function setSpecText(specEl, text) {
@@ -66,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (priceBadge) priceBadge.textContent = `Rs${Number(vehicle.dailyPrice || 0)}/day`;
 
     const photo = Array.isArray(vehicle.photos) && vehicle.photos.length ? vehicle.photos[0] : null;
-    if (img) img.src = photo || "https://placehold.co/640x420/e5e7eb/9ca3af?text=No+Image";
+    if (img) img.src = photo || VEHICLE_PLACEHOLDER;
     if (img) img.alt = vehicle.name || "Vehicle";
 
     if (nameEl) nameEl.textContent = vehicle.name || "Vehicle";
@@ -87,8 +188,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const bikeTemplate = bikesGrid.querySelector(".vehicle-card");
     if (!carTemplate || !bikeTemplate) return;
 
-    carsGrid.innerHTML = `<div style="color:#7b8292;font-size:13px;">Loading vehicles…</div>`;
-    bikesGrid.innerHTML = `<div style="color:#7b8292;font-size:13px;">Loading vehicles…</div>`;
+    // Grey skeleton placeholders while API loads
+    function renderVehicleSkeletons(gridEl, count = 3) {
+      if (!gridEl) return;
+      const tpl = document.createElement('div');
+      tpl.innerHTML = `
+        <div class="rw-vehicle-skel">
+          <div class="rw-vehicle-skel__img"></div>
+          <div class="rw-vehicle-skel__body">
+            <div class="rw-skeleton rw-skeleton--block rw-vehicle-skel__title"></div>
+            <div class="rw-skeleton rw-skeleton--block rw-vehicle-skel__type"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 10px;">
+              <div class="rw-skeleton rw-skeleton--block rw-vehicle-skel__spec"></div>
+              <div class="rw-skeleton rw-skeleton--block rw-vehicle-skel__spec"></div>
+              <div class="rw-skeleton rw-skeleton--block rw-vehicle-skel__spec"></div>
+              <div class="rw-skeleton rw-skeleton--block rw-vehicle-skel__spec"></div>
+            </div>
+          </div>
+        </div>`;
+
+      const card = tpl.firstElementChild;
+      gridEl.innerHTML = '';
+      Array.from({ length: count }).forEach(() => {
+        gridEl.appendChild(card.cloneNode(true));
+      });
+    }
+
+    // Grey skeleton placeholders while API loads
+    renderVehicleSkeletons(carsGrid, 3);
+    renderVehicleSkeletons(bikesGrid, 3);
 
     try {
       const payload = await window.RW_API.vehicles.getAll({ limit: 60 });
@@ -127,7 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (price) price.textContent = `Rs${Number(vehicle.dailyPrice || 0)}/day`;
     const photo = Array.isArray(vehicle.photos) && vehicle.photos.length ? vehicle.photos[0] : null;
-    if (img) img.src = photo || "https://placehold.co/640x420/e5e7eb/9ca3af?text=No+Image";
+    if (img) img.src = photo || VEHICLE_PLACEHOLDER;
     if (img) img.alt = vehicle.name || "Vehicle";
     if (nameEl) nameEl.textContent = vehicle.name || "Vehicle";
     if (typeEl) {
@@ -147,7 +275,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const template = recCarousel.querySelector(".rec-card");
     if (!template) return;
 
-    recCarousel.innerHTML = `<div style="color:#7b8292;font-size:13px;padding:10px 2px;">Loading recommendations…</div>`;
+    // Grey skeleton placeholders while API loads
+    recCarousel.innerHTML = Array.from({ length: 6 }).map(() => `
+      <div class="rw-rec-skel">
+        <div class="rw-rec-skel__img-wrap">
+          <div class="rw-skeleton rw-skeleton--img"></div>
+        </div>
+        <div class="rw-rec-skel__body">
+          <div class="rw-skeleton rw-skeleton--block rw-rec-skel__title"></div>
+          <div class="rw-skeleton rw-skeleton--block rw-rec-skel__type"></div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <div class="rw-skeleton rw-skeleton--block rw-rec-skel__pill"></div>
+            <div class="rw-skeleton rw-skeleton--block rw-rec-skel__pill"></div>
+            <div class="rw-skeleton rw-skeleton--block rw-rec-skel__pill"></div>
+          </div>
+          <div class="rw-skeleton rw-skeleton--block" style="height:36px;margin-top:16px;"></div>
+        </div>
+      </div>
+    `).join('');
     try {
       const payload = await window.RW_API.request("/recommendations/vehicles", { params: { limit: 8 } });
       const recs = Array.isArray(payload?.data?.vehicles) ? payload.data.vehicles : [];
@@ -174,344 +319,344 @@ document.addEventListener('DOMContentLoaded', () => {
       recCarousel.innerHTML = `<div style="color:#b91c1c;font-size:13px;padding:10px 2px;">Failed to load recommendations.</div>`;
     }
   }
-/* ── Hero search widget (hs-* IDs) ─────────────────────── */
-const hsState = {
-  insurance: "",
-  pickupDate: null,
-  returnDate: null,
-  activeCalendar: null,
-  calDate: new Date(),
-};
+  /* ── Hero search widget (hs-* IDs) ─────────────────────── */
+  const hsState = {
+    insurance: "",
+    pickupDate: null,
+    returnDate: null,
+    activeCalendar: null,
+    calDate: new Date(),
+  };
 
-const MONTHS = [
-  "January", "February", "March", "April",
-  "May", "June", "July", "August",
-  "September", "October", "November", "December"
-];
+  const MONTHS = [
+    "January", "February", "March", "April",
+    "May", "June", "July", "August",
+    "September", "October", "November", "December"
+  ];
 
-function fmtDate(d) {
-  if (!d) return "";
+  function fmtDate(d) {
+    if (!d) return "";
 
-  return `${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")}/${d.getFullYear()}`;
-}
+    return `${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")}/${d.getFullYear()}`;
+  }
 
-function todayDate() {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
+  function todayDate() {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
 
-function sameDay(a, b) {
-  return (
-    a &&
-    b &&
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate()
-  );
-}
+  function sameDay(a, b) {
+    return (
+      a &&
+      b &&
+      a.getFullYear() === b.getFullYear() &&
+      a.getMonth() === b.getMonth() &&
+      a.getDate() === b.getDate()
+    );
+  }
 
-/* ── Insurance dropdown ───────────────────────────── */
+  /* ── Insurance dropdown ───────────────────────────── */
 
-const insBtn = document.getElementById("hs-insuranceBtn");
-const insValue = document.getElementById("hs-insuranceValue");
-const insDrop = document.getElementById("hs-insuranceDropdown");
+  const insBtn = document.getElementById("hs-insuranceBtn");
+  const insValue = document.getElementById("hs-insuranceValue");
+  const insDrop = document.getElementById("hs-insuranceDropdown");
 
-if (insBtn && insDrop) {
-  insBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
+  if (insBtn && insDrop) {
+    insBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
 
-    const open = insDrop.classList.toggle("open");
+      const open = insDrop.classList.toggle("open");
 
-    insBtn.setAttribute("aria-expanded", String(open));
+      insBtn.setAttribute("aria-expanded", String(open));
 
-    closeHsCal();
-  });
-
-  insDrop.querySelectorAll(".hs-dropdown__item").forEach((item) => {
-    item.addEventListener("click", () => {
-
-      hsState.insurance = item.dataset.value;
-
-      insValue.textContent = item.textContent;
-
-      insDrop
-        .querySelectorAll(".hs-dropdown__item")
-        .forEach(i => i.classList.toggle("selected", i === item));
-
-      insDrop.classList.remove("open");
-
-      insBtn.setAttribute("aria-expanded", "false");
-
-      document
-        .getElementById("hs-insuranceField")
-        ?.classList.remove("has-error");
+      closeHsCal();
     });
-  });
-}
 
-/* ── Calendar popup ───────────────────────────────── */
+    insDrop.querySelectorAll(".hs-dropdown__item").forEach((item) => {
+      item.addEventListener("click", () => {
 
-const calPopup = document.getElementById("hs-calPopup");
-const calDaysEl = document.getElementById("hs-calDays");
-const calMonthEl = document.getElementById("hs-calMonthYear");
+        hsState.insurance = item.dataset.value;
 
-function openHsCal(type) {
+        insValue.textContent = item.textContent;
 
-  if (!calPopup) return;
+        insDrop
+          .querySelectorAll(".hs-dropdown__item")
+          .forEach(i => i.classList.toggle("selected", i === item));
 
-  hsState.activeCalendar = type;
+        insDrop.classList.remove("open");
 
-  const existing =
-    type === "pickup"
-      ? hsState.pickupDate
-      : hsState.returnDate;
+        insBtn.setAttribute("aria-expanded", "false");
 
-  hsState.calDate = existing
-    ? new Date(existing)
-    : new Date();
-
-  hsState.calDate.setDate(1);
-
-  renderHsCal();
-
-  calPopup.style.display = "block";
-
-  insDrop?.classList.remove("open");
-}
-
-function closeHsCal() {
-  if (calPopup) {
-    calPopup.style.display = "none";
+        document
+          .getElementById("hs-insuranceField")
+          ?.classList.remove("has-error");
+      });
+    });
   }
 
-  hsState.activeCalendar = null;
-}
+  /* ── Calendar popup ───────────────────────────────── */
 
-function renderHsCal() {
+  const calPopup = document.getElementById("hs-calPopup");
+  const calDaysEl = document.getElementById("hs-calDays");
+  const calMonthEl = document.getElementById("hs-calMonthYear");
 
-  if (!calDaysEl || !calMonthEl) return;
+  function openHsCal(type) {
 
-  const year = hsState.calDate.getFullYear();
-  const month = hsState.calDate.getMonth();
+    if (!calPopup) return;
 
-  calMonthEl.textContent = `${MONTHS[month]} ${year}`;
+    hsState.activeCalendar = type;
 
-  const firstDay = new Date(year, month, 1).getDay();
+    const existing =
+      type === "pickup"
+        ? hsState.pickupDate
+        : hsState.returnDate;
 
-  const daysInMonth =
-    new Date(year, month + 1, 0).getDate();
+    hsState.calDate = existing
+      ? new Date(existing)
+      : new Date();
 
-  const today = todayDate();
+    hsState.calDate.setDate(1);
 
-  let minDate = today;
+    renderHsCal();
 
-  if (
-    hsState.activeCalendar === "return" &&
-    hsState.pickupDate
-  ) {
-    minDate = new Date(hsState.pickupDate);
+    calPopup.style.display = "block";
 
-    minDate.setDate(minDate.getDate() + 1);
+    insDrop?.classList.remove("open");
   }
 
-  calDaysEl.innerHTML = "";
+  function closeHsCal() {
+    if (calPopup) {
+      calPopup.style.display = "none";
+    }
 
-  for (let i = 0; i < firstDay; i++) {
-    const b = document.createElement("button");
-
-    b.className = "hs-cal-day empty";
-
-    b.disabled = true;
-
-    calDaysEl.appendChild(b);
+    hsState.activeCalendar = null;
   }
 
-  for (let d = 1; d <= daysInMonth; d++) {
+  function renderHsCal() {
 
-    const dayDate = new Date(year, month, d);
+    if (!calDaysEl || !calMonthEl) return;
 
-    const b = document.createElement("button");
+    const year = hsState.calDate.getFullYear();
+    const month = hsState.calDate.getMonth();
 
-    b.className = "hs-cal-day";
+    calMonthEl.textContent = `${MONTHS[month]} ${year}`;
 
-    b.textContent = d;
+    const firstDay = new Date(year, month, 1).getDay();
+
+    const daysInMonth =
+      new Date(year, month + 1, 0).getDate();
+
+    const today = todayDate();
+
+    let minDate = today;
 
     if (
-      dayDate < minDate &&
-      !sameDay(dayDate, minDate)
+      hsState.activeCalendar === "return" &&
+      hsState.pickupDate
     ) {
-      b.classList.add("past");
+      minDate = new Date(hsState.pickupDate);
+
+      minDate.setDate(minDate.getDate() + 1);
+    }
+
+    calDaysEl.innerHTML = "";
+
+    for (let i = 0; i < firstDay; i++) {
+      const b = document.createElement("button");
+
+      b.className = "hs-cal-day empty";
 
       b.disabled = true;
 
-    } else {
+      calDaysEl.appendChild(b);
+    }
 
-      if (sameDay(dayDate, today)) {
-        b.classList.add("today");
-      }
+    for (let d = 1; d <= daysInMonth; d++) {
 
-      const selDate =
-        hsState.activeCalendar === "pickup"
-          ? hsState.pickupDate
-          : hsState.returnDate;
+      const dayDate = new Date(year, month, d);
 
-      if (sameDay(dayDate, selDate)) {
-        b.classList.add("selected");
-      }
+      const b = document.createElement("button");
 
-      b.addEventListener("click", () => {
+      b.className = "hs-cal-day";
 
-        if (hsState.activeCalendar === "pickup") {
+      b.textContent = d;
 
-          hsState.pickupDate = dayDate;
+      if (
+        dayDate < minDate &&
+        !sameDay(dayDate, minDate)
+      ) {
+        b.classList.add("past");
 
-          const inp =
-            document.getElementById("hs-pickupDate");
+        b.disabled = true;
 
-          if (inp) {
-            inp.value = fmtDate(dayDate);
-          }
+      } else {
 
-          if (
-            hsState.returnDate &&
-            hsState.returnDate <= dayDate
-          ) {
-            hsState.returnDate = null;
-
-            const r =
-              document.getElementById("hs-returnDate");
-
-            if (r) r.value = "";
-          }
-
-        } else {
-
-          hsState.returnDate = dayDate;
-
-          const inp =
-            document.getElementById("hs-returnDate");
-
-          if (inp) {
-            inp.value = fmtDate(dayDate);
-          }
+        if (sameDay(dayDate, today)) {
+          b.classList.add("today");
         }
 
-        closeHsCal();
+        const selDate =
+          hsState.activeCalendar === "pickup"
+            ? hsState.pickupDate
+            : hsState.returnDate;
+
+        if (sameDay(dayDate, selDate)) {
+          b.classList.add("selected");
+        }
+
+        b.addEventListener("click", () => {
+
+          if (hsState.activeCalendar === "pickup") {
+
+            hsState.pickupDate = dayDate;
+
+            const inp =
+              document.getElementById("hs-pickupDate");
+
+            if (inp) {
+              inp.value = fmtDate(dayDate);
+            }
+
+            if (
+              hsState.returnDate &&
+              hsState.returnDate <= dayDate
+            ) {
+              hsState.returnDate = null;
+
+              const r =
+                document.getElementById("hs-returnDate");
+
+              if (r) r.value = "";
+            }
+
+          } else {
+
+            hsState.returnDate = dayDate;
+
+            const inp =
+              document.getElementById("hs-returnDate");
+
+            if (inp) {
+              inp.value = fmtDate(dayDate);
+            }
+          }
+
+          closeHsCal();
+        });
+      }
+
+      calDaysEl.appendChild(b);
+    }
+  }
+
+  /* ── Month navigation ─────────────────────────────── */
+
+  document.getElementById("hs-prevMonth")
+    ?.addEventListener("click", () => {
+
+      hsState.calDate.setMonth(
+        hsState.calDate.getMonth() - 1
+      );
+
+      renderHsCal();
+    });
+
+  document.getElementById("hs-nextMonth")
+    ?.addEventListener("click", () => {
+
+      hsState.calDate.setMonth(
+        hsState.calDate.getMonth() + 1
+      );
+
+      renderHsCal();
+    });
+
+  /* ── Open pickup calendar ─────────────────────────── */
+
+  ["hs-pickupDate", "hs-pickupCalBtn"].forEach(id => {
+
+    document.getElementById(id)
+      ?.addEventListener("click", (e) => {
+
+        e.stopPropagation();
+
+        openHsCal("pickup");
       });
+  });
+
+  /* ── Open return calendar ─────────────────────────── */
+
+  ["hs-returnDate", "hs-returnCalBtn"].forEach(id => {
+
+    document.getElementById(id)
+      ?.addEventListener("click", (e) => {
+
+        e.stopPropagation();
+
+        openHsCal("return");
+      });
+  });
+
+  /* ── Close dropdown/calendar on outside click ────── */
+
+  document.addEventListener("click", (e) => {
+
+    const search =
+      document.getElementById("heroSearch");
+
+    if (
+      search &&
+      !search.contains(e.target)
+    ) {
+      closeHsCal();
+
+      insDrop?.classList.remove("open");
     }
-
-    calDaysEl.appendChild(b);
-  }
-}
-
-/* ── Month navigation ─────────────────────────────── */
-
-document.getElementById("hs-prevMonth")
-  ?.addEventListener("click", () => {
-
-    hsState.calDate.setMonth(
-      hsState.calDate.getMonth() - 1
-    );
-
-    renderHsCal();
   });
 
-document.getElementById("hs-nextMonth")
-  ?.addEventListener("click", () => {
+  /* ── Search button action ─────────────────────────── */
 
-    hsState.calDate.setMonth(
-      hsState.calDate.getMonth() + 1
-    );
+  document.getElementById("hs-searchBtn")
+    ?.addEventListener("click", () => {
 
-    renderHsCal();
-  });
+      closeHsCal();
 
-/* ── Open pickup calendar ─────────────────────────── */
+      insDrop?.classList.remove("open");
 
-["hs-pickupDate", "hs-pickupCalBtn"].forEach(id => {
+      const params = new URLSearchParams();
 
-  document.getElementById(id)
-    ?.addEventListener("click", (e) => {
+      if (hsState.insurance) {
+        params.set("insurance", hsState.insurance);
+      }
 
-      e.stopPropagation();
+      if (hsState.pickupDate) {
+        params.set(
+          "pickup",
+          fmtDate(hsState.pickupDate)
+        );
+      }
 
-      openHsCal("pickup");
+      if (hsState.returnDate) {
+        params.set(
+          "return",
+          fmtDate(hsState.returnDate)
+        );
+      }
+
+      window.location.href =
+        `../html/vehicle.html?${params.toString()}`;
     });
-});
 
-/* ── Open return calendar ─────────────────────────── */
-
-["hs-returnDate", "hs-returnCalBtn"].forEach(id => {
-
-  document.getElementById(id)
-    ?.addEventListener("click", (e) => {
-
-      e.stopPropagation();
-
-      openHsCal("return");
-    });
-});
-
-/* ── Close dropdown/calendar on outside click ────── */
-
-document.addEventListener("click", (e) => {
-
-  const search =
-    document.getElementById("heroSearch");
-
-  if (
-    search &&
-    !search.contains(e.target)
-  ) {
-    closeHsCal();
-
-    insDrop?.classList.remove("open");
-  }
-});
-
-/* ── Search button action ─────────────────────────── */
-
-document.getElementById("hs-searchBtn")
-  ?.addEventListener("click", () => {
-
-    closeHsCal();
-
-    insDrop?.classList.remove("open");
-
-    const params = new URLSearchParams();
-
-    if (hsState.insurance) {
-      params.set("insurance", hsState.insurance);
-    }
-
-    if (hsState.pickupDate) {
-      params.set(
-        "pickup",
-        fmtDate(hsState.pickupDate)
-      );
-    }
-
-    if (hsState.returnDate) {
-      params.set(
-        "return",
-        fmtDate(hsState.returnDate)
-      );
-    }
-
-    window.location.href =
-      `../html/vehicle.html?${params.toString()}`;
-  });
-
-  const exploreCars  = document.getElementById('exploreCars');
+  const exploreCars = document.getElementById('exploreCars');
   const exploreBikes = document.getElementById('exploreBikes');
 
   if (exploreCars) {
-    exploreCars.addEventListener('click', () => {});
+    exploreCars.addEventListener('click', () => { });
   }
 
   if (exploreBikes) {
-    exploreBikes.addEventListener('click', () => {});
+    exploreBikes.addEventListener('click', () => { });
   }
 
   if (carsOnlyView && isVehiclePage && document.getElementById('carsGrid')) {
@@ -519,70 +664,70 @@ document.getElementById("hs-searchBtn")
   }
   /* ── Recommendations carousel ────────────────────────────── */
 
-const recCarousel = document.getElementById("recCarousel");
-const recPrev = document.getElementById("recPrev");
-const recNext = document.getElementById("recNext");
+  const recCarousel = document.getElementById("recCarousel");
+  const recPrev = document.getElementById("recPrev");
+  const recNext = document.getElementById("recNext");
 
-if (recCarousel && recPrev && recNext) {
+  if (recCarousel && recPrev && recNext) {
 
-  const SCROLL_AMT = 292;
+    const SCROLL_AMT = 292;
 
-  function updateRecArrows() {
+    function updateRecArrows() {
 
-    const atStart =
-      recCarousel.scrollLeft <= 4;
+      const atStart =
+        recCarousel.scrollLeft <= 4;
 
-    const atEnd =
-      recCarousel.scrollLeft >=
-      recCarousel.scrollWidth -
-      recCarousel.clientWidth - 4;
+      const atEnd =
+        recCarousel.scrollLeft >=
+        recCarousel.scrollWidth -
+        recCarousel.clientWidth - 4;
 
-    recPrev.style.opacity =
-      atStart ? "0.38" : "1";
+      recPrev.style.opacity =
+        atStart ? "0.38" : "1";
 
-    recPrev.style.pointerEvents =
-      atStart ? "none" : "auto";
+      recPrev.style.pointerEvents =
+        atStart ? "none" : "auto";
 
-    recNext.style.opacity =
-      atEnd ? "0.38" : "1";
+      recNext.style.opacity =
+        atEnd ? "0.38" : "1";
 
-    recNext.style.pointerEvents =
-      atEnd ? "none" : "auto";
+      recNext.style.pointerEvents =
+        atEnd ? "none" : "auto";
+    }
+
+    /* Left Arrow */
+
+    recPrev.addEventListener("click", () => {
+
+      recCarousel.scrollBy({
+        left: -SCROLL_AMT,
+        behavior: "smooth"
+      });
+    });
+
+    /* Right Arrow */
+
+    recNext.addEventListener("click", () => {
+
+      recCarousel.scrollBy({
+        left: SCROLL_AMT,
+        behavior: "smooth"
+      });
+    });
+
+    recCarousel.addEventListener(
+      "scroll",
+      updateRecArrows
+    );
+
+    updateRecArrows();
   }
-
-  /* Left Arrow */
-
-  recPrev.addEventListener("click", () => {
-
-    recCarousel.scrollBy({
-      left: -SCROLL_AMT,
-      behavior: "smooth"
-    });
-  });
-
-  /* Right Arrow */
-
-  recNext.addEventListener("click", () => {
-
-    recCarousel.scrollBy({
-      left: SCROLL_AMT,
-      behavior: "smooth"
-    });
-  });
-
-  recCarousel.addEventListener(
-    "scroll",
-    updateRecArrows
-  );
-
-  updateRecArrows();
-}
 
   if (bikesOnlyView && isVehiclePage && document.getElementById('bikesGrid')) {
     document.body.classList.add('bikes-only-view');
   }
 
- const vehiclesSearch = document.getElementById('vehiclesSearch');
+  const vehiclesSearch = document.getElementById('vehiclesSearch');
   if (vehiclesSearch) {
     vehiclesSearch.addEventListener('input', e => {
       const query = String(e.target.value || '').trim().toLowerCase();
@@ -598,15 +743,15 @@ if (recCarousel && recPrev && recNext) {
       });
 
       // Count visible cards per grid
-      const visibleCars  = [...document.querySelectorAll('#carsGrid .vehicle-card')]
+      const visibleCars = [...document.querySelectorAll('#carsGrid .vehicle-card')]
         .filter(c => c.style.display !== 'none').length;
       const visibleBikes = [...document.querySelectorAll('#bikesGrid .vehicle-card')]
         .filter(c => c.style.display !== 'none').length;
 
       // Show/hide explore buttons
-      const exploreCarsBtn  = document.getElementById('exploreCars')?.closest('.explore-cta');
+      const exploreCarsBtn = document.getElementById('exploreCars')?.closest('.explore-cta');
       const exploreBikesBtn = document.getElementById('exploreBikes')?.closest('.explore-cta');
-      if (exploreCarsBtn)  exploreCarsBtn.style.display  = visibleCars  > 0 ? '' : 'none';
+      if (exploreCarsBtn) exploreCarsBtn.style.display = visibleCars > 0 ? '' : 'none';
       if (exploreBikesBtn) exploreBikesBtn.style.display = visibleBikes > 0 ? '' : 'none';
 
       // No results message
@@ -652,9 +797,9 @@ if (recCarousel && recPrev && recNext) {
     document.querySelectorAll('.rw-toast').forEach(t => t.remove());
 
     const colors = {
-      info : { bg: '#2563EB', icon: 'ℹ' },
-      warn : { bg: '#F59E0B', icon: '⚠' },
-      ok   : { bg: '#22C55E', icon: '✓' },
+      info: { bg: '#2563EB', icon: 'ℹ' },
+      warn: { bg: '#F59E0B', icon: '⚠' },
+      ok: { bg: '#22C55E', icon: '✓' },
     };
     const { bg, icon } = colors[type] || colors.info;
 
@@ -664,39 +809,39 @@ if (recCarousel && recPrev && recNext) {
     toast.innerHTML = `<span class="rw-toast__icon">${icon}</span><span>${message}</span>`;
 
     Object.assign(toast.style, {
-      position       : 'fixed',
-      bottom         : '28px',
-      left           : '50%',
-      transform      : 'translateX(-50%) translateY(12px)',
-      background     : bg,
-      color          : '#fff',
-      padding        : '12px 22px',
-      borderRadius   : '9999px',
-      fontSize       : '0.88rem',
-      fontFamily     : 'Outfit, sans-serif',
-      fontWeight     : '500',
-      display        : 'flex',
-      alignItems     : 'center',
-      gap            : '8px',
-      boxShadow      : '0 6px 24px rgba(0,0,0,0.18)',
-      zIndex         : '9999',
-      opacity        : '0',
-      transition     : 'opacity 0.25s ease, transform 0.25s ease',
-      whiteSpace     : 'nowrap',
-      pointerEvents  : 'none',
+      position: 'fixed',
+      bottom: '28px',
+      left: '50%',
+      transform: 'translateX(-50%) translateY(12px)',
+      background: bg,
+      color: '#fff',
+      padding: '12px 22px',
+      borderRadius: '9999px',
+      fontSize: '0.88rem',
+      fontFamily: 'Outfit, sans-serif',
+      fontWeight: '500',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      boxShadow: '0 6px 24px rgba(0,0,0,0.18)',
+      zIndex: '9999',
+      opacity: '0',
+      transition: 'opacity 0.25s ease, transform 0.25s ease',
+      whiteSpace: 'nowrap',
+      pointerEvents: 'none',
     });
 
     document.body.appendChild(toast);
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        toast.style.opacity   = '1';
+        toast.style.opacity = '1';
         toast.style.transform = 'translateX(-50%) translateY(0)';
       });
     });
 
     setTimeout(() => {
-      toast.style.opacity   = '0';
+      toast.style.opacity = '0';
       toast.style.transform = 'translateX(-50%) translateY(8px)';
       setTimeout(() => toast.remove(), 300);
     }, 3000);

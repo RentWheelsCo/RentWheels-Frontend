@@ -1,5 +1,17 @@
 'use strict';
 
+const VEHICLE_PLACEHOLDER =
+  "data:image/svg+xml;charset=utf-8," +
+  encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="420" viewBox="0 0 640 420">
+      <defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#f3f4f6"/><stop offset="1" stop-color="#e5e7eb"/></linearGradient></defs>
+      <rect width="640" height="420" rx="24" fill="url(#g)"/>
+      <path d="M220 250c0-18 14-32 32-32h150c14 0 26 9 31 21l10 29h22c18 0 33 15 33 33v16h-28c-6 19-23 33-44 33s-38-14-44-33H288c-6 19-23 33-44 33s-38-14-44-33h-28v-32c0-21 17-38 38-38h26l8-22c5-14 17-23 32-23h135" fill="none" stroke="#9ca3af" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="244" cy="318" r="18" fill="none" stroke="#9ca3af" stroke-width="10"/>
+      <circle cx="440" cy="318" r="18" fill="none" stroke="#9ca3af" stroke-width="10"/>
+    </svg>`,
+  );
+
 /* =============================================
    SVG ICON HELPERS
    ============================================= */
@@ -47,15 +59,15 @@ function buildBookingCard(booking, index) {
   const { vehicle, rentalPeriod, pickupLocation, returnLocation, insuranceType } = booking;
 
   // Meta line: year · type  (· location only if present)
-  const metaParts  = [vehicle.year, vehicle.type, vehicle.location].filter(Boolean);
+  const metaParts = [vehicle.year, vehicle.type, vehicle.location].filter(Boolean);
   const vehicleMeta = metaParts.join(' · ');
 
   // Build detail rows
   let detailsHTML = buildDetailRow('calendar', 'Rental Period',
     `${rentalPeriod.from} - ${rentalPeriod.to}`);
-  if (pickupLocation)  detailsHTML += buildDetailRow('pin', 'Pick-up Location', pickupLocation);
-  if (returnLocation)  detailsHTML += buildDetailRow('pin', 'Return Location',  returnLocation);
-  if (insuranceType)   detailsHTML += buildDetailRow('shield', 'Insurance Type', insuranceType);
+  if (pickupLocation) detailsHTML += buildDetailRow('pin', 'Pick-up Location', pickupLocation);
+  if (returnLocation) detailsHTML += buildDetailRow('pin', 'Return Location', returnLocation);
+  if (insuranceType) detailsHTML += buildDetailRow('shield', 'Insurance Type', insuranceType);
 
   const delay = (index * 0.1).toFixed(1);
 
@@ -70,7 +82,7 @@ function buildBookingCard(booking, index) {
             alt="${vehicle.name}"
             class="booking-card__img"
             loading="lazy"
-            onerror="this.src='https://placehold.co/220x155/e5e7eb/9ca3af?text=No+Image'"
+            onerror="this.src='${VEHICLE_PLACEHOLDER}'"
           />
         </div>
         <div class="booking-card__vehicle">
@@ -102,7 +114,7 @@ function buildBookingCard(booking, index) {
    RENDER
    ============================================= */
 function renderBookings(data) {
-  const list       = document.getElementById('bookingsList');
+  const list = document.getElementById('bookingsList');
   const emptyState = document.getElementById('emptyState');
 
   if (!data || data.length === 0) {
@@ -134,7 +146,35 @@ async function loadMyBookings() {
   const list = document.getElementById('bookingsList');
   if (list) {
     list.classList.remove('hidden');
-    list.innerHTML = `<div style="color:#7b8292;font-size:13px;">Loading bookings…</div>`;
+    list.innerHTML = `
+      <div style="display:grid;gap:14px;">
+        ${Array.from({ length: 4 }).map(() => `
+          <article class="booking-card" aria-hidden="true">
+            <div class="booking-card__left">
+              <div class="booking-card__img-wrap">
+                <div class="rw-skeleton rw-skeleton--img rw-skeleton--block"></div>
+              </div>
+              <div class="booking-card__vehicle">
+                <div class="rw-skeleton rw-skeleton--block" style="height:12px; width:180px; margin-bottom:10px;"></div>
+                <div class="rw-skeleton rw-skeleton--block" style="height:10px; width:140px;"></div>
+              </div>
+            </div>
+            <div class="booking-card__details">
+              <div class="booking-card__top-row">
+                <div class="rw-skeleton rw-skeleton--block" style="height:12px; width:120px;"></div>
+                <div class="rw-skeleton rw-skeleton--block" style="height:16px; width:90px; border-radius:999px;"></div>
+              </div>
+              <div class="rw-skeleton rw-skeleton--block" style="height:10px; width:220px; margin-top:12px;"></div>
+              <div class="rw-skeleton rw-skeleton--block" style="height:10px; width:180px; margin-top:8px;"></div>
+            </div>
+            <div class="booking-card__price-col">
+              <div class="rw-skeleton rw-skeleton--block" style="height:10px; width:120px;"></div>
+              <div class="rw-skeleton rw-skeleton--block" style="height:14px; width:140px; margin-top:10px;"></div>
+              <div class="rw-skeleton rw-skeleton--block" style="height:10px; width:160px; margin-top:8px;"></div>
+            </div>
+          </article>
+        `).join('')}
+      </div>`;
   }
 
   try {
@@ -145,7 +185,7 @@ async function loadMyBookings() {
       const photo =
         Array.isArray(v.photos) && v.photos.length
           ? v.photos[0]
-          : 'https://placehold.co/600x420/e5e7eb/9ca3af?text=No+Image';
+          : VEHICLE_PLACEHOLDER;
       const year = v.year ? String(v.year) : '';
       const type = v.category?.value || v.type?.value || '';
       const location = v.location?.value || '';
