@@ -42,7 +42,7 @@
     const availability = String(vehicle.availabilityStatus || "").toUpperCase();
     const isAvailable = availability === "AVAILABLE" || vehicle.isAvailable === true;
     if (availableBadge) availableBadge.textContent = isMine ? "My Vehicle" : (isAvailable ? "Available Now" : "Not Available");
-    if (priceBadge) priceBadge.textContent = `$${Number(vehicle.dailyPrice || 0)}/day`;
+    if (priceBadge) priceBadge.textContent = `Rs${Number(vehicle.dailyPrice || 0)}/day`;
 
     const photo = Array.isArray(vehicle.photos) && vehicle.photos.length ? vehicle.photos[0] : null;
     if (img) img.src = photo || "https://placehold.co/640x420/e5e7eb/9ca3af?text=No+Image";
