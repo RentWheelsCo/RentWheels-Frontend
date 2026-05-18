@@ -6,12 +6,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Add Vehicle</title>
   <link rel="stylesheet" href="../css/Add_vehicle.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
 </head>
 
-<body>
+<body data-page="dashboard">
 
-  <!-- ── Sidebar (identical to dashboard) ── -->
+  <!-- Top navigation rendered by layout.js -->
+  <div id="rw-header"></div>
+
+  <!-- ── Sidebar ── -->
   <aside class="sidebar">
     <div class="sidebar-profile">
       <div class="avatar-wrapper">
@@ -60,102 +64,147 @@
     </nav>
   </aside>
 
-  <!-- ── Main Content ── -->
-  <main class="main-content">
-    <header class="page-header">
-      <h1 class="page-title">Add New Vehicle</h1>
-      <p class="page-subtitle">Fill in details to list a new vehicle for booking, including pricing, availability, and
-        vehicle specifications.</p>
-    </header>
+  <!-- ── Page Body ── -->
+  <div class="page-body">
 
-    <!-- Upload Area -->
-    <div class="upload-box" onclick="document.getElementById('vehiclePhotos').click()">
-      <img src="../assets/upload.png" width="28" height="28">
-      <span>Upload pictures of your vehicle</span>
-      <input type="file" id="vehiclePhotos" accept="image/*" multiple style="display:none;"
-        onchange="previewVehiclePhoto(event)">
-    </div>
-    <img id="vehiclePhotoPreview" class="vehicle-preview">
+    <!-- ── Main Content ── -->
+    <main class="main-content">
+      <header class="page-header">
+        <h1 class="page-title">Add New Vehicle</h1>
+        <p class="page-subtitle">Fill in details to list a new vehicle for booking, including pricing, availability, and
+          vehicle specifications.</p>
+      </header>
 
-    <!-- Vehicle Form (dropdowns populated from backend) -->
-    <div class="vehicle-form">
-      <div class="form-grid-3">
+      <!-- Upload Area -->
+      <div class="upload-box" onclick="document.getElementById('vehiclePhotos').click()">
+        <img src="../assets/upload.png" width="28" height="28">
+        <span>Upload pictures of your vehicle</span>
+        <input type="file" id="vehiclePhotos" accept="image/*" multiple style="display:none;"
+          onchange="previewVehiclePhoto(event)">
+      </div>
+      <img id="vehiclePhotoPreview" class="vehicle-preview">
+
+      <!-- Vehicle Form -->
+      <div class="vehicle-form">
+        <div class="form-grid-3">
+          <div class="form-group">
+            <label>Vehicle Type</label>
+            <select id="typeId">
+              <option value="">Select vehicle type</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Brand</label>
+            <select id="brandId">
+              <option value="">Select brand</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Model</label>
+            <select id="modelId" disabled>
+              <option value="">Select model</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-grid-3">
+          <div class="form-group">
+            <label>Category</label>
+            <select id="categoryId">
+              <option value="">Select category</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Transmission</label>
+            <select id="transmissionId">
+              <option value="">Select transmission</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Fuel Type</label>
+            <select id="fuelTypeId">
+              <option value="">Select fuel type</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-grid-3">
+          <div class="form-group">
+            <label>Year</label>
+            <input id="year" type="number" placeholder="2025" min="1900" max="2100">
+          </div>
+          <div class="form-group">
+            <label>Daily Price (Rs)</label>
+            <input id="dailyPrice" type="number" placeholder="100" min="0" step="0.01">
+          </div>
+          <div class="form-group">
+            <label>Seating Capacity</label>
+            <input id="seatingCapacity" type="number" placeholder="5" min="1">
+          </div>
+        </div>
+
         <div class="form-group">
-          <label>Vehicle Type</label>
-          <select id="typeId">
-            <option value="">Select vehicle type</option>
+          <label>Location</label>
+          <select id="locationId">
+            <option value="">Select location</option>
           </select>
         </div>
         <div class="form-group">
-          <label>Brand</label>
-          <select id="brandId">
-            <option value="">Select brand</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Model</label>
-          <select id="modelId" disabled>
-            <option value="">Select model</option>
-          </select>
+          <label>Description</label>
+          <textarea id="description"
+            placeholder="Describe your vehicle, its condition, and any notable details..."></textarea>
         </div>
       </div>
 
-      <div class="form-grid-3">
-        <div class="form-group">
-          <label>Category</label>
-          <select id="categoryId">
-            <option value="">Select category</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Transmission</label>
-          <select id="transmissionId">
-            <option value="">Select transmission</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Fuel Type</label>
-          <select id="fuelTypeId">
-            <option value="">Select fuel type</option>
-          </select>
-        </div>
-      </div>
+      <button class="submit-btn" onclick="handleSubmit()">
+        <img src="../assets/tick.png" width="25" height="25">
+        List Your Vehicle
+      </button>
+    </main>
 
-            <div class="form-grid-3">
-              <div class="form-group">
-                <label>Year</label>
-                <input id="year" type="number" placeholder="2025" min="1900" max="2100">
-              </div>
-              <div class="form-group">
-                <label>Daily Price (Rs)</label>
-                <input id="dailyPrice" type="number" placeholder="100" min="0" step="0.01">
-              </div>
-              <div class="form-group">
-                <label>Seating Capacity</label>
-                <input id="seatingCapacity" type="number" placeholder="5" min="1">
-              </div>
+    <!-- ── Tips Panel ── -->
+    <aside class="tips-panel">
+      <div class="tips-card">
+        <h3 class="tips-title">Quick tips for better listing</h3>
+        <ul class="tips-list">
+          <li class="tip-item">
+            <span class="tip-number">1</span>
+            <div class="tip-text">
+              <strong>Upload at least 4 photos</strong>
+              <p>Front, back, interior, and dashboard. Clear photos build trust.</p>
             </div>
-
-      <div class="form-group">
-        <label>Location</label>
-        <select id="locationId">
-          <option value="">Select location</option>
-        </select>
+          </li>
+          <li class="tip-item">
+            <span class="tip-number">2</span>
+            <div class="tip-text">
+              <strong>Set a competitive daily price</strong>
+              <p>Check similar vehicles in your area before setting a price.</p>
+            </div>
+          </li>
+          <li class="tip-item">
+            <span class="tip-number">3</span>
+            <div class="tip-text">
+              <strong>Write a detailed description</strong>
+              <p>Mention condition, fuel type, mileage, and any special features.</p>
+            </div>
+          </li>
+          <li class="tip-item">
+            <span class="tip-number">4</span>
+            <div class="tip-text">
+              <strong>Pick the right category</strong>
+              <p>Correct category means your vehicle appears in the right searches.</p>
+            </div>
+          </li>
+        </ul>
       </div>
-      <div class="form-group">
-        <label>Description</label>
-        <textarea id="description"
-          placeholder="Describe your vehicle, its condition, and any notable details..."></textarea>
-      </div>
-    </div>
+    </aside>
 
-    <button class="submit-btn" onclick="handleSubmit()">
-      <img src="../assets/tick.png" width="25" height="25">
-      List Your Vehicle
-    </button>
-  </main>
+  </div><!-- /.page-body -->
 
-  <!-- ── Edit Profile Modal (identical to dashboard) ── -->
+  <!-- Footer rendered by layout.js -->
+  <div id="rw-footer"></div>
+
+  <!-- ── Edit Profile Modal ── -->
   <div id="editProfileModal">
     <div class="modal-box">
       <button class="modal-close" onclick="closeModal()">✕</button>
@@ -222,6 +271,7 @@
 
   <script src="../js/config.js"></script>
   <script src="../js/api.js"></script>
+  <script src="../js/layout.js"></script>
   <script src="../js/Add_vehicle.js"></script>
 </body>
 
