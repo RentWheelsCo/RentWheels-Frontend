@@ -23,6 +23,7 @@
 
 body {
   display: flex;
+  flex-direction: column;       
   min-height: 100vh;
   background: var(--bg);
   font-family: 'Nunito', sans-serif;
@@ -30,8 +31,20 @@ body {
   font-size: 14px;
   line-height: 1.5;
 }
+#rw-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+}
 
-/* ── Sidebar (exact copy from dashboard) ── */
+/* ── Footer fix ── */
+#rw-footer {
+  margin-left: var(--sidebar-w);
+}
+
+/* ── Sidebar ── */
 .sidebar {
   width: var(--sidebar-w);
   background: var(--sidebar-bg);
@@ -40,7 +53,9 @@ body {
   flex-direction: column;
   padding: 28px 0 24px;
   position: fixed;
-  top: 0; left: 0; bottom: 0;
+  top: 60px;                     
+  left: 0;
+  bottom: 0;
   z-index: 10;
 }
 
@@ -98,6 +113,7 @@ body {
 /* ── Main Content ── */
 .main-content {
   margin-left: var(--sidebar-w);
+  margin-top: 60px;              /* ← push main content below the top navbar */
   flex: 1;
   padding: 36px 36px 60px;
   max-width: 860px;
@@ -262,7 +278,7 @@ body {
 .submit-btn:hover { background: #1d4ed8; transform: translateY(-1px); }
 .submit-btn:active { transform: translateY(0); }
 
-/* ── Modal (exact copy from dashboard) ── */
+/* ── Modal ── */
 #editProfileModal {
   display: none;
   position: fixed;
@@ -366,13 +382,125 @@ body {
   cursor: pointer; transition: background .15s;
 }
 .modal-row .btn-save:hover { background: #1d4ed8; }
+/* ── Page Body (main + tips side by side) ── */
+.page-body {
+  display: flex;
+  align-items: stretcht;
+  gap: 24px;
+  margin-left: var(--sidebar-w);
+  margin-top: 60px;
+  padding: 36px 36px 60px;
+}
+
+.main-content {
+  /* override the old standalone styles */
+  margin-left: 0;
+  margin-top: 0;
+  padding: 0;
+  flex: 1;
+  min-width: 0;
+  max-width: 860px;
+}
+
+/* ── Tips Panel ── */
+.tips-panel {
+  width: 320px;
+  flex-shrink: 0;
+  padding-top: 60px;
+  display: flex;
+  flex-direction: column;
+}
+
+.tips-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 28px 26px;
+  position: sticky;
+  top: 80px;
+  flex: 1;
+  display: flex;            
+  flex-direction: column;     
+}
+
+.tips-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 24px;
+}
+
+.tips-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: space-between;  
+  height: 100%;
+}
+
+.tip-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding-bottom: 0;       
+  position: relative;
+  flex: 1;                
+}
+
+/* vertical line between tips */
+.tip-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 32px;
+  bottom: 0;
+  width: 2px;
+  background: var(--accent-light);
+}
+
+.tip-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.tip-text strong {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.tip-text p {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* ── Responsive: hide tips on small screens ── */
+@media (max-width: 1200px) {
+  .tips-panel { display: none; }
+}
 
 /* ── Responsive ── */
 @media (max-width: 800px) {
   .form-grid-3 { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 640px) {
-  .main-content { padding: 24px 16px; margin-left: 0; }
+  .main-content { padding: 24px 16px; margin-left: 0; margin-top: 60px; }
   .sidebar { display: none; }
   .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
 }
