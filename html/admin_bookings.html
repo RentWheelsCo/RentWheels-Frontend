@@ -4,129 +4,114 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Bookings – RentWheels</title>
+  <meta name="description" content="View and manage all user vehicle bookings in the RentWheels admin panel." />
   <link rel="stylesheet" href="../css/admin_Nav.css" />
   <link rel="stylesheet" href="../css/admin_bookings.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 </head>
 <body data-page="bookings" class="rw-page">
 
   <div id="admin-header"></div>
 
-  <div class="container">
-    <div class="page-header">
-      <h1 class="page-title">Users Bookings</h1>
-      <p class="page-subtitle">View and manage users vehicle bookings</p>
+  <div class="ab-container">
+
+    <!-- Page Header -->
+    <div class="ab-page-header">
+      <div>
+        <h1 class="ab-page-title">Users Bookings</h1>
+        <p class="ab-page-subtitle">View and manage users vehicle bookings</p>
+      </div>
     </div>
 
-    <div class="bookings-list" id="bookingsList"></div>
+    <!-- Toolbar: filter tabs + search + calendar -->
+    <div class="ab-toolbar">
+      <div class="ab-filter-tabs" id="filterTabs" role="tablist" aria-label="Booking status filter">
+        <button class="ab-tab active" data-status="all"     role="tab" aria-selected="true"  id="tab-all">All <span class="ab-tab-count" id="count-all"></span></button>
+        <button class="ab-tab"        data-status="confirmed" role="tab" aria-selected="false" id="tab-confirmed">Confirmed <span class="ab-tab-count" id="count-confirmed"></span></button>
+        <button class="ab-tab"        data-status="pending"   role="tab" aria-selected="false" id="tab-pending">Pending <span class="ab-tab-count" id="count-pending"></span></button>
+        <button class="ab-tab"        data-status="cancelled" role="tab" aria-selected="false" id="tab-cancelled">Cancelled <span class="ab-tab-count" id="count-cancelled"></span></button>
+        <button class="ab-tab"        data-status="completed" role="tab" aria-selected="false" id="tab-completed">Completed <span class="ab-tab-count" id="count-completed"></span></button>
+      </div>
+      <div class="ab-search-wrap">
+        <span class="ab-search-icon">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="#9CA3AF" stroke-width="1.8"/><path d="m14 14 3.5 3.5" stroke="#9CA3AF" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </span>
+        <input
+          type="search"
+          id="bookingSearch"
+          class="ab-search-input"
+          placeholder="Search bookings..."
+          aria-label="Search bookings"
+          autocomplete="off"
+        />
+        <button class="ab-cal-btn" id="calToggleBtn" title="Filter by date" aria-label="Filter by date">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="3" stroke="#6B7280" stroke-width="1.8"/><path d="M3 9h18" stroke="#6B7280" stroke-width="1.8"/><path d="M8 2v3M16 2v3" stroke="#6B7280" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </div>
 
-    <div class="empty-state hidden" id="emptyState">
-      <div class="empty-state__icon">
+    <!-- Date range picker (hidden by default) -->
+    <div class="ab-date-filter hidden" id="dateFilter">
+      <label>From <input type="date" id="dateFrom" class="ab-date-input" /></label>
+      <label>To <input type="date" id="dateTo" class="ab-date-input" /></label>
+      <button class="ab-date-apply" id="dateApply">Apply</button>
+      <button class="ab-date-clear" id="dateClear">Clear</button>
+    </div>
+
+    <!-- Bookings list -->
+    <div class="ab-list" id="bookingsList" role="list"></div>
+
+    <!-- Empty state -->
+    <div class="ab-empty hidden" id="emptyState">
+      <div class="ab-empty__icon">
         <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect x="8" y="16" width="48" height="36" rx="4" stroke="#CBD5E1" stroke-width="2.5"/>
           <path d="M8 24h48" stroke="#CBD5E1" stroke-width="2.5"/>
           <path d="M20 36h24M20 42h16" stroke="#CBD5E1" stroke-width="2.5" stroke-linecap="round"/>
         </svg>
       </div>
-      <h3 class="empty-state__title">No bookings yet</h3>
-      <p class="empty-state__text">No vehicle bookings found.</p>
+      <h3 class="ab-empty__title">No bookings found</h3>
+      <p class="ab-empty__text">No vehicle bookings match your current filter.</p>
+    </div>
+
+    <!-- Loading state -->
+    <div class="ab-loading" id="loadingState">
+      <div class="ab-spinner"></div>
+      <span>Loading bookings…</span>
+    </div>
+
+    <!-- Pagination -->
+    <div class="ab-pagination" id="paginationBar">
+      <span class="ab-page-info" id="pageInfo"></span>
+      <div class="ab-page-btns" id="pageBtns" role="navigation" aria-label="Pagination"></div>
     </div>
   </div>
 
-  <!-- Edit Booking Modal -->
-  <div id="editModal" class="modal-overlay hidden">
-    <div class="modal-container">
-      <div class="modal-header">
-        <h2>Edit Booking</h2>
-        <button type="button" class="btn-close-modal" id="cancelEditBtn">&times;</button>
+  <!-- Cancel Confirm Modal -->
+  <div id="cancelModal" class="ab-modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="cancelModalTitle">
+    <div class="ab-modal-box">
+      <div class="ab-modal-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#EF4444" stroke-width="1.8"/><path d="M12 7v5" stroke="#EF4444" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16" r="1" fill="#EF4444"/></svg>
       </div>
-      <div class="modal-body">
-        <form id="editBookingForm" class="edit-form">
-          <fieldset>
-            <legend>Participants</legend>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="edit_r_name">Renter Name</label>
-                <input type="text" id="edit_r_name" required>
-              </div>
-              <div class="form-group">
-                <label for="edit_r_phone">Renter Phone</label>
-                <input type="text" id="edit_r_phone" required>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="edit_rt_name">Rentee Name</label>
-                <input type="text" id="edit_rt_name" required>
-              </div>
-              <div class="form-group">
-                <label for="edit_rt_phone">Rentee Phone</label>
-                <input type="text" id="edit_rt_phone" required>
-              </div>
-            </div>
-          </fieldset>
-          <fieldset>
-            <legend>Vehicle Details</legend>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="edit_v_name">Vehicle Name</label>
-                <input type="text" id="edit_v_name" required>
-              </div>
-              <div class="form-group">
-                <label for="edit_v_type">Type</label>
-                <input type="text" id="edit_v_type" required>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="edit_v_year">Year</label>
-                <input type="text" id="edit_v_year" required>
-              </div>
-            </div>
-          </fieldset>
-          <fieldset>
-            <legend>Rental Period</legend>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="edit_p_from">From Date</label>
-                <input type="date" id="edit_p_from" required>
-              </div>
-              <div class="form-group">
-                <label for="edit_p_to">To Date</label>
-                <input type="date" id="edit_p_to" required>
-              </div>
-            </div>
-          </fieldset>
-          <fieldset>
-            <legend>Financials & Status</legend>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="edit_insuranceType">Insurance Type</label>
-                <input type="text" id="edit_insuranceType">
-              </div>
-              <div class="form-group">
-                <label for="edit_totalPrice">Total Price (Rs)</label>
-                <input type="number" id="edit_totalPrice" required>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="edit_status">Booking Status</label>
-                <select id="edit_status" required>
-                  <option value="pending">Pending</option>
-                  <option value="confirmed">Confirmed</option>
-                  <option value="cancelled">Cancelled</option>
-                </select>
-              </div>
-            </div>
-          </fieldset>
-          <div class="modal-actions">
-            <button type="submit" class="btn-primary">Save Changes</button>
-          </div>
-        </form>
+      <h2 id="cancelModalTitle" class="ab-modal-title">Cancel Booking</h2>
+      <p class="ab-modal-text">Are you sure you want to cancel this booking? This action cannot be undone.</p>
+      <div class="ab-modal-actions">
+        <button class="ab-btn-ghost" id="cancelModalClose">Keep Booking</button>
+        <button class="ab-btn-danger" id="cancelModalConfirm">Yes, Cancel It</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Detail Modal -->
+  <div id="detailModal" class="ab-modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="detailModalTitle">
+    <div class="ab-modal-box ab-modal-box--wide">
+      <div class="ab-modal-header">
+        <h2 id="detailModalTitle" class="ab-modal-title">Booking Details</h2>
+        <button class="ab-modal-close" id="detailModalClose" aria-label="Close">&times;</button>
+      </div>
+      <div class="ab-modal-body" id="detailModalBody"></div>
     </div>
   </div>
 
