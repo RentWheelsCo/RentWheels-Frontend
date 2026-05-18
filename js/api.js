@@ -59,13 +59,19 @@
 
     if (res.status === 401) {
       const rawPath = String(path || "");
+      // Profile endpoint is used as an "am I logged in?" check on public pages.
+      // A 401 here is normal when the user isn't logged in and should not redirect.
+      const isProfileCheck =
+        rawPath === "/auth/profile" ||
+        rawPath.startsWith("/auth/profile?") ||
+        rawPath.startsWith("/auth/profile&");
       const isAuthForm =
         rawPath.startsWith("/auth/login") ||
         rawPath.startsWith("/auth/register") ||
         rawPath.startsWith("/auth/forgot-password") ||
         rawPath.startsWith("/auth/reset-password");
 
-      if (!isAuthForm) {
+      if (!isAuthForm && !isProfileCheck) {
         window.location.href = getLoginHref();
       }
       const err = new Error("Unauthorized");
