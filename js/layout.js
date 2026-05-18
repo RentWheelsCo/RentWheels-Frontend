@@ -15,6 +15,16 @@ function applyProfileToPage(profile) {
   const p = profile || readCachedProfile() || null;
   if (!p) return;
   document.querySelectorAll(".profile-name").forEach((el) => { if (p.name) el.textContent = p.name; });
+
+  const photo = String(p.profilePhoto || "").trim();
+  if (photo) {
+    document
+      .querySelectorAll(".sidebar-profile .avatar img, .avatar img, #editProfileModal .modal-header img")
+      .forEach((img) => {
+        if (!img || img.tagName !== "IMG") return;
+        img.src = photo;
+      });
+  }
 }
 
 function isAuthed() { return Boolean(readCachedProfile()?.id); }
@@ -119,13 +129,16 @@ function renderHeader(activeKey) {
 }
 
 function renderFooter() {
-  return `<footer class="rw-footer"><div class="rw-footer-inner"><div class="rw-footer-brand-col"><a class="rw-footer-logo" href="../html/home.html" aria-label="RentWheels Home"><img src="${ASSETS.brandLogo}" alt="RentWheels logo" /></a><p class="rw-footer-tagline">Premium vehicle rental service with a wide selection of luxury and everyday vehicles for all your driving needs.</p></div><div class="rw-footer-col"><p class="rw-footer-title">Quick Links</p><nav aria-label="Footer navigation"><a class="rw-footer-link" href="../html/home.html">Home</a><a class="rw-footer-link" href="../html/vehicle.html">Browse Vehicle</a><a class="rw-footer-link" href="../html/bookings.html">Bookings</a></nav></div><div class="rw-footer-col"><p class="rw-footer-title">Contact</p><div class="rw-footer-contact"><span>CodeCruiser</span><span>Naxal, Kathmandu</span><span>+01-4964333</span><a href="mailto:rentwheels@gmail.com" class="rw-footer-contact-email">rentwheels@gmail.com</a></div></div></div><div class="rw-footer-divider"></div><div class="rw-footer-bottom"><span>© 2026 RentWheels. All rights reserved.</span></div></footer>`;
+  return `<footer class="rw-footer"><div class="rw-footer-inner"><div class="rw-footer-brand-col"><a class="rw-footer-logo" href="../html/home.html" aria-label="RentWheels Home"><img src="${ASSETS.brandLogo}" alt="RentWheels logo" /></a><p class="rw-footer-tagline">Premium vehicle rental service with a wide selection of luxury and everyday vehicles for all your driving needs.</p></div><div class="rw-footer-col"><p class="rw-footer-title">Quick Links</p><nav aria-label="Footer navigation"><a class="rw-footer-link" href="../html/home.html">Home</a><a class="rw-footer-link" href="../html/vehicle.html">Browse Vehicle</a><a class="rw-footer-link" href="../html/bookings.html">Bookings</a></nav></div><div class="rw-footer-col"><p class="rw-footer-title">Contact</p><div class="rw-footer-contact"><span>CodeCruiser</span><span>Naxal, Kathmandu</span><span>+01-4964333</span><a href="mailto:rentwheels@gmail.com" class="rw-footer-contact-email">rentwheels@gmail.com</a></div></div></div><div class="rw-footer-divider"></div><div class="rw-footer-bottom"><span>Â© 2026 RentWheels. All rights reserved.</span></div></footer>`;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   const pageKey = document.body?.dataset?.page || "home";
   const headerTarget = document.getElementById("rw-header");
   const footerTarget = document.getElementById("rw-footer");
+
+  // Apply cached profile immediately so name/photo don't pop in late.
+  applyProfileToPage(null);
 
   const rerenderHeader = () => {
     if (!headerTarget) return;

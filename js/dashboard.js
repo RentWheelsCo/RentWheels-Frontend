@@ -21,8 +21,28 @@ function formatDate(value) {
 function setProfileName() {
   const el = document.querySelector(".profile-name");
   if (!el) return;
+
+  // First paint from cached profile (fast), then refresh from API in background.
+  try {
+    const cached = JSON.parse(sessionStorage.getItem("rw_profile") || "null");
+    if (cached?.name) el.textContent = cached.name;
+    if (cached?.profilePhoto) {
+      const img = document.querySelector(".avatar img");
+      if (img) img.src = cached.profilePhoto;
+    }
+  } catch {}
+
   window.RW_API?.auth?.profile?.()
-    .then((p) => { if (p?.data?.name) el.textContent = p.data.name; })
+    .then((p) => {
+      if (p?.data?.id) {
+        try { sessionStorage.setItem("rw_profile", JSON.stringify(p.data)); } catch {}
+      }
+      if (p?.data?.name) el.textContent = p.data.name;
+      if (p?.data?.profilePhoto) {
+        const img = document.querySelector(".avatar img");
+        if (img) img.src = p.data.profilePhoto;
+      }
+    })
     .catch(() => {});
 }
 
@@ -231,6 +251,11 @@ function savePhoto() {
       if (url) {
         const img = document.querySelector(".avatar img");
         if (img) img.src = url;
+        try {
+          const cached = JSON.parse(sessionStorage.getItem("rw_profile") || "null") || {};
+          cached.profilePhoto = url;
+          sessionStorage.setItem("rw_profile", JSON.stringify(cached));
+        } catch {}
       } else if (preview?.src) {
         const img = document.querySelector(".avatar img");
         if (img) img.src = preview.src;

@@ -14,6 +14,18 @@ function bindLogout() {
 let vehicleData = [];
 let pendingDeleteId = null;
 
+const VEHICLE_PLACEHOLDER =
+  "data:image/svg+xml;charset=utf-8," +
+  encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="420" viewBox="0 0 640 420">
+      <defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#f3f4f6"/><stop offset="1" stop-color="#e5e7eb"/></linearGradient></defs>
+      <rect width="640" height="420" rx="24" fill="url(#g)"/>
+      <path d="M220 250c0-18 14-32 32-32h150c14 0 26 9 31 21l10 29h22c18 0 33 15 33 33v16h-28c-6 19-23 33-44 33s-38-14-44-33H288c-6 19-23 33-44 33s-38-14-44-33h-28v-32c0-21 17-38 38-38h26l8-22c5-14 17-23 32-23h135" fill="none" stroke="#9ca3af" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="244" cy="318" r="18" fill="none" stroke="#9ca3af" stroke-width="10"/>
+      <circle cx="440" cy="318" r="18" fill="none" stroke="#9ca3af" stroke-width="10"/>
+    </svg>`,
+  );
+
 function getStatusBadge(status) {
   if (status === "Available") {
     return `<span class="badge badge-available">Available</span>`;
@@ -31,8 +43,40 @@ function uiStatusFromAvailability(status) {
   return String(status || "").toUpperCase() === "AVAILABLE" ? "Available" : "Not Available";
 }
 
+function renderVehicleSkeletonRows(rowCount = 6) {
+  const tbody = document.getElementById("vehicleTableBody");
+  if (!tbody) return;
+
+  tbody.innerHTML = Array.from({ length: rowCount })
+    .map(
+      () => `
+        <tr aria-hidden="true">
+          <td>
+            <div class="vehicle-cell">
+              <div class="rw-skeleton rw-skeleton--block rw-skeleton--img rw-table-skel-img"></div>
+              <div>
+                <div class="rw-skeleton rw-skeleton--block" style="height:12px;width:140px;margin-top:6px;border-radius:10px"></div>
+                <div class="rw-skeleton rw-skeleton--block" style="height:10px;width:190px;margin-top:10px;border-radius:999px"></div>
+              </div>
+            </div>
+          </td>
+          <td><div class="rw-skeleton rw-skeleton--block" style="height:10px;width:120px;border-radius:999px"></div></td>
+          <td><div class="rw-skeleton rw-skeleton--block" style="height:10px;width:90px;border-radius:999px"></div></td>
+          <td><div class="rw-skeleton rw-skeleton--block" style="height:10px;width:120px;border-radius:999px"></div></td>
+          <td>
+            <div style="display:flex;gap:10px;align-items:center;justify-content:flex-start">
+              <div class="rw-skeleton rw-skeleton--block" style="height:32px;width:32px;border-radius:10px"></div>
+              <div class="rw-skeleton rw-skeleton--block" style="height:32px;width:32px;border-radius:10px"></div>
+            </div>
+          </td>
+        </tr>
+      `
+    )
+    .join("");
+}
+
 async function loadVehicles() {
-  setTableMessage("Loading vehicles...");
+  renderVehicleSkeletonRows(6);
 
   try {
     const [availabilityPayload, myVehiclesPayload] = await Promise.all([
@@ -55,7 +99,7 @@ async function loadVehicles() {
         category: row.category || "",
         price: Number(row.dailyPrice || 0),
         status: uiStatusFromAvailability(row.availabilityStatus),
-        image: photo || "../assets/bmwm3.png",
+        image: photo || VEHICLE_PLACEHOLDER,
       };
     });
 
@@ -139,7 +183,7 @@ async function toggleStatus(id, btn) {
     }
     alert(err?.message || "Failed to update availability.");
   }
-}function openViewModal(id) {
+} function openViewModal(id) {
   const v = vehicleData.find(x => x.id === id);
   if (!v) return;
   document.getElementById("viewVehicleContent").innerHTML = `
@@ -195,8 +239,8 @@ function initNav() {
     if (item.classList.contains("nav-logout")) return;
     item.addEventListener("click", function (e) {
       const page = this.dataset.page;
-      if (page === "dashboard")      { window.location.href = "dashboard.html";    return; }
-      if (page === "add-vehicle")    { window.location.href = "Add_vehicle.html";  return; }
+      if (page === "dashboard") { window.location.href = "dashboard.html"; return; }
+      if (page === "add-vehicle") { window.location.href = "Add_vehicle.html"; return; }
       if (page === "manage_booking") { window.location.href = "Manage_booking.html"; return; }
       e.preventDefault();
       document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
@@ -210,17 +254,17 @@ function openModal() { showMainOptions(); document.getElementById("editProfileMo
 function closeModal() { document.getElementById("editProfileModal").style.display = "none"; }
 function showMainOptions() {
   document.getElementById("mainOptions").style.display = "block";
-  document.getElementById("photoEdit").style.display   = "none";
+  document.getElementById("photoEdit").style.display = "none";
   document.getElementById("licenseEdit").style.display = "none";
 }
 function showPhotoEdit() {
   document.getElementById("mainOptions").style.display = "none";
-  document.getElementById("photoEdit").style.display   = "block";
+  document.getElementById("photoEdit").style.display = "block";
   document.getElementById("licenseEdit").style.display = "none";
 }
 function showLicenseEdit() {
   document.getElementById("mainOptions").style.display = "none";
-  document.getElementById("photoEdit").style.display   = "none";
+  document.getElementById("photoEdit").style.display = "none";
   document.getElementById("licenseEdit").style.display = "block";
 }
 function previewLicense(event) {
@@ -231,7 +275,7 @@ function previewLicense(event) {
 }
 function saveLicense() {
   const licenseInput = document.getElementById("licenseNumber");
-  const expiryInput  = document.getElementById("expiryDate");
+  const expiryInput = document.getElementById("expiryDate");
   let valid = true;
   licenseInput.style.borderColor = ""; expiryInput.style.borderColor = "";
   licenseInput.style.color = ""; expiryInput.style.color = "";

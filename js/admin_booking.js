@@ -75,20 +75,71 @@ function renderBookings(rows) {
     .join("");
 }
 
+function renderAdminBookingsSkeletonRows(rowCount = 6) {
+  const list = document.getElementById("bookingsList");
+  const empty = document.getElementById("emptyState");
+  if (!list) return;
+
+  if (empty) empty.classList.add("hidden");
+
+  list.innerHTML = Array.from({ length: rowCount })
+    .map(
+      () => `
+        <article class="booking-card" aria-hidden="true">
+          <div class="booking-card__top">
+            <div class="booking-card__title">
+              <div class="rw-skeleton rw-skeleton--block" style="height:16px;width:180px;border-radius:10px"></div>
+              <div class="rw-skeleton rw-skeleton--block" style="height:12px;width:120px;margin-top:8px;border-radius:999px"></div>
+            </div>
+            <div class="rw-skeleton rw-skeleton--block" style="height:22px;width:90px;border-radius:999px"></div>
+          </div>
+
+          <div class="booking-card__grid">
+            <div class="booking-field">
+              <div class="rw-skeleton rw-skeleton--block" style="height:12px;width:70px;border-radius:999px"></div>
+              <div class="rw-skeleton rw-skeleton--block" style="height:14px;width:110px;margin-top:8px;border-radius:10px"></div>
+            </div>
+            <div class="booking-field">
+              <div class="rw-skeleton rw-skeleton--block" style="height:12px;width:70px;border-radius:999px"></div>
+              <div class="rw-skeleton rw-skeleton--block" style="height:14px;width:110px;margin-top:8px;border-radius:10px"></div>
+            </div>
+            <div class="booking-field">
+              <div class="rw-skeleton rw-skeleton--block" style="height:12px;width:80px;border-radius:999px"></div>
+              <div class="rw-skeleton rw-skeleton--block" style="height:14px;width:120px;margin-top:8px;border-radius:10px"></div>
+            </div>
+            <div class="booking-field">
+              <div class="rw-skeleton rw-skeleton--block" style="height:12px;width:40px;border-radius:999px"></div>
+              <div class="rw-skeleton rw-skeleton--block" style="height:14px;width:90px;margin-top:8px;border-radius:10px"></div>
+            </div>
+          </div>
+        </article>
+      `
+    )
+    .join("");
+}
+
 async function loadBookings() {
   const list = document.getElementById("bookingsList");
   const empty = document.getElementById("emptyState");
   if (!list) return;
 
-  list.innerHTML = `<div style="color:#7b8292;font-size:13px;">Loading bookings…</div>`;
+  // Show skeleton immediately for better UX.
+  renderAdminBookingsSkeletonRows(6);
   if (empty) empty.classList.add("hidden");
 
-  const payload = await window.RW_API.request("/admin/bookings", { params: { page: 1, limit: 50 } });
-  const rows = Array.isArray(payload?.data?.bookings) ? payload.data.bookings : [];
-  renderBookings(rows);
+  try {
+    const payload = await window.RW_API.request("/admin/bookings", { params: { page: 1, limit: 50 } });
+    const rows = Array.isArray(payload?.data?.bookings) ? payload.data.bookings : [];
+    renderBookings(rows);
+  } catch (err) {
+    console.error("Admin bookings load error:", err);
+    list.innerHTML = `<div style="color:#b91c1c;font-size:13px;">${err?.message || "Failed to load bookings."}</div>`;
+    if (empty) empty.classList.add("hidden");
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+
   loadBookings().catch((err) => {
     console.error("Admin bookings load error:", err);
     const list = document.getElementById("bookingsList");
