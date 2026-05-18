@@ -37,7 +37,6 @@ function renderAdminHeader(activeKey) {
       <nav class="admin-nav" aria-label="Admin navigation">
         ${navHtml}
         <button type="button" class="nav-logout" id="rw-admin-logout" aria-label="Logout">
-          <img src="../assets/logout.png" alt="" width="16" height="16" />
           Logout
         </button>
       </nav>
@@ -47,7 +46,6 @@ function renderAdminHeader(activeKey) {
         <nav class="mobile-nav" aria-label="Admin navigation mobile">
           ${navHtml}
           <button type="button" class="nav-logout mobile-logout" id="rw-admin-logout-mobile" aria-label="Logout">
-            <img src="../assets/logout.png" alt="" width="16" height="16" />
             Logout
           </button>
         </nav>

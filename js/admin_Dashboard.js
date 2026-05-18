@@ -105,7 +105,14 @@ function renderAll() {
     userTbody.innerHTML = users.slice(0, 5).map(r => `
       <tr>
         <td><span class="id-cell">#${r.id}</span></td>
-        <td><div class="avatar">${initials(r.name)}</div></td>
+        <td>
+          ${r.avatar
+            ? `<img src="${r.avatar}" class="dashboard-user-avatar" alt="${r.name}"
+                onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+              /><div class="avatar" style="display:none">${initials(r.name)}</div>`
+            : `<div class="avatar">${initials(r.name)}</div>`
+          }
+        </td>
         <td>${r.name}</td>
         <td>${r.username}</td>
         <td>${r.phone}</td>
@@ -118,7 +125,14 @@ function renderAll() {
     vehicleTbody.innerHTML = vehicles.slice(0, 5).map(r => `
       <tr>
         <td><span class="id-cell">#${r.id}</span></td>
-        <td><div class="photo-box">${r.icon}</div></td>
+        <td>
+          ${r.photo
+            ? `<img src="${r.photo}" class="dashboard-vehicle-photo" alt="${r.name}"
+                onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+              /><div class="photo-box dashboard-vehicle-placeholder">🚗</div>`
+            : `<div class="photo-box dashboard-vehicle-placeholder">🚗</div>`
+          }
+        </td>
         <td>${r.name}</td>
         <td>${r.owner}</td>
         <td class="price-cell">${r.dailyPrice}</td>
@@ -155,6 +169,7 @@ async function loadAdminDashboard() {
       username: safeUsername(u.email),
       phone: u.phone || "-",
       email: u.email || "-",
+      avatar: u.avatar || "",
     }));
 
     const vehicleRows = Array.isArray(vehiclesPayload?.data?.vehicles) ? vehiclesPayload.data.vehicles : [];
@@ -164,7 +179,7 @@ async function loadAdminDashboard() {
       owner: v?.owner?.name || "-",
       dailyPrice: formatNpr(v.dailyPrice),
       booked: Number(v.activeBookingsCount || 0) > 0,
-      icon: "🚗",
+      photo: Array.isArray(v.photos) && v.photos.length ? v.photos[0] : "",
     }));
   } catch (err) {
     if (err?.status === 401) {

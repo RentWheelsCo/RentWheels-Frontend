@@ -45,7 +45,7 @@ function renderVehicles(searchTerm = "") {
       </td>
       <td><strong>Rs ${v.dailyPrice}</strong></td>
       <td>
-        <span style="font-size:0.75rem; font-weight:600; padding:4px 10px; border-radius:999px; background:${v.status==='Available'?'#d1fae5':v.status==='Rented'?'#fef3c7':'#fee2e2'}; color:${v.status==='Available'?'#065f46':v.status==='Rented'?'#92400e':'#991b1b'}">${v.status}</span>
+        <span style="font-size:0.75rem; font-weight:600; padding:4px 10px; border-radius:999px; background:${v.status==='Available'?'#d1fae5':v.status==='Rented'?'#fef3c7':'#f1f5f9'}; color:${v.status==='Available'?'#065f46':v.status==='Rented'?'#92400e':'#64748b'}">${v.status}</span>
       </td>
       <td>
         <div class="action-dropdown-container">
@@ -281,7 +281,7 @@ function renderOptionsTable() {
       <td>${o.value}</td>
       <td>${o.isActive ? "Yes" : "No"}</td>
       <td>
-        <button class="${o.isActive ? "btn-danger" : "btn-primary"}" style="padding:6px 10px;font-size:12px;"
+        <button class="${o.isActive ? "btn-deactivate" : "btn-primary"}" style="padding:6px 10px;font-size:12px;"
           onclick="toggleOptionActive(${o.id}, ${o.isActive ? "false" : "true"})">
           ${o.isActive ? "Deactivate" : "Activate"}
         </button>

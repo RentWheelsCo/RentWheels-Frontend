@@ -438,6 +438,24 @@ body {
   background: #b91c1c;
 }
 
+/* Softer deactivate button — not the harsh red */
+.btn-deactivate {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  font-family: var(--font);
+}
+.btn-deactivate:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
 /* Detail row */
 .detail-row {
   display: flex;

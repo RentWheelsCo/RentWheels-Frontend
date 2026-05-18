@@ -197,3 +197,46 @@ tbody td {
   .search-wrap { margin-top: 24px; margin-bottom: 20px; }
   .search-bar { width: 100%; }
 }
+/* ── Dashboard user profile photo ── */
+.dashboard-user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid #dbeafe;
+  display: block;
+}
+
+/* ── Dashboard vehicle photo ── */
+.dashboard-vehicle-photo {
+  width: 52px;
+  height: 36px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid #e5e7eb;
+  display: block;
+}
+
+.dashboard-vehicle-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 36px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  font-size: 18px;
+}
+
+/* ── photo-box base ── */
+.photo-box {
+  width: 52px;
+  height: 36px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
