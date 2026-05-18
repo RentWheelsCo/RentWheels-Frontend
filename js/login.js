@@ -104,6 +104,12 @@ form.addEventListener('submit', async (e) => {
       password: pwIn.value,
     });
 
+    // Cache profile so the sidebar/header name + photo render instantly on the next page.
+    const user = payload?.user || payload?.data?.user || null;
+    if (user && user.id) {
+      try { sessionStorage.setItem("rw_profile", JSON.stringify(user)); } catch {}
+    }
+
     const role = payload?.user?.role || payload?.data?.user?.role || null;
     const nextHref = String(role || "").toLowerCase() === "admin" ? "admin_Dashboard.html" : "dashboard.html";
 

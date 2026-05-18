@@ -16,8 +16,28 @@ function bindLogout() {
 function setProfileName() {
   const el = document.querySelector(".profile-name");
   if (!el) return;
+
+  // Fast paint from cached profile first.
+  try {
+    const cached = JSON.parse(sessionStorage.getItem("rw_profile") || "null");
+    if (cached?.name) el.textContent = cached.name;
+    if (cached?.profilePhoto) {
+      const img = document.querySelector(".avatar img");
+      if (img) img.src = cached.profilePhoto;
+    }
+  } catch {}
+
   window.RW_API?.auth?.profile?.()
-    .then((p) => { if (p?.data?.name) el.textContent = p.data.name; })
+    .then((p) => {
+      if (p?.data?.id) {
+        try { sessionStorage.setItem("rw_profile", JSON.stringify(p.data)); } catch {}
+      }
+      if (p?.data?.name) el.textContent = p.data.name;
+      if (p?.data?.profilePhoto) {
+        const img = document.querySelector(".avatar img");
+        if (img) img.src = p.data.profilePhoto;
+      }
+    })
     .catch(() => {});
 }
 
@@ -54,17 +74,102 @@ function markInvalid(el, isInvalid) {
   el.style.borderColor = isInvalid ? "#dc2626" : "";
 }
 
-// €€ Vehicle Photo Preview €€
+let selectedVehiclePhotos = [];
+
+function sameFile(a, b) {
+  if (!a || !b) return false;
+  return a.name === b.name && a.size === b.size && a.type === b.type && a.lastModified === b.lastModified;
+}
+
+function syncVehiclePhotosInput(inputEl) {
+  if (!inputEl) return;
+  const dt = new DataTransfer();
+  selectedVehiclePhotos.forEach((f) => dt.items.add(f));
+  inputEl.files = dt.files;
+}
+
+function renderVehiclePhotoPreviews() {
+  const wrap = document.getElementById("vehiclePhotoPreviewList");
+  if (!wrap) return;
+
+  wrap.innerHTML = "";
+  if (!selectedVehiclePhotos.length) {
+    wrap.style.display = "none";
+    return;
+  }
+
+Object.assign(wrap.style, {
+  display: "grid",
+  gridAutoFlow: "column",
+  gridAutoColumns: "110px",
+  gap: "10px",
+  overflowX: "auto",
+  marginTop: "12px",
+  width: "100%",
+});
+  selectedVehiclePhotos.forEach((file, idx) => {
+    const item = document.createElement("div");
+    Object.assign(item.style, {
+      position: "relative",
+      borderRadius: "12px",
+      overflow: "hidden",
+      border: "1px solid #e5e7eb",
+      background: "#f8fafc",
+    });
+
+    const img = document.createElement("img");
+    img.alt = file.name || `Vehicle photo ${idx + 1}`;
+    Object.assign(img.style, { width: "100%", height: "90px", objectFit: "cover", display: "block" });
+    img.loading = "lazy";
+    img.src = URL.createObjectURL(file);
+    img.addEventListener("load", () => {
+      try { URL.revokeObjectURL(img.src); } catch {}
+    });
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = "×";
+    btn.title = "Remove photo";
+    Object.assign(btn.style, {
+      position: "absolute",
+      top: "6px",
+      right: "6px",
+      width: "26px",
+      height: "26px",
+      borderRadius: "999px",
+      border: "1px solid rgba(0,0,0,0.08)",
+      background: "rgba(255,255,255,0.95)",
+      cursor: "pointer",
+      fontSize: "18px",
+      lineHeight: "22px",
+      padding: "0",
+    });
+    btn.addEventListener("click", () => {
+      selectedVehiclePhotos.splice(idx, 1);
+      const inputEl = document.getElementById("vehiclePhotos");
+      syncVehiclePhotosInput(inputEl);
+      renderVehiclePhotoPreviews();
+    });
+
+    item.appendChild(img);
+    item.appendChild(btn);
+    wrap.appendChild(item);
+  });
+}
+
 function previewVehiclePhoto(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const preview = document.getElementById("vehiclePhotoPreview");
-    preview.src = e.target.result;
-    preview.style.display = "block";
-  };
-  reader.readAsDataURL(file);
+  const inputEl = event?.target;
+  const incoming = Array.from(inputEl?.files || []);
+  if (!incoming.length) return;
+
+  for (const f of incoming) {
+    if (selectedVehiclePhotos.some((x) => sameFile(x, f))) continue;
+    selectedVehiclePhotos.push(f);
+  }
+  selectedVehiclePhotos = selectedVehiclePhotos.slice(0, 10);
+
+  syncVehiclePhotosInput(inputEl);
+  renderVehiclePhotoPreviews();
 }
 
 async function fetchOptions(type, parentId) {
