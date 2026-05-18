@@ -75,14 +75,14 @@
           vehicle specifications.</p>
       </header>
 
-      <!-- Upload Area -->
-      <div class="upload-box" onclick="document.getElementById('vehiclePhotos').click()">
-        <img src="../assets/upload.png" width="28" height="28">
-        <span>Upload pictures of your vehicle</span>
-        <input type="file" id="vehiclePhotos" accept="image/*" multiple style="display:none;"
-          onchange="previewVehiclePhoto(event)">
-      </div>
-      <div id="vehiclePhotoPreviewList" class="vehicle-preview"></div>
+    <!-- Upload Area -->
+    <div class="upload-box" onclick="document.getElementById('vehiclePhotos').click()">
+      <img src="../assets/upload.png" width="28" height="28">
+      <span>Upload pictures of your vehicle</span>
+      <input type="file" id="vehiclePhotos" accept="image/*" multiple style="display:none;"
+        onchange="previewVehiclePhoto(event)">
+    </div>
+    <img id="vehiclePhotoPreview" class="vehicle-preview">
 
       <!-- Vehicle Form -->
       <div class="vehicle-form">
