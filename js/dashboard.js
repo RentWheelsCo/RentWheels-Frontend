@@ -46,7 +46,7 @@ function setProfileName() {
     .catch(() => {});
 }
 
-function drawDonutChart() {
+function drawDonutChart({ totalVehicles = 0, activeBookings = 0, pendingBookings = 0 } = {}) {
   requestAnimationFrame(() => {
     const canvas = document.getElementById("fleetChart");
     if (!canvas) return;
@@ -59,10 +59,32 @@ function drawDonutChart() {
 
     ctx.clearRect(0, 0, 180, 180);
 
-    ctx.beginPath();
-    ctx.arc(90, 90, 76, 0, 2 * Math.PI);
-    ctx.fillStyle = "#e2e5ec";
-    ctx.fill();
+    const segments = [
+      { label: "Total Vehicle", value: Number(totalVehicles || 0), color: "#3b82f6" },
+      { label: "Active Booking", value: Number(activeBookings || 0), color: "#1e40af" },
+      { label: "Pending", value: Number(pendingBookings || 0), color: "#0f2a6e" },
+    ].filter((s) => Number.isFinite(s.value) && s.value > 0);
+
+    const total = segments.reduce((sum, s) => sum + s.value, 0);
+
+    if (!total) {
+      ctx.beginPath();
+      ctx.arc(90, 90, 76, 0, 2 * Math.PI);
+      ctx.fillStyle = "#e2e5ec";
+      ctx.fill();
+    } else {
+      let startAngle = -Math.PI / 2;
+      for (const seg of segments) {
+        const angle = (seg.value / total) * Math.PI * 2;
+        ctx.beginPath();
+        ctx.moveTo(90, 90);
+        ctx.arc(90, 90, 76, startAngle, startAngle + angle);
+        ctx.closePath();
+        ctx.fillStyle = seg.color;
+        ctx.fill();
+        startAngle += angle;
+      }
+    }
 
     ctx.globalCompositeOperation = "destination-out";
     ctx.beginPath();
@@ -81,7 +103,21 @@ function renderDashboard(data) {
   const revenue = Number(data?.monthlyRevenue || 0);
   document.getElementById("monthlyRevenue").textContent = "Rs " + revenue.toLocaleString();
 
-  drawDonutChart();
+  const activeBookings = data?.activeBookings ?? data?.activeBooking ?? 0;
+  const pendingBookings = data?.pendingBookings ?? 0;
+
+  const tEl = document.getElementById("fleetLegendTotalVehicles");
+  const aEl = document.getElementById("fleetLegendActiveBookings");
+  const pEl = document.getElementById("fleetLegendPendingBookings");
+  if (tEl) tEl.textContent = String(data?.totalVehicles ?? 0);
+  if (aEl) aEl.textContent = String(activeBookings ?? 0);
+  if (pEl) pEl.textContent = String(pendingBookings ?? 0);
+
+  drawDonutChart({
+    totalVehicles: data?.totalVehicles ?? 0,
+    activeBookings,
+    pendingBookings,
+  });
 
   const list   = document.getElementById("bookingsList");
   const bookings = Array.isArray(data?.recentBookings) ? data.recentBookings : [];
@@ -118,6 +154,8 @@ async function loadDashboard() {
   renderDashboard({
     totalVehicles:  data.totalVehicles,
     totalBookings:  data.totalBookings,
+    activeBookings: data.activeBookings,
+    pendingBookings: data.pendingBookings,
     monthlyRevenue: current?.revenue ?? fallback?.revenue ?? 0,
     recentBookings: data.recentBookings,
   });
