@@ -1,6 +1,16 @@
 (function () {
   const configuredBase = String(window.RW_CONFIG?.API_BASE || "").trim();
-  const base = (configuredBase || "http://localhost:5000/api/").replace(/\/+$/, "");
+  const DEFAULT_REMOTE_API = "https://rentwheels-zr2p.onrender.com/api";
+  const DEFAULT_LOCAL_API = "http://localhost:5000/api";
+
+  const hostname = String(window.location?.hostname || "").toLowerCase();
+  const isLocalHost =
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname === "[::1]" ||
+    hostname.endsWith(".local");
+
+  const base = (configuredBase || (isLocalHost ? DEFAULT_LOCAL_API : DEFAULT_REMOTE_API)).replace(/\/+$/, "");
 
   function buildUrl(path, params) {
     const raw = String(path || "");
@@ -26,6 +36,7 @@
     const opt = options || {};
     const method = opt.method || "GET";
     const headers = new Headers(opt.headers || {});
+    const timeoutMs = Number.isFinite(opt.timeoutMs) ? opt.timeoutMs : 20000;
 
     let body = opt.body;
     const isBodyObject =
@@ -40,12 +51,36 @@
       body = JSON.stringify(body);
     }
 
-    const res = await fetch(buildUrl(path, opt.params), {
-      method,
-      headers,
-      body,
-      credentials: "include",
-    });
+    const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+    const timeoutId =
+      controller && timeoutMs > 0
+        ? setTimeout(() => {
+            try {
+              controller.abort();
+            } catch {}
+          }, timeoutMs)
+        : null;
+
+    let res;
+    try {
+      res = await fetch(buildUrl(path, opt.params), {
+        method,
+        headers,
+        body,
+        credentials: "include",
+        signal: controller ? controller.signal : undefined,
+      });
+    } catch (err) {
+      if (err && (err.name === "AbortError" || String(err.message || "").includes("aborted"))) {
+        const e = new Error(`Request timed out after ${timeoutMs}ms`);
+        e.status = 408;
+        e.cause = err;
+        throw e;
+      }
+      throw err;
+    } finally {
+      if (timeoutId) clearTimeout(timeoutId);
+    }
 
     const text = await res.text();
     let data = null;
@@ -59,13 +94,19 @@
 
     if (res.status === 401) {
       const rawPath = String(path || "");
+      // Profile endpoint is used as an "am I logged in?" check on public pages.
+      // A 401 here is normal when the user isn't logged in and should not redirect.
+      const isProfileCheck =
+        rawPath === "/auth/profile" ||
+        rawPath.startsWith("/auth/profile?") ||
+        rawPath.startsWith("/auth/profile&");
       const isAuthForm =
         rawPath.startsWith("/auth/login") ||
         rawPath.startsWith("/auth/register") ||
         rawPath.startsWith("/auth/forgot-password") ||
         rawPath.startsWith("/auth/reset-password");
 
-      if (!isAuthForm) {
+      if (!isAuthForm && !isProfileCheck) {
         window.location.href = getLoginHref();
       }
       const err = new Error("Unauthorized");

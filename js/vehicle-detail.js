@@ -1,14 +1,19 @@
 (function () {
   // <!-- FULL API INTEGRATION ADDED -->
   // NOTE: This file previously used static vehicle data. It's now backend-driven.
-  const FALLBACK_IMAGES = [
-    "../assets/bmwx5.png",
-    "../assets/bmwm3.png",
-    "../assets/TeslaModelX.png",
-    "../assets/bmws1krr.png",
-    "../assets/streetfighterV4S.png",
-    "../assets/RoyalEnfield350.png",
-  ];
+  // Avoid demo images: use a lightweight inline placeholder when the API has no photos.
+  const VEHICLE_PLACEHOLDER =
+    "data:image/svg+xml;charset=utf-8," +
+    encodeURIComponent(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="420" viewBox="0 0 640 420">
+        <defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#f3f4f6"/><stop offset="1" stop-color="#e5e7eb"/></linearGradient></defs>
+        <rect width="640" height="420" rx="24" fill="url(#g)"/>
+        <path d="M220 250c0-18 14-32 32-32h150c14 0 26 9 31 21l10 29h22c18 0 33 15 33 33v16h-28c-6 19-23 33-44 33s-38-14-44-33H288c-6 19-23 33-44 33s-38-14-44-33h-28v-32c0-21 17-38 38-38h26l8-22c5-14 17-23 32-23h135" fill="none" stroke="#9ca3af" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="244" cy="318" r="18" fill="none" stroke="#9ca3af" stroke-width="10"/>
+        <circle cx="440" cy="318" r="18" fill="none" stroke="#9ca3af" stroke-width="10"/>
+      </svg>`,
+    );
+  const FALLBACK_IMAGES = [VEHICLE_PLACEHOLDER];
 
   function resolveId(raw) {
     const n = parseInt(String(raw), 10);
@@ -160,9 +165,12 @@
 
   function createHeroSlides(id, d) {
     const fromApi = Array.isArray(d?.photos) ? d.photos.filter(Boolean) : [];
-    const merged = [...new Set([...fromApi, ...FALLBACK_IMAGES])].filter(Boolean);
-    const slides = merged.slice(0, 5);
-    return slides.length ? slides : FALLBACK_IMAGES.slice(0, 5);
+    // Use exactly the photos the seller uploaded. Only fall back to a placeholder if there are none.
+    if (fromApi.length) {
+      const uniq = [...new Set(fromApi)].filter(Boolean);
+      return uniq.slice(0, 10);
+    }
+    return FALLBACK_IMAGES.slice(0, 1);
   }
 
   function setupHeroCarousel(id, d) {
@@ -175,7 +183,16 @@
     const slides = createHeroSlides(id, d);
     let active = 0;
 
+    const hasCarousel = slides.length > 1;
+    prevBtn.style.display = hasCarousel ? "" : "none";
+    nextBtn.style.display = hasCarousel ? "" : "none";
+    dotsWrap.style.display = hasCarousel ? "" : "none";
+
     function renderDots() {
+      if (!hasCarousel) {
+        dotsWrap.innerHTML = "";
+        return;
+      }
       dotsWrap.innerHTML = slides
         .map(
           (_, index) =>
@@ -187,9 +204,9 @@
     }
 
     function setSlide(index) {
-      active = (index + slides.length) % slides.length;
+      active = slides.length ? (index + slides.length) % slides.length : 0;
       heroImg.classList.add("is-fading");
-      heroImg.src = slides[active];
+      heroImg.src = slides[active] || FALLBACK_IMAGES[0];
       heroImg.alt = `${d.title} view ${active + 1}`;
       renderDots();
       window.setTimeout(() => {
@@ -197,14 +214,16 @@
       }, 120);
     }
 
-    prevBtn.addEventListener("click", () => setSlide(active - 1));
-    nextBtn.addEventListener("click", () => setSlide(active + 1));
-    dotsWrap.addEventListener("click", (e) => {
-      const btn = e.target.closest(".vehicle-detail-hero__dot");
-      if (!btn) return;
-      const idx = Number(btn.dataset.index);
-      if (Number.isFinite(idx)) setSlide(idx);
-    });
+    if (hasCarousel) {
+      prevBtn.addEventListener("click", () => setSlide(active - 1));
+      nextBtn.addEventListener("click", () => setSlide(active + 1));
+      dotsWrap.addEventListener("click", (e) => {
+        const btn = e.target.closest(".vehicle-detail-hero__dot");
+        if (!btn) return;
+        const idx = Number(btn.dataset.index);
+        if (Number.isFinite(idx)) setSlide(idx);
+      });
+    }
 
     setSlide(0);
   }
@@ -336,7 +355,7 @@
           list.innerHTML = comments.map((c) => renderComment({
             name: c?.user?.name || "User",
             text: c?.content || "",
-            avatar: c?.user?.profilePhoto || "https://placehold.co/64x64/e5e7eb/9ca3af?text=U",
+            avatar: c?.user?.profilePhoto || "../assets/Person-Icon.png",
             time: new Date(c.createdAt).toLocaleDateString(),
             image: "",
             commentId: c.id,

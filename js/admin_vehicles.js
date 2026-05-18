@@ -1,6 +1,18 @@
 const adminVehicleData = [];
 let optionRows = [];
 
+const VEHICLE_PLACEHOLDER =
+  "data:image/svg+xml;charset=utf-8," +
+  encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="420" viewBox="0 0 640 420">
+      <defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#f3f4f6"/><stop offset="1" stop-color="#e5e7eb"/></linearGradient></defs>
+      <rect width="640" height="420" rx="24" fill="url(#g)"/>
+      <path d="M220 250c0-18 14-32 32-32h150c14 0 26 9 31 21l10 29h22c18 0 33 15 33 33v16h-28c-6 19-23 33-44 33s-38-14-44-33H288c-6 19-23 33-44 33s-38-14-44-33h-28v-32c0-21 17-38 38-38h26l8-22c5-14 17-23 32-23h135" fill="none" stroke="#9ca3af" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="244" cy="318" r="18" fill="none" stroke="#9ca3af" stroke-width="10"/>
+      <circle cx="440" cy="318" r="18" fill="none" stroke="#9ca3af" stroke-width="10"/>
+    </svg>`,
+  );
+
 let pendingDeleteId = null;
 let editingId = null;
 
@@ -73,7 +85,7 @@ async function loadVehicles() {
     const rows = Array.isArray(payload?.data?.vehicles) ? payload.data.vehicles : [];
 
     adminVehicleData.splice(0, adminVehicleData.length, ...rows.map((v) => {
-      const photo = Array.isArray(v?.photos) && v.photos.length ? v.photos[0] : "../assets/bmwm3.png";
+      const photo = Array.isArray(v?.photos) && v.photos.length ? v.photos[0] : VEHICLE_PLACEHOLDER;
       return {
         id: v.id,
         name: safeName(v),

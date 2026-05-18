@@ -212,7 +212,7 @@ button {
   background: #fff;
   border: 1px solid var(--clr-border);
   border-radius: var(--radius-md);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
   list-style: none;
   min-width: 170px;
   z-index: 100;
@@ -284,7 +284,7 @@ button {
   background: #fff;
   border: 1px solid var(--clr-border);
   border-radius: var(--radius-md);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.13);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.13);
   padding: 16px;
   width: 290px;
   z-index: 200;
@@ -405,7 +405,7 @@ button {
 
 .hs-search-btn:hover {
   background: var(--clr-primary-dk);
-  box-shadow: 0 4px 16px rgba(37,99,235,0.25);
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.25);
 }
 
 /* ─── Hero car visual ──────────────────────────────────────── */
@@ -760,7 +760,7 @@ button {
   background: var(--clr-primary);
   color: #fff;
   border-color: var(--clr-primary);
-  box-shadow: 0 4px 16px rgba(37,99,235,0.25);
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.25);
 }
 
 .rec-card {
@@ -1067,4 +1067,134 @@ button {
     padding: 12px;
     border-radius: 50%;
   }
+}
+
+/* ─────────────────────────────────────────────────────────
+   Skeleton (grey loading placeholders)
+   ───────────────────────────────────────────────────────── */
+
+:root {
+  --rw-skeleton-bg: #e5e7eb;
+  --rw-skeleton-fg: #f1f5f9;
+}
+
+.rw-skeleton {
+  display: inline-block;
+  width: 100%;
+  background: var(--rw-skeleton-bg);
+  border-radius: 999px;
+  opacity: 0.9;
+  position: relative;
+  overflow: hidden;
+}
+
+.rw-skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.65) 50%,
+      rgba(255, 255, 255, 0) 100%);
+  animation: rw-skeleton-shimmer 1.15s ease-in-out infinite;
+}
+
+@keyframes rw-skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* blocks */
+.rw-skeleton--block {
+  border-radius: var(--radius-sm);
+}
+
+/* common shapes */
+.rw-skeleton--rect-hero {
+  height: 420px;
+  border-radius: var(--radius-xl);
+}
+
+.rw-skeleton--img {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+}
+
+.rw-skeleton--card {
+  height: auto;
+}
+
+/* vehicle-card skeleton layout */
+.rw-vehicle-skel {
+  border: 1px solid var(--clr-border);
+  background: #fff;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  cursor: default;
+}
+
+.rw-vehicle-skel__img {
+  height: 180px;
+  background: var(--rw-skeleton-bg);
+}
+
+.rw-vehicle-skel__body {
+  padding: 16px 16px 18px;
+}
+
+.rw-vehicle-skel__title {
+  height: 14px;
+  max-width: 80%;
+  margin-bottom: 10px;
+}
+
+.rw-vehicle-skel__type {
+  height: 10px;
+  max-width: 55%;
+  margin-bottom: 16px;
+}
+
+.rw-vehicle-skel__spec {
+  height: 10px;
+}
+
+/* recommendation-card skeleton layout */
+.rw-rec-skel {
+  flex: 0 0 272px;
+  background: #fff;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--clr-border);
+  overflow: hidden;
+  cursor: default;
+}
+
+.rw-rec-skel__img-wrap {
+  height: 188px;
+  background: var(--rw-skeleton-bg);
+}
+
+.rw-rec-skel__body {
+  padding: 16px 18px 20px;
+}
+
+.rw-rec-skel__title {
+  height: 14px;
+  max-width: 65%;
+  margin-bottom: 10px;
+}
+
+.rw-rec-skel__type {
+  height: 10px;
+  max-width: 85%;
+  margin-bottom: 16px;
+}
+
+.rw-rec-skel__pill {
+  height: 10px;
+  width: 72px;
 }
